@@ -7,6 +7,8 @@ import { Observable } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 
 import { Image } from '../models/image.model';
+import { ProductCategory } from '../models/product-category.model';
+import { Product } from '../models/product.model';
 
 @Injectable()
 export class VJAPI {
@@ -48,7 +50,7 @@ export class VJAPI {
 	 * Helper: Hide HTTP loading spinner
 	 */
 	public hideLoader() {
-		this.loader.dismiss();
+		this.loader.dismiss().catch(()=>{});
 	}
 
 	/********************************************************************************************
@@ -75,5 +77,34 @@ export class VJAPI {
 		}
 	}
 
+	/********************************************************************************************
+	 *                   API Section: get products related data
+	 *
+	 * 1. Interface to get product category
+	 *   GET: http://api_url/api/product/category
+	 * 2. Interface to get a list of all products
+	 *   GET: http://api_url/api/product/all
+	 ********************************************************************************************/
 
+	 public getProductCategories(): Observable<ProductCategory[]> {
+	 	this.showLoader();
+
+	 	let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.get(this.apiUrl +'api/' + 'product/categories', {headers: headers})
+	 			.pipe(map((res: Response) => res.json()));
+
+	 }
+
+	 public getProductAll(): Observable<Product[]> {
+	 	this.showLoader();
+
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.get(this.apiUrl + 'api/' + 'product/all', {headers: headers})
+	 			.pipe(map((res: Response) => res.json()));
+
+	 }
 }

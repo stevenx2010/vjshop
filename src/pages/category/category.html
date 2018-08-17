@@ -6,6 +6,49 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
-	<h1>CategoryjdINte Page</h1>
+
+<ion-content>
+	<ion-grid [style.height]="gridHeight">
+		<ion-row>
+			<ion-col class="menu" col-3>
+				<ion-scroll scrollY="true" [style.height]="scrollHeight">
+					<ion-list>
+						<ion-item *ngFor="let category of productCategories; let i = index" (click)="itemSelected(i, id)" [style.background-color]="i==clickedItemIndex ? 'white' : '#efefef'" [style.border-left]="i==clickedItemIndex ? '2px solid #00ff00' : 'none'">
+							  {{ category.name }}
+						</ion-item>
+					</ion-list>
+				</ion-scroll>
+			</ion-col>
+
+			<ion-col col-9>
+				<ion-scroll scrollY="true" [style.height]="scrollHeight">
+					<ion-list *ngIf="clickedItemIndex === 0">
+						<ion-item *ngFor="let product of products">
+							<img src="{{ baseUrl }}{{ product.thumbnail_url }}" height="10rem">
+						{{ product.model}}
+			
+						</ion-item>
+					</ion-list>
+				</ion-scroll>
+			</ion-col>
+		</ion-row>
+	</ion-grid>
 </ion-content>
+
+<style>
+	ion-list, ion-grid, ion-col, ion-row, ion-content, ion-tab {
+		margin: 0;
+		padding: 0;
+		border: none;
+	}
+
+	.menu ion-item {
+		font-size: 1.3rem;
+		text-align: center;
+
+	}
+
+	.menu {
+		background-color: #efefef;
+	}
+</style>
