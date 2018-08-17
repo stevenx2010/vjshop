@@ -9,6 +9,8 @@ import { switchMap, map } from 'rxjs/operators';
 import { Image } from '../models/image.model';
 import { ProductCategory } from '../models/product-category.model';
 import { Product } from '../models/product.model';
+import { ProductDetail } from '../models/product-detail.model';
+import { ProductDetailImage } from '../models/product-detail-image.model';
 
 @Injectable()
 export class VJAPI {
@@ -81,13 +83,16 @@ export class VJAPI {
 	 *                   API Section: get products related data
 	 *
 	 * 1. Interface to get product category
-	 *   GET: http://api_url/api/product/category
+	 *   	GET: http://api_url/api/product/category
 	 * 2. Interface to get a list of all products
-	 *   GET: http://api_url/api/product/all
+	 *   	GET: http://api_url/api/product/all
+	 * 3. Interface to get the detail of a product
+	 *		GET: http://api_url/api/product/detail/{id}		//get product info
+	 *		GET: http://api_url/api/product/images/{id}/{position}	//get product's images at position
 	 ********************************************************************************************/
 
 	 public getProductCategories(): Observable<ProductCategory[]> {
-	 	this.showLoader();
+//	 	this.showLoader();
 
 	 	let headers = new Headers();
 	 	this.initAuthHeader(headers);
@@ -98,7 +103,7 @@ export class VJAPI {
 	 }
 
 	 public getProductAll(): Observable<Product[]> {
-	 	this.showLoader();
+//	 	this.showLoader();
 
 		let headers = new Headers();
 	 	this.initAuthHeader(headers);
@@ -107,4 +112,25 @@ export class VJAPI {
 	 			.pipe(map((res: Response) => res.json()));
 
 	 }
+
+	 public getProductDetailInfo(productId: number): Observable<ProductDetail[]> {
+//	 	this.showLoader();
+
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.get(this.apiUrl + 'api/' + 'product/detail/' + productId, {headers: headers})
+				.pipe(map((res: Response) => res.json()));	 	
+	 }
+
+	 public getProductDetailImages(productId: number, position: number): Observable<ProductDetailImage[]> {
+//	 	this.showLoader();
+
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.get(this.apiUrl + 'api/' + 'product/detail/images/' + productId + '/' + position, {headers: headers})
+				.pipe(map((res: Response) => res.json()));	 	
+	 }
+
 }

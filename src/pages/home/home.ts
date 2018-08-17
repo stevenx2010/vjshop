@@ -1,5 +1,5 @@
 import { Component, ViewChild, Inject } from '@angular/core';
-import { Content, Slides } from 'ionic-angular';
+import { Content, Slides, NavController } from 'ionic-angular';
 
 import { VJAPI } from '../../services/vj.services';
 import { Image } from '../../models/image.model';
@@ -26,7 +26,7 @@ export class HomePage {
   contentWidth: number;
   contentHeight: number;
 
-  constructor(private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string, private http: Http ) {
+  constructor(public navCtrl: NavController, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string, private http: Http ) {
   	// initialize arrays
   	this.remoteImages = new Array<Array<Image>>();
   	this.imageUrls = new Array<Array<string>>();

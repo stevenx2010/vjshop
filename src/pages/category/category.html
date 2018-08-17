@@ -22,18 +22,52 @@
 
 			<ion-col col-9>
 				<ion-scroll scrollY="true" [style.height]="scrollHeight">
-					<ion-list *ngIf="clickedItemIndex === 0">
-						<ion-item *ngFor="let product of products">
-							<img src="{{ baseUrl }}{{ product.thumbnail_url }}" height="10rem">
-						{{ product.model}}
-			
-						</ion-item>
-					</ion-list>
+
+					<div  class="content" *ngIf="clickedItemIndex === 0" >
+						<div *ngFor="let product_1 of products_1; let i = index">
+						<ion-row class="images">
+							<ion-col>
+								<div align="center" (click)="toProductDetail(product_1.id)">
+									<img src="{{ baseUrl }}{{ product_1.thumbnail_url }}">
+								</div>
+							</ion-col>
+							<ion-col>
+								<div *ngIf="i < products_2.length" align="center"  (click)="toProductDetail(products_2[i].id)" >
+									<img src="{{ baseUrl }}{{ products_2[i].thumbnail_url }}">
+								</div>
+							</ion-col>
+							<ion-col>
+								<div *ngIf="i < products_3.length" align="center"  (click)="toProductDetail(products_3[i].id)">
+									<img src="{{ baseUrl }}{{ products_3[i].thumbnail_url }}">
+								</div>
+							</ion-col>
+						</ion-row>
+						<ion-row class="text">
+							<ion-col >
+								<div align="center" (click)="toProductDetail(product_1.id)">
+									{{ product_1.model }}
+								</div>
+							</ion-col>
+							<ion-col>
+								<div *ngIf="i < products_2.length" align="center" (click)="toProductDetail(products_2[i].id)">
+									{{ products_2[i].model }}
+								</div>
+							</ion-col>
+							<ion-col>
+								<div *ngIf="i < products_3.length" align="center" (click)="toProductDetail(products_3[i].id)">
+									{{ products_3[i].model }}
+								</div>
+							</ion-col>
+						</ion-row>
+						</div>
+					</div>
 				</ion-scroll>
 			</ion-col>
 		</ion-row>
 	</ion-grid>
 </ion-content>
+
+
 
 <style>
 	ion-list, ion-grid, ion-col, ion-row, ion-content, ion-tab {
@@ -51,4 +85,24 @@
 	.menu {
 		background-color: #efefef;
 	}
+
+	.content img {
+		height: 3rem;
+	}
+
+	.content ion-col {
+		justify-content: center;
+
+	}
+
+	.content .images {
+		padding-top: 2.5rem;
+	}
+
+	.content .text {
+		font-size: 1rem;
+	}
+
+
+
 </style>
