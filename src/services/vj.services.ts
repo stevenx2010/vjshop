@@ -11,6 +11,7 @@ import { ProductCategory } from '../models/product-category.model';
 import { Product } from '../models/product.model';
 import { ProductDetail } from '../models/product-detail.model';
 import { ProductDetailImage } from '../models/product-detail-image.model';
+import { ProductSubCategory } from '../models/product-sub-category.model';
 
 @Injectable()
 export class VJAPI {
@@ -89,6 +90,9 @@ export class VJAPI {
 	 * 3. Interface to get the detail of a product
 	 *		GET: http://api_url/api/product/detail/{id}		//get product info
 	 *		GET: http://api_url/api/product/images/{id}/{position}	//get product's images at position
+	 * 4. Interface to get products under a sub-category & sub-categories under a category
+	 		GET: http://api_url/api/product/products/{subCategoryId}
+	 		GET: http://api_url/api/product/productSubCategories/{categoryId}
 	 ********************************************************************************************/
 
 	 public getProductCategories(): Observable<ProductCategory[]> {
@@ -132,5 +136,21 @@ export class VJAPI {
 		return this.http.get(this.apiUrl + 'api/' + 'product/detail/images/' + productId + '/' + position, {headers: headers})
 				.pipe(map((res: Response) => res.json()));	 	
 	 }
+
+	 public getSubCategories(categoryId: number): Observable<ProductSubCategory[]> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.get(this.apiUrl + 'api/' + 'product/productSubCategories/' + categoryId, {headers: headers})
+	 			.pipe(map((res: Response) => res.json()));
+	 }
+
+	 public getProducts(categoryId: number): Observable<Product[]> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.get(this.apiUrl + 'api/' + 'product/products/' + categoryId, {headers: headers})
+	 			.pipe(map((res: Response) => res.json()));
+	}
 
 }

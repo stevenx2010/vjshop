@@ -6,7 +6,7 @@
 -->
 <ion-content>
 	<ion-fab top left>
-		<button ion-fab (click)="goBack()" color="light"><ion-icon name="arrow-back"></ion-icon></button>
+		<button ion-fab (click)="goBack()" mini><ion-icon name="arrow-back"></ion-icon></button>
 	</ion-fab>
 
 	<ion-grid>
@@ -56,7 +56,7 @@
 			<ion-col col-8 style="align-self: center;">配送：</ion-col>
 			<ion-col col-4 style="align-self: center;">
 				<div align="right">
-				<button ion-button outline color="blue" small style="font-size: 1rem;">新建地址</button>
+				<button ion-button outline color="blue" small style="font-size: 1.2rem;margin: 0;">新建地址</button>
 				</div>
 			</ion-col>
 		</ion-row>
@@ -90,12 +90,14 @@
 					</div>
 				<!--	</button>-->
 				</ion-col>
-				<ion-col col-1>
-					<button ion-button icon-only outline  [disabled]="!(numberOfProducts-1)" (click)="removeItem()">
+				<ion-col col-2>
+					<div align="right">
+					<button ion-button icon-only outline [disabled]="!(numberOfProducts-1)" (click)="removeItem()">
 						<ion-icon name="remove"></ion-icon>
 					</button>
+					</div>
 				</ion-col>
-				<ion-col col-2>
+				<ion-col col-1>
 					<div align="center"> {{ numberOfProducts }} </div>
 				</ion-col>
 				<ion-col col-1>
@@ -108,7 +110,9 @@
 				<ion-col col-2>
 				</ion-col>
 				<ion-col col-4>
-					<button ion-button full style="font-size: 1.2rem" (click)="addToShoppingCart()">加入购物车</button>
+					<div align="right">
+					<button ion-button full style="font-size: 1.4rem;height: 4.5rem;" color="shoppingbtn" (click)="addToShoppingCart()">加入购物车</button>
+					</div>
 				</ion-col>
 			</ion-row>
 		</ion-grid>
@@ -122,6 +126,10 @@
 		padding: 0;
 		border: none;
 
+	}
+
+	ion-fab button {
+		background-color: rgba(230,230,230,0.6);
 	}
 
 	.info {
@@ -153,7 +161,8 @@
 
 	.price {
 		font-size: 1.6rem;
-		color: #0000ff;
+		color: #0437f1;
+		font-weight: bold
 	}
 
 	.seperator {
@@ -165,7 +174,8 @@
 	}
 
 	.delivery {
-		margin-top: 0;
+		margin-top: 1rem;
+		margin-bottom: 1rem;
 		padding-left: 1.2rem;
 		padding-right: 1.2rem;
 		font-size: 1.2rem;

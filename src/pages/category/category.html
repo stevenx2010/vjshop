@@ -13,7 +13,7 @@
 			<ion-col class="menu" col-3>
 				<ion-scroll scrollY="true" [style.height]="scrollHeight">
 					<ion-list>
-						<ion-item *ngFor="let category of productCategories; let i = index" (click)="itemSelected(i, id)" [style.background-color]="i==clickedItemIndex ? 'white' : '#efefef'" [style.border-left]="i==clickedItemIndex ? '2px solid #00ff00' : 'none'">
+						<ion-item *ngFor="let category of productCategories; let i = index; " (click)="itemSelected(i, category.id)" [style.background-color]="i==clickedItemIndex ? 'white' : '#efefef'" [style.border-left]="i==clickedItemIndex ? '2px solid #00ff00' : 'none'">
 							  {{ category.name }}
 						</ion-item>
 					</ion-list>
@@ -42,6 +42,7 @@
 								</div>
 							</ion-col>
 						</ion-row>
+
 						<ion-row class="text">
 							<ion-col >
 								<div align="center" (click)="toProductDetail(product_1.id)">
@@ -61,6 +62,60 @@
 						</ion-row>
 						</div>
 					</div>
+
+					<div class="content-category" *ngIf="clickedItemIndex != 0">
+						<div *ngFor="let category of productBySubCategories; let i = index;">
+							<ion-row class="category" style="flex-wrap: nowrap;">
+								<ion-col></ion-col>
+								<ion-col col-1><ion-row class="seperator"></ion-row></ion-col>
+								<ion-col col-auto>									
+									{{ category.subCategory.name}}
+									
+								</ion-col>
+								<ion-col col-1><ion-row class="seperator"></ion-row></ion-col>
+								<ion-col></ion-col>
+							</ion-row>
+							<div *ngFor="let product of category.products; let j = index;">
+							
+								<ion-row class="images">
+									<ion-col>
+										<div *ngIf="j < category.products.length && j % 3 == 0" align="center" (click)="toProductDetail(category.products[j].id)">
+											<img src="{{ baseUrl }}{{ category.products[j].thumbnail_url}}">
+										</div>
+									</ion-col>
+									<ion-col>
+										<div *ngIf="j+1 < category.products.length && (j+1) % 3 == 1" align="center" (click)="toProductDetail(category.products[j+1].id)">
+											<img src="{{ baseUrl }}{{ category.products[j+1].thumbnail_url}}">
+										</div>
+									</ion-col>
+									<ion-col>
+										<div *ngIf="j+2 < category.products.length && (j+2) % 3 == 2" align="center" (click)="toProductDetail(category.products[j+2].id)">
+											<img src="{{ baseUrl }}{{ category.products[j+2].thumbnail_url}}">
+										</div>
+									</ion-col>
+								</ion-row>
+
+								<ion-row class="text">
+									<ion-col>
+										<div *ngIf="j < category.products.length && j % 3 == 0" align="center" (click)="toProductDetail(category.products[j].id)">
+											{{category.products[j].model}}
+										</div>
+									</ion-col>
+									<ion-col>
+										<div *ngIf="j+1 < category.products.length && (j+1) % 3 == 1" align="center" (click)="toProductDetail(category.products[j+1].id)">
+											{{category.products[j+1].model}}
+										</div>
+									</ion-col>
+									<ion-col>
+										<div *ngIf="j+2 < category.products.length && (j+2) % 3 == 2" align="center" (click)="toProductDetail(category.products[j+2].id)">
+											{{category.products[j+2].model}}
+										</div>
+									</ion-col>
+								</ion-row>
+							</div>
+						</div>
+					</div>
+
 				</ion-scroll>
 			</ion-col>
 		</ion-row>
@@ -70,7 +125,7 @@
 
 
 <style>
-	ion-list, ion-grid, ion-col, ion-row, ion-content, ion-tab {
+	* {
 		margin: 0;
 		padding: 0;
 		border: none;
@@ -103,6 +158,36 @@
 		font-size: 1rem;
 	}
 
+	.content-category .category {
+		font-size: 1.2rem;
+		text-align: center;
+		font-weight: bold;
+		align-self: center;
+		margin-top: 2rem;
+		padding-top: 1rem;
+		padding-bottom: 1rem;
+		flex-wrap: nowrap;
+		align-items: center;
+	}
+
+
+	.content-category .images {
+		margin-top: 1rem;
+		padding: 0;
+	}
+
+	.content-category .text {
+		height: 0;
+	}
+
+	.seperator {
+		padding: 0;
+		background-color: #efefef;
+		color: #efefef;
+		font-size: 1px;
+		height: 1px;
+		align-self: flex-end;
+	}
 
 
 </style>

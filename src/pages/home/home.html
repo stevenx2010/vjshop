@@ -1,6 +1,36 @@
 <ion-header>
-	<ion-navbar>
-		<ion-title>Hoem Page IMages</ion-title>
+	<ion-navbar no-border-top color="primary">
+		<ion-grid>
+
+			<ion-row>
+				<ion-col col-1>
+					<div align="right">
+						<ion-icon name="send" color="light"></ion-icon>
+					</div>
+				</ion-col>
+				<ion-col col-2>
+					<div align="center">
+						Loc
+					</div>
+				</ion-col>
+				<ion-col col-7>
+
+						<ion-searchbar [(ngModel)]="myInput"></ion-searchbar>
+
+				</ion-col>
+				<ion-col col-2 class="distributor">
+						<ion-row>
+							<ion-col col-12 style="align-self: flex-end;">
+								<div align="center">
+									<ion-icon name="contacts" color="light"></ion-icon>
+								</div>
+							</ion-col>
+							<ion-col style="align-self: flex-start;"><div style="font-size: 0.8rem; color: white;" align="center">经销商</div></ion-col>
+						</ion-row>
+				</ion-col>
+			</ion-row>
+		</ion-grid>
+
 	</ion-navbar>
 </ion-header>
 
@@ -34,15 +64,29 @@
 </ion-content>
 
 <style>
-ion-content, ion-grid, ion-row, ion-col, img {
-		margin: 0;
-		padding: 9;
-		border: none;
-}
+	ion-content, ion-grid, ion-row, ion-col, img {
+			margin: 0;
+			padding: 9;
+			border: none;
+	}
 
-.coupon {
-	padding: 5px;
-	background-color: white;
-}
+	.coupon {
+		padding: 5px;
+		background-color: white;
+	}
+
+	ion-header * {
+		margin: 0;
+		padding: 0;
+	}
+
+	ion-header ion-row {
+		align-items: center;
+		height: 4.6rem;
+	}
+
+	ion-header ion-icon {
+		font-size: 2rem;
+	}
 
 </style>
