@@ -1,11 +1,101 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Cart
+      购物车
     </ion-title>
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
-	<h1>Cart Page</h1>
+<ion-content>
+	<ion-grid>
+		<ion-row *ngIf="!loginStatus" class="login-remind">
+			<ion-col col-10>
+				<ion-label>您还未登录，请先登录进行下单购买</ion-label>
+			</ion-col>
+			<ion-col col-2>
+				<button ion-button small (click)="toLoginPage()">登录</button>
+			</ion-col>
+		</ion-row>
+
+		<ion-row class="seperator">
+			<ion-col col-12>s</ion-col>
+		</ion-row>
+
+		<ion-row class="address">
+			<ion-col col-1>
+				<div align="center">
+					<ion-icon name="navigate"></ion-icon>
+				</div>
+			</ion-col>
+			<ion-col col-10>
+				<ion-row>
+					<ion-col col-12>
+						<div>收货人</div>
+					</ion-col>
+				</ion-row>
+					<ion-col col-12>
+						<div>address</div>
+					</ion-col>
+				<ion-row>
+				</ion-row>
+			</ion-col>
+			<ion-col col-1>
+				<ion-icon name="arrow-forward"></ion-icon>
+			</ion-col>
+		</ion-row>
+
+		<ion-row class="seperator">
+			<ion-col col-12>s</ion-col>
+		</ion-row>
+
+	</ion-grid>
 </ion-content>
+
+<style>
+	* {
+		margin: 0;
+		padding: 0;
+		border: none;
+		font-size: 1.1rem;
+	}
+
+	.seperator {
+		margin: 1.5rem, 0,0,0;
+		padding: 0;
+		background-color: #efefef;
+		color: #efefef;
+		font-size: 1px;
+	}
+
+	.login-remind:not(button) {
+		background-color: #fff372;
+		align-items: center;
+		height: 3rem;
+	}
+
+	.login-remind ion-label {
+		font-size: 1.1rem;
+		text-indent: 1.2rem;
+		color: #ff871f;
+	}
+
+	.login-remind button {
+		font-size: 1.2rem;
+		padding-left: 1.2rem;
+		padding-right: 1.2rem;
+		background-color: #ff871f;
+
+	}
+
+	.address  {
+		align-items: center;
+		padding-top: 0.5rem;
+		padding-bottom: 0.5rem;
+	}
+
+	.address ion-icon {
+		font-size: 1.5rem;
+	}
+
+
+</style>

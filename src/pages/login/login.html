@@ -1,0 +1,43 @@
+<!--
+  Generated template for the LoginPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>登录</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+	<ion-list>
+		<ion-item>
+			<ion-label>+86</ion-label>
+			<ion-input type="text" placeholder="手机号" [(ngModel)]="mobile" (input)="validate()"></ion-input>
+			<button ion-button item-end (click)="getSMSCode()" class="counter" [disabled]="smsBtnDisabled">{{caption}}</button>
+		</ion-item>
+		<ion-item>
+			<ion-input type="number" placeholder="短信验证码" [(ngModel)]="smsCode" (input)="validate()"></ion-input>
+		</ion-item>
+	</ion-list>
+
+	<button ion-button full (click)="confirmLogin()" [disabled]="confirmDisabled">确认</button>
+</ion-content>
+
+<style>
+	* {
+		font-size: 1.3rem;
+	}
+
+	.counter {
+		font-size: 1.1rem;
+		width: 6.9rem;
+		height: 2.5rem;
+	}
+
+</style>

@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { VJAPI } from '../../services/vj.services';
@@ -25,7 +25,7 @@ export class ProductDetailPage {
   shoppedItems: number;
 
   constructor(private navCtrl: NavController, private navParams: NavParams, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string,
-              private storage: Storage) {
+              private storage: Storage, private app: App) {
   	this.images_1 = new Array<ProductDetailImage>();
   	this.images_2 = new Array<ProductDetailImage>();
   	this.detailInfo = new Array<ProductDetail>();
@@ -113,5 +113,9 @@ export class ProductDetailPage {
     console.log('total', total);
 
     return total;
+  }
+
+  createAddress(): void {
+    this.app.getRootNav().push('AddAdressPage');
   }
 }

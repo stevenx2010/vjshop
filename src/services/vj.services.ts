@@ -153,4 +153,36 @@ export class VJAPI {
 	 			.pipe(map((res: Response) => res.json()));
 	}
 
+	public getSearchedProducts(keyword: string): Observable<ProductDetail[]> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.get(this.apiUrl + 'api/' + 'product/search/' + keyword, {headers: headers})
+				.pipe(map((res: Response) => res.json()));
+	}
+
+
+	/********************************************************************************************
+	 *                   API Section: User Login related interface
+	 *
+	 * 1. Interface to request SMS verification code
+	 *   	POST: https://api_url/api/customer/login/getsms
+	 * 2. Interface to send SMS confirmation
+	 *		POST: https://api_url/api/customer/login/confirm
+	 *
+	 ********************************************************************************************/
+	 public getSmsCode(body: any): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.post(this.apiUrl + 'api/customer/login/getsms', body, {headers: headers});
+	 }
+
+	 public confirmSmsCode(body: any): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.post(this.apiUrl + 'api/customer/login/confirm', body, {headers: headers});
+	 }
+
 }

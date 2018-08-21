@@ -65,10 +65,10 @@
 
 					<div class="content-category" *ngIf="clickedItemIndex != 0">
 						<div *ngFor="let category of productBySubCategories; let i = index;">
-							<ion-row class="category" style="flex-wrap: nowrap;">
+							<ion-row class="category" style="flex-wrap: nowrap">
 								<ion-col></ion-col>
 								<ion-col col-1><ion-row class="seperator"></ion-row></ion-col>
-								<ion-col col-auto>									
+								<ion-col>									
 									{{ category.subCategory.name}}
 									
 								</ion-col>

@@ -39,7 +39,9 @@ $colors: (
   danger:     #f53d3d,
   light:      #f4f4f4,
   dark:       #222,
-  shoppingbtn: 	  #0ac300
+  shoppingbtn: 	  #0ac300,
+  notsolight:	  #a0a0a0,
+  alert: 		  #ff871f
 );
 
 
@@ -47,12 +49,13 @@ $colors: (
 // --------------------------------------------------
 // iOS only Sass variables can go here
 $searchbar-ios-input-background-color: rgba(250,250,250, 0.8)!important;
+$toggle-ios-background-color-on: #32db64!important;
 
 
 // App Material Design Variables
 // --------------------------------------------------
 // Material Design only Sass variables can go here
-
+$toggle-md-track-background-color-on: #32db64!important;
 
 
 

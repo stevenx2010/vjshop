@@ -56,7 +56,7 @@
 			<ion-col col-8 style="align-self: center;">配送：</ion-col>
 			<ion-col col-4 style="align-self: center;">
 				<div align="right">
-				<button ion-button outline color="blue" small style="font-size: 1.2rem;margin: 0;">新建地址</button>
+				<button ion-button outline color="blue" small style="font-size: 1.2rem;margin: 0;" (click)="createAddress()">新建地址</button>
 				</div>
 			</ion-col>
 		</ion-row>
@@ -78,7 +78,7 @@
 </ion-content>
 
 <ion-footer>
-	<ion-toolbar>
+<!--	<ion-toolbar>-->
 		<ion-grid>
 			<ion-row>
 				<ion-col col-2>
@@ -92,7 +92,10 @@
 				</ion-col>
 				<ion-col col-2>
 					<div align="right">
-					<button ion-button icon-only outline [disabled]="!(numberOfProducts-1)" (click)="removeItem()">
+					<button ion-button icon-only outline [disabled]="!(numberOfProducts-1)" (click)="removeItem()" showWhen="android" class="android_btn">
+						<ion-icon name="remove"></ion-icon>
+					</button>
+					<button ion-button icon-only outline [disabled]="!(numberOfProducts-1)" (click)="removeItem()" showWhen="ios" class="ios_btn">
 						<ion-icon name="remove"></ion-icon>
 					</button>
 					</div>
@@ -101,7 +104,10 @@
 					<div align="center"> {{ numberOfProducts }} </div>
 				</ion-col>
 				<ion-col col-1>
-					<button ion-button icon-only outline (click)="addItem()">
+					<button ion-button icon-only outline (click)="addItem()" showWhen="android" class="android_btn">
+						<ion-icon name="add"></ion-icon>
+					</button>
+					<button ion-button icon-only outline (click)="addItem()" showWhen="ios">
 						<ion-icon name="add"></ion-icon>
 					</button>
 					<!--
@@ -111,12 +117,12 @@
 				</ion-col>
 				<ion-col col-4>
 					<div align="right">
-					<button ion-button full style="font-size: 1.4rem;height: 4.5rem;" color="shoppingbtn" (click)="addToShoppingCart()">加入购物车</button>
+					<button ion-button full style="font-size: 1.4rem;" color="shoppingbtn" (click)="addToShoppingCart()">加入购物车</button>
 					</div>
 				</ion-col>
 			</ion-row>
 		</ion-grid>
-	</ion-toolbar>
+<!--	</ion-toolbar>-->
 </ion-footer>
 
 
@@ -193,6 +199,9 @@
 		padding: 0;
 	}
 
+	ion-footer ion-row {
+		border-top: 1px solid #efefef;
+	}
 	ion-footer button {
 		font-size: 0.8rem;
 		margin: 0;
@@ -211,6 +220,11 @@
 	ion-footer #cart {
 		position: relative;
 		font-size: 2.5rem;
+	}
+
+	ion-footer .android_btn {
+		font-size: 0.7rem;
+		height: 2.1rem;
 	}
 
 </style>

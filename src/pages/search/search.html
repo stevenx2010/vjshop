@@ -1,0 +1,77 @@
+<!--
+  Generated template for the SearchPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-toolbar placeholder="返回">
+  	<ion-grid>
+  		<ion-row>
+  			<ion-col col-2>
+  				<button ion-button clear icon-start (click)="goBack()">
+  					<ion-icon name="arrow-back"></ion-icon>		
+  					<div>返回</div>
+  				</button>
+  			</ion-col>
+  			<ion-col col-10>
+
+  	<ion-searchbar [(ngModel)]="searchKeyword" (ionInput)="filterItems($event)" [debounce]="550"  placeholder="搜索产品..."></ion-searchbar>
+  </ion-col>
+</ion-row>
+</ion-grid>
+  </ion-toolbar>
+
+</ion-header>
+
+
+<ion-content padding>
+	<ion-list *ngIf="isShowHistory">
+		<ion-item>
+			<ion-label color="notsolight">搜索历史</ion-label>
+			<ion-icon name="trash" item-end color="notsolight" (click)="clearHistory()"></ion-icon>
+		</ion-item>
+		<ion-item *ngFor="let item of items">
+			<div (click)="setSearchKeyword(item)">
+				{{ item }}
+			</div>
+		</ion-item>
+	</ion-list>
+	<ion-list *ngIf="!isShowHistory">
+		<ion-item *ngFor="let product of searchedProducts">
+			<div (click)="toProductDetailPage(product.id)">
+				{{ product.name }}
+			</div>
+		</ion-item>
+	</ion-list>
+</ion-content>
+
+
+<style>
+	ion-item {
+		font-size: 1.3rem;
+	}
+
+	ion-icon {
+		font-size: 2.1rem;
+	}
+
+	ion-icon:hover {
+		cursor: pointer;
+		color: green;
+	}
+
+	ion-header button {
+		font-size: 1.2rem;
+	}
+
+	ion-header ion-row {
+		align-items: center;
+	}
+
+	ion-searchbar {
+		font-size: 1.3rem;
+	}
+
+</style>

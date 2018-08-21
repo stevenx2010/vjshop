@@ -15,17 +15,19 @@
 				</ion-col>
 				<ion-col col-7>
 
-						<ion-searchbar [(ngModel)]="myInput"></ion-searchbar>
+						<ion-searchbar (click)="toSearchPage()" placeholder="搜索..."></ion-searchbar>
 
 				</ion-col>
 				<ion-col col-2 class="distributor">
-						<ion-row>
+						<ion-row style="align-items: center">
 							<ion-col col-12 style="align-self: flex-end;">
 								<div align="center">
-									<ion-icon name="contacts" color="light"></ion-icon>
+									<ion-icon name="contacts" color="light" (click)="goMulti()"></ion-icon>
 								</div>
 							</ion-col>
-							<ion-col style="align-self: flex-start;"><div style="font-size: 0.8rem; color: white;" align="center">经销商</div></ion-col>
+						</ion-row>
+						<ion-row>
+							<ion-col style="align-self: flex-start;"><div style="font-size: 0.8rem; color: white;" align="center" (click)="goMulti()">经销商</div></ion-col>
 						</ion-row>
 				</ion-col>
 			</ion-row>
@@ -87,6 +89,10 @@
 
 	ion-header ion-icon {
 		font-size: 2rem;
+	}
+
+	ion-header ion-searchbar {
+		font-size: 1.3rem;
 	}
 
 </style>

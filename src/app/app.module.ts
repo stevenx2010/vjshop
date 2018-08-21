@@ -18,6 +18,8 @@ import { CartPage } from '../pages/cart/cart';
 import { CategoryPage } from '../pages/category/category';
 import { MyvjPage } from '../pages/myvj/myvj';
 
+
+
 @NgModule({
   declarations: [
     MyApp,
@@ -32,7 +34,7 @@ import { MyvjPage } from '../pages/myvj/myvj';
     IonicModule.forRoot(MyApp),
     HttpModule,
     HttpClientModule,
-    IonicStorageModule.forRoot()
+    IonicStorageModule.forRoot(),
   ],
   bootstrap: [IonicApp],
   entryComponents: [
