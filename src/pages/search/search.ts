@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { ProductDetail } from '../../models/product-detail.model';
 import { VJAPI } from '../../services/vj.services';
@@ -27,15 +27,15 @@ export class SearchPage {
   searchedProducts: ProductDetail[];
   isShowHistory: boolean;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI, private alertCtrl: AlertController) {
   	this.searchHistory = new Array<SearchHistoryEntry>();
 
-  	this.storage.get(Constants.SEARCH_HISTORY_KEY).then((data) => {
+  	this.storage.ready().then(() => {this.storage.get(Constants.SEARCH_HISTORY_KEY).then((data) => {
   		if(data) 
   			{
   				this.searchHistory = data;
   			}
-  	});
+  	})}).catch(console.log);
 
   	this.searchedProducts = new Array<ProductDetail>();
 	  this.items = new Array<string>();
@@ -98,7 +98,23 @@ export class SearchPage {
   clearHistory() {
   	this.items = [];
   	this.searchHistory = [];
-  	this.storage.set(Constants.SEARCH_HISTORY_KEY, this.searchHistory);
+  	this.storage.ready().then(() => {this.storage.set(Constants.SEARCH_HISTORY_KEY, this.searchHistory);}).catch(console.log);
+  }
+
+  doPrompt() {
+    let alert = this.alertCtrl.create();
+    alert.setTitle('提示');
+    alert.setMessage('请确认真的要删除搜索历史记录吗？');
+    alert.addButton({
+      text: '确定',
+      handler: () => {this.clearHistory()}
+    });
+    alert.addButton({
+      text: '取消',
+      handler: () => {}
+    });
+
+    alert.present();
   }
 
   setSearchKeyword(kw: string) {

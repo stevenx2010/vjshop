@@ -12,18 +12,26 @@ import { Product } from '../models/product.model';
 import { ProductDetail } from '../models/product-detail.model';
 import { ProductDetailImage } from '../models/product-detail-image.model';
 import { ProductSubCategory } from '../models/product-sub-category.model';
+import { Constants } from '../models/constants.model';
+import { Address } from '../models/address.model';
 
 @Injectable()
 export class VJAPI {
 	private TOKEN_KEY = 'api_token';
 	private api_token: string;
+	private access_token: string;
 	private loader: any;
 
 	constructor(private http: Http, private storage: Storage, private loadingCtrl: LoadingController,
 			    private inAppBrowser: InAppBrowser, @Inject('API_BASE_URL') private apiUrl: string) {
-		this.storage.get(this.TOKEN_KEY).then(
-			(token) => { this.api_token = token; }
-		)
+		this.storage.ready().then(() =>{ 
+			this.storage.get(Constants.API_TOKEN_KEY).then((token) => { 
+				this.api_token = token; }).catch(console.log);
+
+			this.storage.get(Constants.ACCESS_TOKEN_KEY).then((token) => {
+				this.access_token = token;
+			}).catch(console.log);
+		});
 	}
 
 	/**
@@ -31,6 +39,7 @@ export class VJAPI {
 	 */
 	private initAuthHeader(headers: Headers) {
 		headers.append('Authorization', 'Bearer ' + this.api_token);
+		headers.append('X-Acces-Token', this.access_token);
 		headers.append('Accept-language', 'en_US');
 		headers.append('Content-type', 'application/json');
 		headers.append('Access-Control-Allow-Origin', '*');
@@ -93,6 +102,10 @@ export class VJAPI {
 	 * 4. Interface to get products under a sub-category & sub-categories under a category
 	 		GET: http://api_url/api/product/products/{subCategoryId}
 	 		GET: http://api_url/api/product/productSubCategories/{categoryId}
+	 * 5. Interface to search products
+	 *		GET: http://api_url/api/product/search/{keyword}
+	 * 6. Inteface to get products by productIds
+	 *		POST: http://api_url/api/product/product/ids
 	 ********************************************************************************************/
 
 	 public getProductCategories(): Observable<ProductCategory[]> {
@@ -161,28 +174,94 @@ export class VJAPI {
 				.pipe(map((res: Response) => res.json()));
 	}
 
+	public getProductsByIds(body: any): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.post(this.apiUrl + 'api/' + 'product/products/ids', body, {headers: headers});
+	}
+
 
 	/********************************************************************************************
 	 *                   API Section: User Login related interface
 	 *
 	 * 1. Interface to request SMS verification code
-	 *   	POST: https://api_url/api/customer/login/getsms
-	 * 2. Interface to send SMS confirmation
-	 *		POST: https://api_url/api/customer/login/confirm
+	 *   	POST: https://api_url/api/customer/login
+	 *
+	 * Requiremnet: all requests must have api_token in the Authentication header
+	 *
+	 * Content of POST:
+	 * 	1) Get SMS Code request
+	 *		{
+	 *			"command": "0",		// Get SMS Code
+	 *			"mobile": "13888888138",
+	 *		}
+	 *	   Reponse:
+	 *		{
+	 *			"status": "0"/"1", //0: failed to send SMS code; 1. succeeded to send SMS code
+	 *			"mobile": "13888888138",
+	 *
+	 *		}
+	 *	2) Confirm the SMS Code request
+	 *		{
+	 *			"command": "1",		// Confirm SMS Code
+	 *			"mobile": "13888888138",
+	 *			"sms_code": sms_code
+	 *		}
+	 *		Response:
+	 * 		{
+	 *			"status": "0"/"1", 	//0: failed to auth; 2. 1. succeeded to auth
+	 *			"mobile": "13888888138", 
+	 *			"access_token": token_string	// contains access token if authed successfully for a new user, otherwise empty string
+	 *			"address_check": 0/1			// if user user has valid shipping address: 0: no, 1: yes
+	 *		}
+	 *
+	 *	3) Save shipping address to server request
+	 *		{
+	 *			"command": "2",
+	 *			"username": username,
+	 *			"mobile": mobile,
+	 *			"tel": telephone,
+	 *			"city": city,
+	 *			"street": street,
+	 *			"default_address": true/false
+	 *		}
+	 *		Response:
+	 *		{
+	 *			"status": 0/1,		// 0:failed; 1 success
+	 *			"mobile": mobile
+	 *		}
 	 *
 	 ********************************************************************************************/
-	 public getSmsCode(body: any): Observable<Response> {
+	 public auth(body: any): Observable<Response> {
 		let headers = new Headers();
 	 	this.initAuthHeader(headers);
 
-	 	return this.http.post(this.apiUrl + 'api/customer/login/getsms', body, {headers: headers});
+	 	return this.http.post(this.apiUrl + 'api/customer/login', body, {headers: headers});
 	 }
 
-	 public confirmSmsCode(body: any): Observable<Response> {
+	/********************************************************************************************
+	 *                   API Section: get shipping address related data
+	 *
+	 * 1. Interface to get a list of all address
+	 *		GET:	http://api_url/api/address/all
+	 * 2. Interface to verify if a user exists
+	 *		GET:	http://api_url/api/address/userid
+	 ********************************************************************************************/
+	 public getAddressAll(mobile: string): Observable<Address[]> {
 		let headers = new Headers();
 	 	this.initAuthHeader(headers);
 
-	 	return this.http.post(this.apiUrl + 'api/customer/login/confirm', body, {headers: headers});
+	 	return this.http.get(this.apiUrl + 'api/address/all/' + mobile, {headers: headers})
+	 			.pipe(map((resp: Response) => resp.json()));
+
 	 }
 
+	 public getUserId(mobile: string): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.get(this.apiUrl + 'api/address/userid/' + mobile, {headers: headers});
+
+	 }
 }

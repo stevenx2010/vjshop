@@ -30,7 +30,7 @@
 	<ion-list *ngIf="isShowHistory">
 		<ion-item>
 			<ion-label color="notsolight">搜索历史</ion-label>
-			<ion-icon name="trash" item-end color="notsolight" (click)="clearHistory()"></ion-icon>
+			<ion-icon name="trash" item-end color="notsolight" (click)="doPrompt()"></ion-icon>
 		</ion-item>
 		<ion-item *ngFor="let item of items">
 			<div (click)="setSearchKeyword(item)">

@@ -17,6 +17,7 @@
 			</ion-col>
 		</ion-row>
 
+		<!--------------Seperator---------------------->
 		<ion-row class="seperator">
 			<ion-col col-12>s</ion-col>
 		</ion-row>
@@ -29,23 +30,48 @@
 			</ion-col>
 			<ion-col col-10>
 				<ion-row>
-					<ion-col col-12>
-						<div>收货人</div>
+					<ion-col col-8>
+						<div>收货人: {{address.username}}</div>
+					</ion-col>
+					<ion-col col-4>
+						<div>{{mobile}}</div>
 					</ion-col>
 				</ion-row>
 					<ion-col col-12>
-						<div>address</div>
+						<div style="padding-top: 0.5rem;">收货地址： {{address.city}}{{address.street}}</div>
 					</ion-col>
 				<ion-row>
 				</ion-row>
 			</ion-col>
 			<ion-col col-1>
-				<ion-icon name="arrow-forward"></ion-icon>
+				<ion-icon name="arrow-forward" (click)="goManageAddressPage()"></ion-icon>
 			</ion-col>
 		</ion-row>
 
+		<!--------------Seperator---------------------->
 		<ion-row class="seperator">
-			<ion-col col-12>s</ion-col>
+			<ion-col col-12>d</ion-col>
+		</ion-row>
+
+		<ion-row *ngFor="let product of products; let i = index;" class="item-list">
+			<ion-col col-12>
+				<ion-row>
+					<ion-col col-1>
+						<ion-item>
+							<ion-checkbox color="primary"></ion-checkbox>
+						</ion-item>
+					</ion-col>
+					<ion-col col-3>
+						<ion-item>
+							<ion-thumbnail>
+								<img src="{{baseUrl}}{{product[0].thumbnail_url}}" />
+							</ion-thumbnail>
+						</ion-item>
+					</ion-col>
+					<ion-col col-8>
+					</ion-col>
+				</ion-row>
+			</ion-col>
 		</ion-row>
 
 	</ion-grid>
@@ -89,13 +115,17 @@
 
 	.address  {
 		align-items: center;
-		padding-top: 0.5rem;
-		padding-bottom: 0.5rem;
+		padding-top: 1rem;
+		padding-bottom: 1rem;
 	}
 
 	.address ion-icon {
 		font-size: 1.5rem;
 	}
 
+	.item-list ion-row {
+		align-items: center;
+
+	}
 
 </style>

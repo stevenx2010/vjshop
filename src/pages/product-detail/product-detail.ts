@@ -6,6 +6,7 @@ import { VJAPI } from '../../services/vj.services';
 import { ProductDetail } from '../../models/product-detail.model';
 import { ProductDetailImage } from '../../models/product-detail-image.model';
 import { ShoppingItem } from '../../models/shopping-item.model';
+import { Constants } from '../../models/constants.model';
 
 
 @IonicPage()
@@ -14,7 +15,6 @@ import { ShoppingItem } from '../../models/shopping-item.model';
   templateUrl: 'product-detail.html',
 })
 export class ProductDetailPage {
-  private SHOPPING_CART = 'shoppingCart';
 
   images_1: ProductDetailImage[];
   images_2: ProductDetailImage[];
@@ -35,7 +35,7 @@ export class ProductDetailPage {
     this.numberOfProducts = 1;
 
     // Get shopping cart
-    this.storage.get(this.SHOPPING_CART).then(
+    this.storage.get(Constants.SHOPPING_CART_KEY).then(
         (cart) => {
           if(cart) this.shoppingCart = cart;
           this.shoppedItems = this.calculateShoppedItems(cart);
@@ -97,7 +97,7 @@ export class ProductDetailPage {
     if(this.numberOfProducts > 0) {
       this.shoppingCart.push(new ShoppingItem(this.productId, this.numberOfProducts));
       this.shoppedItems += this.numberOfProducts;
-      this.storage.set(this.SHOPPING_CART, this.shoppingCart);
+      this.storage.set(Constants.SHOPPING_CART_KEY, this.shoppingCart);
     }
   }
 
@@ -116,6 +116,16 @@ export class ProductDetailPage {
   }
 
   createAddress(): void {
-    this.app.getRootNav().push('AddAdressPage');
+    // check if user has logged in
+    let loginStatus = false;
+    this.storage.ready().then(() => {
+      this.storage.get(Constants.LOGIN_KEY).then((data) => {
+        if(data)
+          this.app.getRootNav().push('AddAdressPage');
+        else
+          this.app.getRootNav().push('LoginPage');
+      })
+    });
+    
   }
 }

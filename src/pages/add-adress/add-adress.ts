@@ -1,12 +1,12 @@
 import { Component,ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, Events } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { ChineseCities }  from '../../models/chinese-cities';
 import { Address } from '../../models/address.model';
 import { MultiPicker } from 'ion-multi-picker';
-import { Constants } from '../../models/constants.model';
-
+import { Constants, Login } from '../../models/constants.model';
+import { VJAPI } from '../../services/vj.services';
 
 /**
  * Generated class for the AddAdressPage page.
@@ -30,9 +30,12 @@ export class AddAdressPage {
   address: Address;
   saveBtnDisable: boolean = true;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private alertCtrl: AlertController, private storage: Storage) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private alertCtrl: AlertController, private storage: Storage, private vjApi: VJAPI,
+              private events: Events) 
+  {
     this.cityColumns = ChineseCities.cities;
-    this.address = new Address('', '', '', '', '', false);
+    this.address = new Address();
+    this.address.mobile = navParams.get('mobile');
   }
 
   validate(): void {
@@ -84,9 +87,69 @@ export class AddAdressPage {
   }
 
   saveAddress(): void {
-    //save to server -- this must be done after login
+    //check if it's the only address, if so, set it as default address
+    this.storage.ready().then(() => {
+      this.storage.get(Constants.SHIPPING_ADDRESS_KEY).then((data) => {
+        if(data == null)
+          this.address.default_address = true;
+        
+        //save to server -- this must be done after login
+        let body = {
+          "command": Login.CREATE_SHIPPING_ADDDRESS,
+          "username": this.address.username,
+          "mobile": this.address.mobile,
+          "tel": this.address.tel,
+          "city": this.address.city,
+          "street": this.address.street,
+          "default_address": this.address.default_address
+        }
 
-    //save to local, note: only default address is saved locally
-    this.storage.set(Constants.SHIPPING_ADDRESS_KEY, this.address); 
+          console.log(JSON.stringify(body));
+        this.vjApi.auth(JSON.stringify(body)).subscribe((data) => {
+            console.log(data);
+            let response = data.json();
+            console.log(response);
+            console.log(response.status);
+            console.log(Login.CREATE_SHIPPING_ADDRESS_SUCCESS);
+            if(response.status === Login.CREATE_SHIPPING_ADDRESS_SUCCESS) {
+               //save to local, note: only default address is saved locally
+              this.storage.set(Constants.SHIPPING_ADDRESS_KEY, this.address);
+              this.saveBtnDisable = true;
+              this.doPromptFinish();          
+            }
+        },
+        (err) => {
+          this.doPromptError();
+        });
+          
+
+      })     
+    });  
   }
+
+  doPromptFinish() {
+    let alert = this.alertCtrl.create();
+    alert.setTitle('提示');
+    alert.setMessage('新地址已经保存，请继续！');
+    alert.addButton({
+      text: '确定',
+      handler: () => {
+        this.navCtrl.pop().then(() => {
+          this.events.publish('login_address_added');
+        });
+      }
+      });
+
+    alert.present();
+  }
+  doPromptError() {
+     let alert = this.alertCtrl.create();
+    alert.setTitle('警告');
+    alert.setMessage('出现错误，无法保存地址，请稍后重试！');
+    alert.addButton('确定'); 
+
+    alert.present();
+  }
+
 }
+
