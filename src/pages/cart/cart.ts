@@ -16,13 +16,14 @@ import { Product } from '../../models/product.model';
 })
 export class CartPage {
  
-  loginStatus: boolean = false;
+  loggedIn: boolean = false;
   mobile: string;
   address: Address;
   shoppingCart: ShoppingItem[];
   products: Product[];
   model: string;
   baseUrl: string;
+  shoppingCartEmpty: boolean;
 
   constructor(public navCtrl: NavController, private storage: Storage, private app: App, private events: Events, private vjApi: VJAPI,
   				@Inject('API_BASE_URL') private apiUrl: string) 
@@ -33,20 +34,29 @@ export class CartPage {
 	this.products = new Array<Product>();
 	this.baseUrl = this.apiUrl;
 
-  	this.storage.get(Constants.LOGIN_KEY).then((data) => {
-  		if(data) {
-  			this.loginStatus = true;
-  			this.getShippingAddress();
+	this.events.subscribe('shopping_cart_item_added', (shoppingCart) => {
+		//console.log(shoppingCart);
+		this.getShoppingItems();
+	})
 
-  		}
-  	});
   }
 
   ionViewWillLoad() {
 
+    // check if user has logged in
+  	this.storage.get(Constants.LOGIN_KEY).then((data) => {
+  		if(data) {
+  			this.loggedIn = true;
+  			this.getShippingAddress();
+
+  		}
+  	});
+
+    // get products from server according to the items in the shopping cart
   	this.vjApi.showLoader();
 
   	this.getShoppingItems();
+
   	this.vjApi.hideLoader();
 
   }
@@ -58,7 +68,7 @@ export class CartPage {
 
   toLoginPage(): void {
   	this.events.subscribe('login_success', (param) => {
-  		this.loginStatus = param.logged_in;
+  		this.loggedIn = param.logged_in;
   		this.getShippingAddress();
   		this.events.unsubscribe('login_success');
 
@@ -86,7 +96,6 @@ export class CartPage {
    	//Syncronization check
   	this.vjApi.getUserId(mobile).subscribe((data) => {
   		let result = data.json();
-  		console.log(result);
   		if(result.userid == -1) {  // no user info in db, then remove local info
   			this.storage.remove(Constants.SHIPPING_ADDRESS_KEY);
   			this.storage.remove(Constants.LOGIN_KEY);
@@ -108,11 +117,13 @@ export class CartPage {
   		this.storage.get(Constants.SHOPPING_CART_KEY)
   		.then((data) => {
   			this.shoppingCart = data;
-  			console.log(JSON.stringify(this.shoppingCart));
+
+          if(this.shoppingCart.length > 0) this.shoppingCartEmpty = false;
+            else this.shoppingCartEmpty = true;
+
   			this.vjApi.getProductsByIds(JSON.stringify(this.shoppingCart)).subscribe(
   				(data) => {
-  					console.log(data.json());
-  					this.products = data.json();
+  					this.products = data.json();         
   				},
   				(err) => console.log(err)
   			);
@@ -120,7 +131,12 @@ export class CartPage {
   	}).catch(console.log);
   }
  
+  toProductDetailPage(productId: number) {
+  	this.app.getRootNav().push('ProductDetailPage', {productId});
+  }
 
-
-
+  selectionChange(index: number) {
+    console.log(this.shoppingCart[index].price);
+    console.log(this.shoppingCart[index].selected);
+  }
 }

@@ -7,8 +7,13 @@
 </ion-header>
 
 <ion-content>
-	<ion-grid>
-		<ion-row *ngIf="!loginStatus" class="login-remind">
+	<ion-grid *ngIf="shoppingCartEmpty">
+		<ion-col col 12>
+			<p>您还没有选购任何产品!</p>
+		</ion-col>
+	</ion-grid>
+	<ion-grid *ngIf="!shoppingCartEmpty">
+		<ion-row *ngIf="!loggedIn" class="login-remind">
 			<ion-col col-10>
 				<ion-label>您还未登录，请先登录进行下单购买</ion-label>
 			</ion-col>
@@ -25,7 +30,7 @@
 		<ion-row class="address">
 			<ion-col col-1>
 				<div align="center">
-					<ion-icon name="navigate"></ion-icon>
+					<ion-icon name="paper-plane"></ion-icon>
 				</div>
 			</ion-col>
 			<ion-col col-10>
@@ -44,7 +49,9 @@
 				</ion-row>
 			</ion-col>
 			<ion-col col-1>
-				<ion-icon name="arrow-forward" (click)="goManageAddressPage()"></ion-icon>
+				<button ion-button icon-only full outline>
+					<ion-icon name="arrow-forward" (click)="goManageAddressPage()"></ion-icon>
+				</button>
 			</ion-col>
 		</ion-row>
 
@@ -55,27 +62,78 @@
 
 		<ion-row *ngFor="let product of products; let i = index;" class="item-list">
 			<ion-col col-12>
+
 				<ion-row>
-					<ion-col col-1>
-						<ion-item>
-							<ion-checkbox color="primary"></ion-checkbox>
-						</ion-item>
+
+					<ion-col col-2>
+						<div align="center">
+							<ion-checkbox color="primary" checked="true" [(ngModel)]="shoppingCart[i].selected" (ionChange)="selectionChange(i)"></ion-checkbox>
+						</div>
 					</ion-col>
-					<ion-col col-3>
-						<ion-item>
-							<ion-thumbnail>
-								<img src="{{baseUrl}}{{product[0].thumbnail_url}}" />
-							</ion-thumbnail>
-						</ion-item>
+
+					<ion-col col-2 class="item">
+						<div align="left">
+							<img src="{{baseUrl}}{{product[0].thumbnail_url}}" (click)="toProductDetailPage(product[0].id)">
+						</div>
 					</ion-col>
-					<ion-col col-8>
+
+					
+					<ion-col col-8 class="item">
+						<ion-row>
+							<ion-col col-6>
+								{{product[0].product_sub_category_name}}
+							</ion-col>
+							<ion-col col-6>
+								{{product[0].model}}
+							</ion-col>
+						</ion-row>
+						<ion-row>
+							<ion-col class="price">
+								&yen;{{shoppingCart[i].price}}
+							</ion-col>
+							<ion-col>
+								{{shoppingCart[i].quantity}}
+							</ion-col>
+							<ion-col>
+								小计：<span class="price">&yen;{{shoppingCart[i].price * shoppingCart[i].quantity}}.00</span>
+							</ion-col>
+						</ion-row>
 					</ion-col>
+
+
 				</ion-row>
+
+
+
 			</ion-col>
 		</ion-row>
 
 	</ion-grid>
 </ion-content>
+
+<ion-footer>
+	<ion-toolbar>
+		<ion-grid>
+			<ion-row>
+				<ion-col col-2>
+					<div align="center">
+						<ion-checkbox color="primary" checked="true"></ion-checkbox>
+					</div>
+				</ion-col>
+				<ion-col col-7>
+					<div align="right">
+						合计：
+					</div>
+				</ion-col>
+				<ion-col col-3>
+					<button ion-button full color="secondary" style="font-size: 1.6rem;" [disabled]="!loggedIn" icon-start>
+						去结算
+					</button>
+				</ion-col>
+			</ion-row>
+		</ion-grid>
+	</ion-toolbar>
+</ion-footer>
 
 <style>
 	* {
@@ -125,7 +183,41 @@
 
 	.item-list ion-row {
 		align-items: center;
+	}
+
+	.item-list img {
+		width: 4.5rem;
+	}
+
+	.item {
+		border-bottom: 1px solid #efefef;
+		height: 6.5rem;
 
 	}
+
+	.item img, .item ion-row {
+		padding-top: 1.2rem;
+	}
+
+	.item .price {
+		color:  #0437f1;
+	}
+
+  ion-footer * {
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+
+  ion-footer {
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+
+  ion-footer ion-row {
+  	align-items: center;
+  }
+
 
 </style>

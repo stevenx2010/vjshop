@@ -34,6 +34,8 @@ export class CategoryPage {
 
   baseUrl: string;
 
+  allProductsSelected: boolean = true;
+
   constructor(public navCtrl: NavController, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string,
             private app: App, private events: Events) {
   	this.productCategories = new Array<ProductCategory>();
@@ -106,6 +108,10 @@ export class CategoryPage {
 
   itemSelected(index: number, id?: number): void {
   	this.clickedItemIndex = index;
+    if(index == 0) this.allProductsSelected = true;
+    else this.allProductsSelected = false;
+
+    console.log(index);
     //Set Sub Categories
     this.vjApi.showLoader();
     this.getProducts(id);
@@ -160,5 +166,81 @@ export class CategoryPage {
           console.log(err);
       }
     );
+  }
+
+  priceSortUp() {
+    let data = this.products.sort((a, b) => {
+      if(a.price - b.price > 0) return 1;
+      if(a.price - b.price < 0) return -1;
+      return 0;
+    });
+
+    this.products_1 = new Array<Product>();
+    this.products_2 = new Array<Product>();
+    this.products_3 = new Array<Product>();
+              
+    for(let i = 0; i < data.length; i += 3) {
+      this.products_1.push(data[i]);
+      if(i+1 < this.products.length) this.products_2.push(data[i+1]);
+      if(i+2 < this.products.length) this.products_3.push(data[i+2]);
+    }
+  }
+
+  priceSortDown() {
+    let data = this.products.sort((a, b) => {
+      if(a.price - b.price > 0) return -1;
+      if(a.price - b.price < 0) return 1;
+      return 0;
+    });
+
+    this.products_1 = new Array<Product>();
+    this.products_2 = new Array<Product>();
+    this.products_3 = new Array<Product>();
+              
+    for(let i = 0; i < data.length; i += 3) {
+      this.products_1.push(data[i]);
+      if(i+1 < this.products.length) this.products_2.push(data[i+1]);
+      if(i+2 < this.products.length) this.products_3.push(data[i+2]);
+    }
+  }
+
+  soldAmountSortUp() {
+    let data = this.products.sort((a, b) => {
+      if(a.sold_amount - b.sold_amount > 0) return 1;
+      if(a.sold_amount - b.sold_amount < 0) return -1;
+      return 0;
+    });
+
+    this.products_1 = new Array<Product>();
+    this.products_2 = new Array<Product>();
+    this.products_3 = new Array<Product>();
+              
+    for(let i = 0; i < data.length; i += 3) {
+      this.products_1.push(data[i]);
+      if(i+1 < this.products.length) this.products_2.push(data[i+1]);
+      if(i+2 < this.products.length) this.products_3.push(data[i+2]);
+    }
+  }
+
+  soldAmountSortDown() {
+    let data = this.products.sort((a, b) => {
+      if(a.sold_amount - b.sold_amount > 0) return -1;
+      if(a.sold_amount - b.sold_amount < 0) return 1;
+      return 0;
+    });
+
+    this.products_1 = new Array<Product>();
+    this.products_2 = new Array<Product>();
+    this.products_3 = new Array<Product>();
+              
+    for(let i = 0; i < data.length; i += 3) {
+      this.products_1.push(data[i]);
+      if(i+1 < this.products.length) this.products_2.push(data[i+1]);
+      if(i+2 < this.products.length) this.products_3.push(data[i+2]);
+    }
+  }
+
+   toSearchPage(): void {
+    this.app.getRootNav().push('SearchPage');
   }
 }

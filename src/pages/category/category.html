@@ -1,11 +1,40 @@
 <ion-header>
-  <ion-navbar>
-    <ion-title>
-      Category
-    </ion-title>
-  </ion-navbar>
-</ion-header>
+	<ion-navbar no-border-top color="primary">
+		<ion-grid>
 
+			<ion-row>
+				<ion-col col-1>
+					<div align="right">
+						<ion-icon name="pin" color="light"></ion-icon>
+					</div>
+				</ion-col>
+				<ion-col col-2>
+					<div align="center">
+						Loc
+					</div>
+				</ion-col>
+				<ion-col col-7>
+
+						<ion-searchbar (click)="toSearchPage()" placeholder="搜索..."></ion-searchbar>
+
+				</ion-col>
+				<ion-col col-2 class="distributor">
+						<ion-row style="align-items: center">
+							<ion-col col-12 style="align-self: flex-end;">
+								<div align="center">
+									<ion-icon name="contacts" color="light" (click)="goMulti()"></ion-icon>
+								</div>
+							</ion-col>
+				<!--		</ion-row>
+						<ion-row>-->
+							<ion-col style="align-self: flex-start;"><div style="font-size: 0.8rem; color: white;" align="center" (click)="goMulti()">经销商</div></ion-col>
+						</ion-row>
+				</ion-col>
+			</ion-row>
+		</ion-grid>
+
+	</ion-navbar>
+</ion-header>
 
 <ion-content>
 	<ion-grid [style.height]="gridHeight">
@@ -21,6 +50,31 @@
 			</ion-col>
 
 			<ion-col col-9>
+				<div  *ngIf="allProductsSelected" class="sort">
+					<ion-list>
+					<ion-item-sliding>
+						<ion-item>
+							<div align="right"><ion-icon name="rewind" color="secondary" style="vertical-align: bottom;"></ion-icon><span style="color: white;">s</span>排序</div>
+						</ion-item>
+						<ion-item-options side="right">
+							<button ion-button small (click)="priceSortUp()">
+								<ion-icon name="logo-yen"></ion-icon>价格升序
+							</button>
+							<button ion-button color="secondary" small (click)="priceSortDown()">
+								<ion-icon name="logo-yen"></ion-icon>价格降序
+							</button>
+							<button ion-button small (click)="soldAmountSortUp()">
+								<ion-icon name="podium"></ion-icon>销量升序
+							</button>
+							<button ion-button color="secondary"small (click)="soldAmountSortDown()">
+								<ion-icon name="podium"></ion-icon>销量降序
+							</button>
+						</ion-item-options>
+
+					</ion-item-sliding>
+				</ion-list>
+				</div>
+
 				<ion-scroll scrollY="true" [style.height]="scrollHeight">
 
 					<div  class="content" *ngIf="clickedItemIndex === 0" >
@@ -187,6 +241,14 @@
 		font-size: 1px;
 		height: 1px;
 		align-self: flex-end;
+	}
+
+	.sort ion-list {
+		font-size: 1rem;
+	}
+
+	.sort button {
+		height: 1rem;
 	}
 
 
