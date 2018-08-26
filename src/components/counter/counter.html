@@ -1,0 +1,16 @@
+
+<ion-row>
+	<ion-col><div align="right">
+  <button ion-button icon-only outline (click)="decrease()" [style.height]="size" [style.width]="size" [disabled]="btnDisabled">
+  	<ion-icon name="remove" [style.font-size]="size"></ion-icon>
+  </button></div>
+</ion-col>
+<ion-col style="align-self: center;">
+  <div align="center"  [style.font-size]="size">{{count}}</div>
+</ion-col>
+<ion-col><div align="left">
+  <button ion-button icon-only outline (click)="increase()" [style.height]="size" [style.width]="size">
+  	<ion-icon name="add" [style.font-size]="size"></ion-icon>
+  </button></div>
+</ion-col>
+</ion-row>

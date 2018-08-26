@@ -121,12 +121,12 @@
 						<div *ngFor="let category of productBySubCategories; let i = index;">
 							<ion-row class="category" style="flex-wrap: nowrap">
 								<ion-col></ion-col>
-								<ion-col col-1><ion-row class="seperator"></ion-row></ion-col>
+								<ion-col col-1><seperator></seperator></ion-col>
 								<ion-col>									
 									{{ category.subCategory.name}}
 									
 								</ion-col>
-								<ion-col col-1><ion-row class="seperator"></ion-row></ion-col>
+								<ion-col col-1><seperator></seperator></ion-col>
 								<ion-col></ion-col>
 							</ion-row>
 							<div *ngFor="let product of category.products; let j = index;">
@@ -185,6 +185,11 @@
 		border: none;
 	}
 
+	ion-header ion-row {
+		align-items: center;
+		height: 4.6rem;
+	}
+
 	.menu ion-item {
 		font-size: 1.3rem;
 		text-align: center;
@@ -234,6 +239,7 @@
 		height: 0;
 	}
 
+/*
 	.seperator {
 		padding: 0;
 		background-color: #efefef;
@@ -241,15 +247,14 @@
 		font-size: 1px;
 		height: 1px;
 		align-self: flex-end;
-	}
+	}*/
 
 	.sort ion-list {
 		font-size: 1rem;
 	}
 
-	.sort button {
-		height: 1rem;
+	.sort ion-item {
+		color: #858585;
 	}
-
 
 </style>

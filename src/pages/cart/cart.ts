@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { NavController, App, Events } from 'ionic-angular';
+import { NavController, App, Events, AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Observable, Subject } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
@@ -24,9 +24,10 @@ export class CartPage {
   model: string;
   baseUrl: string;
   shoppingCartEmpty: boolean;
+  currentSelectedItem: number;
 
   constructor(public navCtrl: NavController, private storage: Storage, private app: App, private events: Events, private vjApi: VJAPI,
-  				@Inject('API_BASE_URL') private apiUrl: string) 
+  				@Inject('API_BASE_URL') private apiUrl: string, private alertCtrl: AlertController) 
   { 	
 //  	this.storage.remove(Constants.USER_INFO_KEY);
 	this.address = new Address();
@@ -115,15 +116,19 @@ export class CartPage {
 
   	this.storage.ready().then(() => {
   		this.storage.get(Constants.SHOPPING_CART_KEY)
-  		.then((data) => {
-  			this.shoppingCart = data;
+  		.then((data: ShoppingItem[]) => {
+        if(data == null || data.length < 1)  {
+          this.shoppingCartEmpty = true;
+          return;
+        } else
+          this.shoppingCartEmpty = false;
 
-          if(this.shoppingCart.length > 0) this.shoppingCartEmpty = false;
-            else this.shoppingCartEmpty = true;
+  			this.shoppingCart = data;
 
   			this.vjApi.getProductsByIds(JSON.stringify(this.shoppingCart)).subscribe(
   				(data) => {
-  					this.products = data.json();         
+  					this.products = data.json();      
+
   				},
   				(err) => console.log(err)
   			);
@@ -138,5 +143,62 @@ export class CartPage {
   selectionChange(index: number) {
     console.log(this.shoppingCart[index].price);
     console.log(this.shoppingCart[index].selected);
+  }
+
+  deleteItem(index: number) {
+    this.currentSelectedItem = index;
+    this.doDeletePrompt(index);
+  }
+
+  doDeletePrompt(i: number) {
+    let alert = this.alertCtrl.create();
+
+    alert.setTitle('删除确认');
+    alert.setSubTitle(this.products[i][0].product_sub_category_name + ': ' + this.products[i][0].model);
+    let msg = '您确定要从购物车中删除此项商品吗？'
+    alert.setMessage(msg);
+    alert.addButton({
+        text: '确定',
+        handler: () => { 
+
+          if(this.shoppingCart == null) return;
+          /*
+          if(this.shoppingCart.length == 1) {
+            this.shoppingCart = new Array<ShoppingItem>();
+            this.storage.remove(Constants.SHOPPING_CART_KEY);
+          }*/
+
+          let tempChart = new Array<ShoppingItem>();
+          let tempProducts = new Array<Product>();
+                   
+          for(let j = 0; j < this.shoppingCart.length; j++) {
+            if(j == this.currentSelectedItem) continue;
+            tempChart.push(this.shoppingCart[j]);
+            tempProducts.push(this.products[j]);
+          }
+
+          
+          if(this.shoppingCart != null && this.shoppingCart.length > 0) {
+            this.products = tempProducts;
+            this.shoppingCartEmpty = false;
+            this.storage.ready().then(() => {
+              this.storage.set(Constants.SHOPPING_CART_KEY, tempChart);
+
+            }).catch(console.log);
+          } else {
+            this.shoppingCartEmpty = true;
+            this.storage.remove(Constants.SHOPPING_CART_KEY);
+            this.products = new Array<Product>();
+          }
+        }
+      });
+
+    alert.addButton({
+      text: '取消',
+      role: 'cancel',
+      handler: () => {}
+    });
+
+    alert.present();
   }
 }

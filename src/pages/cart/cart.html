@@ -8,9 +8,11 @@
 
 <ion-content>
 	<ion-grid *ngIf="shoppingCartEmpty">
-		<ion-col col 12>
-			<p>您还没有选购任何产品!</p>
-		</ion-col>
+		<ion-row class="empty">
+			<ion-col col-12>
+				<button ion-button full>您还没有选购任何产品，请去分类中购买。 </button>
+			</ion-col>
+		</ion-row>
 	</ion-grid>
 	<ion-grid *ngIf="!shoppingCartEmpty">
 		<ion-row *ngIf="!loggedIn" class="login-remind">
@@ -23,9 +25,7 @@
 		</ion-row>
 
 		<!--------------Seperator---------------------->
-		<ion-row class="seperator">
-			<ion-col col-12>s</ion-col>
-		</ion-row>
+		<seperator height="1.5rem"></seperator>
 
 		<ion-row class="address">
 			<ion-col col-1>
@@ -56,9 +56,7 @@
 		</ion-row>
 
 		<!--------------Seperator---------------------->
-		<ion-row class="seperator">
-			<ion-col col-12>d</ion-col>
-		</ion-row>
+		<seperator height="1.5rem"></seperator>
 
 		<ion-row *ngFor="let product of products; let i = index;" class="item-list">
 			<ion-col col-12>
@@ -79,23 +77,29 @@
 
 					
 					<ion-col col-8 class="item">
-						<ion-row>
+						<ion-row class="item-intro">
 							<ion-col col-6>
 								{{product[0].product_sub_category_name}}
 							</ion-col>
-							<ion-col col-6>
+							<ion-col col-5>
 								{{product[0].model}}
 							</ion-col>
+							<ion-col col-1>
+								<button ion-button outline icon-only (click)="deleteItem(i)">
+									<ion-icon name="close" color="alert"></ion-icon>
+								</button>
+							</ion-col>
 						</ion-row>
-						<ion-row>
-							<ion-col class="price">
-								&yen;{{shoppingCart[i].price}}
+						<ion-row class="item-price" style="flex-wrap: nowrap;">
+							<ion-col class="price" col-3>
+								{{shoppingCart[i].price | currency:'CNY':'symbol-narrow'}}
 							</ion-col>
-							<ion-col>
-								{{shoppingCart[i].quantity}}
+							<ion-col col-4>
+								<counter count="{{shoppingCart[i].quantity}}" size="1.2rem"></counter>
+								
 							</ion-col>
-							<ion-col>
-								小计：<span class="price">&yen;{{shoppingCart[i].price * shoppingCart[i].quantity}}.00</span>
+							<ion-col col-5>
+								<div align="right">小计：<span class="price">{{shoppingCart[i].price * shoppingCart[i].quantity | currency:'CNY':'symbol-narrow'}}</span></div>
 							</ion-col>
 						</ion-row>
 					</ion-col>
@@ -126,7 +130,7 @@
 					</div>
 				</ion-col>
 				<ion-col col-3>
-					<button ion-button full color="secondary" style="font-size: 1.6rem;" [disabled]="!loggedIn" icon-start>
+					<button ion-button full block color="secondary" style="font-size: 1.4rem;" [disabled]="!loggedIn" icon-start>
 						去结算
 					</button>
 				</ion-col>
@@ -143,13 +147,10 @@
 		font-size: 1.1rem;
 	}
 
-	.seperator {
-		margin: 1.5rem, 0,0,0;
-		padding: 0;
-		background-color: #efefef;
-		color: #efefef;
-		font-size: 1px;
+	.empty {
+		justify-content: center;
 	}
+
 
 	.login-remind:not(button) {
 		background-color: #fff372;
@@ -181,22 +182,29 @@
 		font-size: 1.5rem;
 	}
 
+	
 	.item-list ion-row {
 		align-items: center;
 	}
 
 	.item-list img {
 		width: 4.5rem;
+
 	}
 
 	.item {
 		border-bottom: 1px solid #efefef;
-		height: 6.5rem;
+		height: 8rem;
+		padding-right: 1rem;
 
 	}
 
-	.item img, .item ion-row {
-		padding-top: 1.2rem;
+	.item img {
+		margin-top: 1.2rem;
+	}
+	
+	.item .item-intro {
+		padding-top: 1rem;
 	}
 
 	.item .price {
