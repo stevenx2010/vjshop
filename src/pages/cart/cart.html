@@ -25,7 +25,7 @@
 		</ion-row>
 
 		<!--------------Seperator---------------------->
-		<seperator height="1.5rem"></seperator>
+		<seperator height="1.3rem"></seperator>
 
 		<ion-row class="address">
 			<ion-col col-1>
@@ -39,7 +39,7 @@
 						<div>收货人: {{address.username}}</div>
 					</ion-col>
 					<ion-col col-4>
-						<div>{{mobile}}</div>
+						<div align="right">{{mobile}}</div>
 					</ion-col>
 				</ion-row>
 					<ion-col col-12>
@@ -56,7 +56,7 @@
 		</ion-row>
 
 		<!--------------Seperator---------------------->
-		<seperator height="1.5rem"></seperator>
+		<seperator height="1.3rem"></seperator>
 
 		<ion-row *ngFor="let product of products; let i = index;" class="item-list">
 			<ion-col col-12>
@@ -78,12 +78,12 @@
 					
 					<ion-col col-8 class="item">
 						<ion-row class="item-intro">
-							<ion-col col-6>
-								{{product[0].product_sub_category_name}}
+							<ion-col col-11>
+								{{product[0].model}}{{product[0].product_sub_category_name}}
 							</ion-col>
-							<ion-col col-5>
-								{{product[0].model}}
-							</ion-col>
+					<!--		<ion-col col-5>
+								
+							</ion-col>-->
 							<ion-col col-1>
 								<button ion-button outline icon-only (click)="deleteItem(i)">
 									<ion-icon name="close" color="alert"></ion-icon>
@@ -94,13 +94,15 @@
 							<ion-col class="price" col-3>
 								{{shoppingCart[i].price | currency:'CNY':'symbol-narrow'}}
 							</ion-col>
-							<ion-col col-4>
-								<counter count="{{shoppingCart[i].quantity}}" size="1.2rem"></counter>
-								
-							</ion-col>
+
 							<ion-col col-5>
-								<div align="right">小计：<span class="price">{{shoppingCart[i].price * shoppingCart[i].quantity | currency:'CNY':'symbol-narrow'}}</span></div>
+								<div align="center">小计：<span class="price">{{shoppingCart[i].price * shoppingCart[i].quantity | currency:'CNY':'symbol-narrow'}}</span></div>
 							</ion-col>
+							<ion-col col-4>
+								<div align="right">
+								<counter count="{{shoppingCart[i].quantity}}" size="1.2rem" (change)="quantityChange($event, i)"></counter>
+								</div>
+							</ion-col>							
 						</ion-row>
 					</ion-col>
 
@@ -124,13 +126,18 @@
 						<ion-checkbox color="primary" checked="true"></ion-checkbox>
 					</div>
 				</ion-col>
-				<ion-col col-7>
-					<div align="right">
-						合计：
+				<ion-col col-4>
+					<div align="left">
+						合计：<span style="color: blue;">{{totalPrice | currency:'CNY':'symbol-narrow'}}</span>
 					</div>
 				</ion-col>
 				<ion-col col-3>
-					<button ion-button full block color="secondary" style="font-size: 1.4rem;" [disabled]="!loggedIn" icon-start>
+					<div align="left">
+						总重量：{{totalWeight}}{{weightUnit}}
+					</div>
+				</ion-col>
+				<ion-col col-3>
+					<button ion-button full block color="secondary" style="font-size: 1.4rem;" [disabled]="!loggedIn" icon-start (click)="toPaymentPage()">
 						去结算
 					</button>
 				</ion-col>
@@ -188,7 +195,7 @@
 	}
 
 	.item-list img {
-		width: 4.5rem;
+		width: 4.7rem;
 
 	}
 
@@ -197,14 +204,16 @@
 		height: 8rem;
 		padding-right: 1rem;
 
+
 	}
 
 	.item img {
-		margin-top: 1.2rem;
+		margin-top: 3rem;
 	}
 	
 	.item .item-intro {
 		padding-top: 1rem;
+
 	}
 
 	.item .price {

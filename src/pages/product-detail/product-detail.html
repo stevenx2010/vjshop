@@ -51,7 +51,7 @@
 		<div style="margin-top: 1.2rem">
 		<seperator></seperator>
 		<ion-row class="delivery">
-			<ion-col col-8 style="align-self: center;">配送：</ion-col>
+			<ion-col col-8 style="align-self: center;">配送：{{shippingAddress?.city}}{{shippingAddress?.street}}</ion-col>
 			<ion-col col-4 style="align-self: center;">
 				<div align="right">
 				<button ion-button outline color="blue" small style="font-size: 1.2rem;margin: 0;" (click)="createAddress()">新建地址</button>

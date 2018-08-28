@@ -35,7 +35,7 @@ export class LoginPage {
   }
 
   getSMSCode() {
-  	// Send request to get a SMS code
+  	// step 1: Send request to get a SMS code
   	let body = {
   		"command": Login.GET_SMS_CODE,
   		"mobile": this.mobile
@@ -71,14 +71,27 @@ export class LoginPage {
 
   		console.log(data); 
   		let response = data.json();
-  		// if it's new user, store the access_token locally
-  		if(response.api_token != '') {
+
+  		// step A: check if it's a new user, if so, store the access_token locally
+      // for new users, an access_token will be returned.
+  		if(response.access_token != '') {
   			this.storage.ready().then(() => {
-  				this.storage.set(Constants.ACCESS_TOKEN_KEY, response.api_token);
+  				this.storage.set(Constants.ACCESS_TOKEN_KEY, response.access_token);
   			}).catch(console.log);
   		}
 
+      // step B: check login success/failure
   		if(response.status === Login.CONFIRM_SMS_CODE_SUCCESS) {
+        // step 1: store user login status locally
+        this.storage.ready().then(() => {
+          // step 1-1: store user's mobile
+          this.storage.set(Constants.USER_MOBILE_KEY, this.mobile);
+
+          // setp 1-2: set Login key as true
+          this.storage.set(Constants.LOGIN_KEY, 1);
+        }).catch(console.log);
+
+        // step 2: check if the user has inputted his/her address
   			if(response.address_check == Login.SHIPPING_ADDRESS_CHECK_FAILURE) {
   				this.events.subscribe('login_address_added', () => {
   					this.navCtrl.pop().then(() => {
@@ -89,6 +102,8 @@ export class LoginPage {
 
   				this.navCtrl.push('AddAdressPage', { mobile: this.mobile });
   			} else {
+
+          // step 3-2: the user has inputted his/her address, then set LOGIN_KEY = 1(true)
   				this.storage.ready().then(() => {
   					this.storage.set(Constants.LOGIN_KEY, 1);
   				}).catch(console.log);

@@ -40,6 +40,9 @@
 	</ion-list>
 	<ion-list *ngIf="!isShowHistory">
 		<ion-item *ngFor="let product of searchedProducts">
+			<ion-avatar item-start>
+				<img src="{{baseUrl}}{{product.thumbnail_url}}">
+			</ion-avatar>
 			<div (click)="toProductDetailPage(product.id)">
 				{{ product.name }}
 			</div>

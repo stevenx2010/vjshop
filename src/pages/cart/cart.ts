@@ -1,8 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { NavController, App, Events, AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
-import { Observable, Subject } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
 
 import { Constants } from '../../models/constants.model';
 import { Address } from '../../models/address.model';
@@ -25,6 +23,9 @@ export class CartPage {
   baseUrl: string;
   shoppingCartEmpty: boolean;
   currentSelectedItem: number;
+  totalPrice: number = 0;
+  totalWeight: number = 0;
+  weightUnit: string = '';
 
   constructor(public navCtrl: NavController, private storage: Storage, private app: App, private events: Events, private vjApi: VJAPI,
   				@Inject('API_BASE_URL') private apiUrl: string, private alertCtrl: AlertController) 
@@ -50,7 +51,8 @@ export class CartPage {
   			this.loggedIn = true;
   			this.getShippingAddress();
 
-  		}
+  		} else
+        this.loggedIn = false;
   	});
 
     // get products from server according to the items in the shopping cart
@@ -81,7 +83,8 @@ export class CartPage {
   getShippingAddress() {
   	this.storage.ready().then(() => {
   			this.storage.get(Constants.SHIPPING_ADDRESS_KEY).then((data) => {
-  				this.address = new Address(data);
+  				if(data) this.address = new Address(data);
+          else return;
 
   				//Sync to db
   				this.syncDatabase(this.address.mobile);
@@ -125,6 +128,8 @@ export class CartPage {
 
   			this.shoppingCart = data;
 
+        this.calculateTotle();
+
   			this.vjApi.getProductsByIds(JSON.stringify(this.shoppingCart)).subscribe(
   				(data) => {
   					this.products = data.json();      
@@ -141,8 +146,12 @@ export class CartPage {
   }
 
   selectionChange(index: number) {
-    console.log(this.shoppingCart[index].price);
-    console.log(this.shoppingCart[index].selected);
+   // console.log(this.shoppingCart[index].price);
+   // console.log(this.shoppingCart[index].selected);
+
+    this.weightUnit = this.shoppingCart[index].weight_unit;
+    this.calculateTotle();
+    
   }
 
   deleteItem(index: number) {
@@ -178,9 +187,13 @@ export class CartPage {
           }
 
           
-          if(this.shoppingCart != null && this.shoppingCart.length > 0) {
+          if(tempChart.length > 0) {
+            this.products = [];
             this.products = tempProducts;
+            this.shoppingCart = [];
+            this.shoppingCart = tempChart;
             this.shoppingCartEmpty = false;
+
             this.storage.ready().then(() => {
               this.storage.set(Constants.SHOPPING_CART_KEY, tempChart);
 
@@ -190,6 +203,8 @@ export class CartPage {
             this.storage.remove(Constants.SHOPPING_CART_KEY);
             this.products = new Array<Product>();
           }
+
+          this.calculateTotle();
         }
       });
 
@@ -200,5 +215,31 @@ export class CartPage {
     });
 
     alert.present();
+  }
+
+  quantityChange(event, index: number) {
+    this.shoppingCart[index].quantity = event;
+    this.storage.ready().then(() => {
+      this.storage.set(Constants.SHOPPING_CART_KEY, this.shoppingCart);
+      this.calculateTotle();
+    }).catch(console.log);
+  }
+
+  calculateTotle() {
+    this.totalPrice = 0;
+    this.totalWeight = 0;
+    if(!this.shoppingCartEmpty) {
+      for(let item of this.shoppingCart) {
+        if(item.selected) {
+          this.totalPrice += item.price * item.quantity;
+          this.totalWeight += item.weight *item.quantity;
+          this.weightUnit = item.weight_unit;
+        }
+      }
+    }
+  }
+
+  toPaymentPage() {
+    this.app.getRootNav().push('PaymentPage');
   }
 }

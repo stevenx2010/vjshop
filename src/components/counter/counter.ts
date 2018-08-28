@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Content } from 'ionic-angular';
 
 /**
@@ -15,12 +15,15 @@ export class CounterComponent {
   @Input() size = '1rem';
   @Input() start = 1;
   @Input() count: number;
+  @Output() change: EventEmitter<number>;
 
   btnDisabled: boolean = true;
 
   constructor() {
   	if(this.count <= this.start) this.btnDisabled = true;
   	else this.btnDisabled = false;
+
+    this.change = new EventEmitter<number>();
   }
 
   decrease() {
@@ -28,11 +31,15 @@ export class CounterComponent {
   		this.count -= 1;
   	if(this.count <= this.start) this.btnDisabled = true;
   	else this.btnDisabled = false;
+
+    this.change.emit(this.count);
   }
 
   increase() {
   	this.count = Number(this.count) + 1;
   	if(this.count >= this.start) this.btnDisabled = false;
   	else this.btnDisabled = true;
+
+    this.change.emit(this.count);
   }
 }

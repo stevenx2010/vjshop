@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { ProductDetail } from '../../models/product-detail.model';
@@ -26,9 +26,12 @@ export class SearchPage {
   searchKeyword: string;
   searchedProducts: ProductDetail[];
   isShowHistory: boolean;
+  baseUrl: string;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI, private alertCtrl: AlertController) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI, 
+            private alertCtrl: AlertController, @Inject('API_BASE_URL') private apiUrl: string) {
   	this.searchHistory = new Array<SearchHistoryEntry>();
+    this.baseUrl = this.apiUrl;
 
   	this.storage.ready().then(() => {this.storage.get(Constants.SEARCH_HISTORY_KEY).then((data) => {
   		if(data) 

@@ -7,6 +7,7 @@ import { ProductDetail } from '../../models/product-detail.model';
 import { ProductDetailImage } from '../../models/product-detail-image.model';
 import { ShoppingItem } from '../../models/shopping-item.model';
 import { Constants } from '../../models/constants.model';
+import { Address } from '../../models/address.model';
 
 
 @IonicPage()
@@ -23,6 +24,7 @@ export class ProductDetailPage {
   numberOfProducts: number;
   shoppingCart: ShoppingItem[];
   shoppedItems: number;
+  shippingAddress: Address;
 
   eventsPublished: boolean = false;
 
@@ -32,20 +34,35 @@ export class ProductDetailPage {
   	this.images_2 = new Array<ProductDetailImage>();
   	this.detailInfo = new Array<ProductDetail>();
     this.shoppingCart = new Array<ShoppingItem>();
+    this.shippingAddress = new Address();
 
   	this.productId = this.navParams.get('productId');
     this.numberOfProducts = 1;
+    this.shoppedItems = 0;
   }
 
   ionViewWillLoad() {
-    // Get shopping cart
+    // step 1: Get shopping cart & shipping address
     // this.storage.remove(Constants.SHOPPING_CART_KEY);  // this line is for test
-    this.storage.get(Constants.SHOPPING_CART_KEY).then(
-        (cart) => {
-          if(cart) this.shoppingCart = cart;
-          this.shoppedItems = this.calculateShoppedItems(cart);
-        });
 
+    this.storage.ready().then(() => {
+      // step 1-1: Get shopping cart
+      this.storage.get(Constants.SHOPPING_CART_KEY).then(
+          (cart) => {
+            if(cart) {
+              this.shoppingCart = cart;
+              this.shoppedItems = this.calculateShoppedItems(cart);
+            }
+          });
+
+      //step 1-2: Get shipping address
+      this.storage.get(Constants.SHIPPING_ADDRESS_KEY).then(
+          (address) => {
+            if(address) this.shippingAddress = address;
+          }
+        )
+    });
+    // step 3: get product information from server
     this.vjApi.showLoader();
 
     this.vjApi.getProductDetailImages(this.productId,1).subscribe(
@@ -71,12 +88,11 @@ export class ProductDetailPage {
   	this.vjApi.getProductDetailInfo(this.productId).subscribe(
   		(data) => {
   			this.detailInfo = data;
-  			console.log(this.detailInfo);
-  		//	this.vjApi.hideLoader();
+  			//console.log(this.detailInfo);
+
   		},
   		(err) => {
   			console.log(err);
-  		//	this.vjApi.hideLoader();
   		}
   	);
 
@@ -99,8 +115,12 @@ export class ProductDetailPage {
   addToShoppingCart() {
 
       // if the shopping cart is empty, then we create a new item & put it in
+
       if(this.shoppingCart.length < 1) {
-        this.shoppingCart.push(new ShoppingItem(this.productId, this.numberOfProducts, this.detailInfo[0].price, true));
+ 
+        this.shoppingCart.push(new ShoppingItem(this.productId, this.numberOfProducts, this.detailInfo[0].price, 
+                        this.detailInfo[0].weight, this.detailInfo[0].weight_unit, true));
+
       } else {
 
         // else we check if the product is in the shopping cart already
@@ -117,11 +137,14 @@ export class ProductDetailPage {
         // if i >= shopping cart length, then we didn't find the product
         if(i >= this.shoppingCart.length) {
           // we create a new item & put it in
-          this.shoppingCart.push(new ShoppingItem(this.productId, this.numberOfProducts, this.detailInfo[0].price, true));
+          this.shoppingCart.push(new ShoppingItem(this.productId, this.numberOfProducts, this.detailInfo[0].price, 
+                        this.detailInfo[0].weight, this.detailInfo[0].weight_unit,true));
         }
       }
-      
-      this.shoppedItems += this.numberOfProducts;
+      //  console.log(this.detailInfo[0]);
+      //      console.log(this.shoppingCart);
+
+      this.shoppedItems += Number(this.numberOfProducts);
       this.storage.ready().then(() => {
         this.storage.set(Constants.SHOPPING_CART_KEY, this.shoppingCart);
 
@@ -146,7 +169,6 @@ export class ProductDetailPage {
 
   createAddress(): void {
     // check if user has logged in
-    let loginStatus = false;
     this.storage.ready().then(() => {
       this.storage.get(Constants.LOGIN_KEY).then((data) => {
         if(data)
