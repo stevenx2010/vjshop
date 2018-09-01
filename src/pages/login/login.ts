@@ -70,8 +70,10 @@ export class LoginPage {
   	this.vjApi.auth(JSON.stringify(body)).subscribe((data) => {
 
   		console.log(data); 
+
   		let response = data.json();
 
+      console.log(response['status']);
   		// step A: check if it's a new user, if so, store the access_token locally
       // for new users, an access_token will be returned.
   		if(response.access_token != '') {
@@ -113,11 +115,18 @@ export class LoginPage {
   				});
   			}
   		} else
-  		  	this.doPrompt();
-  	});
+  		  	this.doPrompt('登录信息错误，请检查后重新登录');
+  	},
+    (err) => {
+      console.log(err);
+      let msg;
+      if(err.status == 403)
+        msg = '验证码错误，请检查后重新登录';
+      if(err.status == 404)
+        msg = '验证码超时!';
 
-
-
+      this.doPrompt(msg);
+    });
   }
 
   validate(): void {
@@ -146,10 +155,10 @@ export class LoginPage {
   		this.confirmDisabled = true;
   }
 
-  doPrompt() {
+  doPrompt(msg) {
   	let alert = this.alertCtrl.create();
   	alert.setTitle('提示');
-  	alert.setMessage('登录信息错误，请检查后重新登录');
+  	alert.setMessage(msg);
   	alert.addButton('确定');
 
   	alert.present();

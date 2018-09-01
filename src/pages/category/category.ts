@@ -16,21 +16,13 @@ export class CategoryPage {
 
   gridHeight: string;
   scrollHeight: string;
+  scrollHeightMenu: string;
   clickedItemIndex: number;
 
   productCategories: ProductCategory[];
   productBySubCategories: ProductBySubCategory[];
 
   products: Product[];
-  products1: Product[];
-
-  products_1: Product[];
-  products_2: Product[];
-  products_3: Product[];
-
-  category_1: Product[];
-  category_2: Product[];
-  category_3: Product[];
 
   baseUrl: string;
 
@@ -42,12 +34,6 @@ export class CategoryPage {
     this.productBySubCategories = new Array<ProductBySubCategory>();
 
   	this.products = new Array<Product>();
-    this.products1 = new Array<Product>();
-
-    // Array for display products in 3 columns a row
-    this.products_1 = new Array<Product>();
-    this.products_2 = new Array<Product>();
-    this.products_3 = new Array<Product>();
 
 	  this.clickedItemIndex = 0;
 	  this.baseUrl = this.apiUrl;
@@ -75,20 +61,10 @@ export class CategoryPage {
   ionViewWillLoad() {
      this.vjApi.getProductAll().subscribe(
         (data) => {
-          this.products = data;
-          for(let i = 0; i < data.length; i += 3) {
-            this.products_1.push(data[i]);
-            if(i+1 < this.products.length)
-              this.products_2.push(data[i+1]);
-            if(i+2 < this.products.length)
-            this.products_3.push(data[i+2]);
-          }
-
-//          this.vjApi.hideLoader();
+          if(data) this.products = data;
         },
         (err) => {
           console.log(err);
-//          this.vjApi.hideLoader();
         }
       );   
     this.vjApi.hideLoader();
@@ -97,8 +73,9 @@ export class CategoryPage {
   ionViewDidEnter() {
   	let scroll = this.content.getScrollElement();
   	scroll.style.overflowY = 'hidden';
-
-  	let h = this.content.contentHeight;
+  	let h =  this.content.contentHeight
+    this.scrollHeightMenu = h + 'px';
+    h = h - this.content.contentBottom;
   	this.gridHeight = h +'px';
   	this.scrollHeight = this.gridHeight;
 
@@ -174,16 +151,6 @@ export class CategoryPage {
       if(a.price - b.price < 0) return -1;
       return 0;
     });
-
-    this.products_1 = new Array<Product>();
-    this.products_2 = new Array<Product>();
-    this.products_3 = new Array<Product>();
-              
-    for(let i = 0; i < data.length; i += 3) {
-      this.products_1.push(data[i]);
-      if(i+1 < this.products.length) this.products_2.push(data[i+1]);
-      if(i+2 < this.products.length) this.products_3.push(data[i+2]);
-    }
   }
 
   priceSortDown() {
@@ -192,16 +159,6 @@ export class CategoryPage {
       if(a.price - b.price < 0) return 1;
       return 0;
     });
-
-    this.products_1 = new Array<Product>();
-    this.products_2 = new Array<Product>();
-    this.products_3 = new Array<Product>();
-              
-    for(let i = 0; i < data.length; i += 3) {
-      this.products_1.push(data[i]);
-      if(i+1 < this.products.length) this.products_2.push(data[i+1]);
-      if(i+2 < this.products.length) this.products_3.push(data[i+2]);
-    }
   }
 
   soldAmountSortUp() {
@@ -210,16 +167,6 @@ export class CategoryPage {
       if(a.sold_amount - b.sold_amount < 0) return -1;
       return 0;
     });
-
-    this.products_1 = new Array<Product>();
-    this.products_2 = new Array<Product>();
-    this.products_3 = new Array<Product>();
-              
-    for(let i = 0; i < data.length; i += 3) {
-      this.products_1.push(data[i]);
-      if(i+1 < this.products.length) this.products_2.push(data[i+1]);
-      if(i+2 < this.products.length) this.products_3.push(data[i+2]);
-    }
   }
 
   soldAmountSortDown() {
@@ -228,16 +175,6 @@ export class CategoryPage {
       if(a.sold_amount - b.sold_amount < 0) return 1;
       return 0;
     });
-
-    this.products_1 = new Array<Product>();
-    this.products_2 = new Array<Product>();
-    this.products_3 = new Array<Product>();
-              
-    for(let i = 0; i < data.length; i += 3) {
-      this.products_1.push(data[i]);
-      if(i+1 < this.products.length) this.products_2.push(data[i+1]);
-      if(i+2 < this.products.length) this.products_3.push(data[i+2]);
-    }
   }
 
    toSearchPage(): void {

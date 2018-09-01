@@ -1,0 +1,78 @@
+
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>ConfirmOrder</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content >
+	<ion-grid>
+		<ion-row class="address">
+			<ion-col col-1>
+				<div align="center">
+					<ion-icon name="pin"></ion-icon>
+				</div>
+			</ion-col>
+			<ion-col col-8>
+				<ion-row>
+					<ion-col>
+						收货人：
+					</ion-col>
+				</ion-row>
+				<ion-row>
+					<ion-col>
+						收货地址： 
+					</ion-col>
+				</ion-row>
+			</ion-col>
+			<ion-col col-3>
+				mobile
+			</ion-col>
+		</ion-row>
+
+		<ion-row>
+			<ion-col col-12><seperator height="1.2rem"></seperator></ion-col>
+		</ion-row>
+
+		<ion-row>
+			<ion-col col-9>
+				<ion-scroll scrollX="true">
+				</ion-scroll>
+			</ion-col>
+			<ion-col col-2>
+				共 件
+			</ion-col>
+			<ion-col col-1>
+				<div align="center">
+					<button ion-button icon-only>
+						<ion-icon name="arrow-forward"></ion-icon>
+					</button>
+				</div>
+			</ion-col>
+		</ion-row>
+
+	</ion-grid>
+</ion-content>
+
+<style>
+	* {
+		margin: 0;
+		padding: 0;
+		border: none;
+		font-size: 1.1rem;
+	}
+
+	ion-icon {
+		font-size: 1.5rem;
+	}
+
+	.address  {
+		align-items: center;
+		padding-top: 1rem;
+		padding-bottom: 1rem;
+	}
+
+</style>

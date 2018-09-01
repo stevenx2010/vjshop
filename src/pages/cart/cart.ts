@@ -1,5 +1,5 @@
-import { Component, Inject } from '@angular/core';
-import { NavController, App, Events, AlertController } from 'ionic-angular';
+import { Component, Inject, ViewChild } from '@angular/core';
+import { NavController, App, Events, AlertController, Toolbar } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { Constants } from '../../models/constants.model';
@@ -13,7 +13,7 @@ import { Product } from '../../models/product.model';
   templateUrl: 'cart.html'
 })
 export class CartPage {
- 
+  @ViewChild(Toolbar) toolbar: Toolbar;
   loggedIn: boolean = false;
   mobile: string;
   address: Address;
@@ -40,20 +40,24 @@ export class CartPage {
 		//console.log(shoppingCart);
 		this.getShoppingItems();
 	})
-
   }
 
   ionViewWillLoad() {
 
     // check if user has logged in
-  	this.storage.get(Constants.LOGIN_KEY).then((data) => {
+    /*********************************************
+     * for debug
+    this.storage.remove(Constants.LOGIN_KEY);
+    ********************************************/
+  	this.storage.ready().then(() => {
+      this.storage.get(Constants.LOGIN_KEY).then((data) => {
   		if(data) {
   			this.loggedIn = true;
   			this.getShippingAddress();
 
   		} else
         this.loggedIn = false;
-  	});
+  	})});
 
     // get products from server according to the items in the shopping cart
   	this.vjApi.showLoader();
@@ -61,7 +65,6 @@ export class CartPage {
   	this.getShoppingItems();
 
   	this.vjApi.hideLoader();
-
   }
 
   ionViewDidEnter() {
@@ -240,6 +243,6 @@ export class CartPage {
   }
 
   toPaymentPage() {
-    this.app.getRootNav().push('PaymentPage');
+    this.app.getRootNav().push('ConfirmOrderPage');
   }
 }

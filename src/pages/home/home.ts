@@ -1,8 +1,11 @@
 import { Component, ViewChild, Inject } from '@angular/core';
 import { Content, Slides, NavController, App } from 'ionic-angular';
 
+import { Storage } from '@ionic/storage';
+
 import { VJAPI } from '../../services/vj.services';
 import { Image } from '../../models/image.model';
+import { Constants } from '../../models/constants.model';
 
 import { Http } from '@angular/http';
 
@@ -26,7 +29,11 @@ export class HomePage {
   contentWidth: number;
   contentHeight: number;
 
-  constructor(public navCtrl: NavController, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string, private http: Http, private app: App ) {
+  loggedIn: boolean = false;
+
+  constructor(public navCtrl: NavController, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string, private http: Http, private app: App,
+              private storage: Storage ) 
+  {
   	// initialize arrays
   	this.remoteImages = new Array<Array<Image>>();
   	this.imageUrls = new Array<Array<string>>();
@@ -42,6 +49,18 @@ export class HomePage {
   image_2: string;
 
   ionViewWillLoad() {
+    // Step 1: check if user has logged in
+    this.storage.ready().then((data) => {
+      this.storage.get(Constants.LOGIN_KEY).then((data) => {
+        if(data) {
+          this.loggedIn = true;
+        } else {
+          this.loggedIn = false;
+          this.storage.remove(Constants.LOGIN_KEY);
+          this.storage.remove(Constants.SHIPPING_ADDRESS_KEY);
+        }
+      })
+    })
   	this.vjApi.getHomePageImages().subscribe(
   		(data) => { 
   			this.remoteImages = data.json();

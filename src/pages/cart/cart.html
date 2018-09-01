@@ -25,7 +25,7 @@
 		</ion-row>
 
 		<!--------------Seperator---------------------->
-		<seperator height="1.3rem"></seperator>
+		<seperator height="1.2rem"></seperator>
 
 		<ion-row class="address">
 			<ion-col col-1>
@@ -56,7 +56,7 @@
 		</ion-row>
 
 		<!--------------Seperator---------------------->
-		<seperator height="1.3rem"></seperator>
+		<seperator height="1.2rem"></seperator>
 
 		<ion-row *ngFor="let product of products; let i = index;" class="item-list">
 			<ion-col col-12>
@@ -137,8 +137,8 @@
 					</div>
 				</ion-col>
 				<ion-col col-3>
-					<button ion-button full block color="secondary" style="font-size: 1.4rem;" [disabled]="!loggedIn" icon-start (click)="toPaymentPage()">
-						去结算
+					<button ion-button full block color="secondary" style="font-size: 1.4rem;"  icon-start (click)="toPaymentPage()">
+						去结算 <!--[disabled]="!loggedIn"-->
 					</button>
 				</ion-col>
 			</ion-row>
@@ -236,5 +236,13 @@
   	align-items: center;
   }
 
+  ion-toolbar {
+  	min-height: 3.6rem;
+  }
+
+  ion-footer button {
+  	margin: 0;
+  	padding: 0;
+  }
 
 </style>

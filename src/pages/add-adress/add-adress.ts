@@ -35,7 +35,10 @@ export class AddAdressPage {
   {
     this.cityColumns = ChineseCities.cities;
     this.address = new Address();
-    this.address.mobile = navParams.get('mobile');
+    if(navParams.get('mobile'))
+      this.address.mobile = navParams.get('mobile');
+    else
+      this.address.mobile = '';
   }
 
   validate(): void {
@@ -116,6 +119,8 @@ export class AddAdressPage {
               this.storage.set(Constants.SHIPPING_ADDRESS_KEY, this.address);
               this.saveBtnDisable = true;
               this.doPromptFinish();          
+            } else {
+              this.doPromptError();
             }
         },
         (err) => {
