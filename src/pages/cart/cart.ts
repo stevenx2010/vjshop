@@ -46,9 +46,10 @@ export class CartPage {
 
     // check if user has logged in
     /*********************************************
-     * for debug
-    this.storage.remove(Constants.LOGIN_KEY);
-    ********************************************/
+     * for debug */
+    //this.storage.remove(Constants.LOGIN_KEY); // enabled for debug
+
+    //this.storage.remove(Constants.SHOPPING_CART_KEY); // enabled for debug
   	this.storage.ready().then(() => {
       this.storage.get(Constants.LOGIN_KEY).then((data) => {
   		if(data) {

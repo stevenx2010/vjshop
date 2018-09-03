@@ -5,12 +5,12 @@
 			<ion-row>
 				<ion-col col-1>
 					<div align="right">
-						<ion-icon name="pin" color="light"></ion-icon>
+						<ion-icon name="pin" color="light" (click)="getLocation()"></ion-icon>
 					</div>
 				</ion-col>
 				<ion-col col-2>
 					<div align="center">
-						Loc
+						{{city}}
 					</div>
 				</ion-col>
 				<ion-col col-7>
@@ -38,7 +38,7 @@
 
 <ion-content>
 	<ion-grid>
-		<ion-row>
+		<ion-row class="slides">
 			<ion-col col-12>
 				<ion-slides autoplay="2000" pager>
 					<ion-slide *ngFor="let imageUrl of imageUrls_1">
@@ -50,36 +50,39 @@
 		
 		<ion-row align-items-center>
 			<ion-col col-6>
-				<img src="{{imageUrls_2[0]}}" class="coupon">
+				<img src="{{imageUrls_2[0]}}" class="coupon1" (click)="toCouponForNewComerPage()">
 			</ion-col>
 			<ion-col col-6>
-				<img src="{{imageUrls_3[0]}}" class="coupon">
+				<img src="{{imageUrls_3[0]}}" class="coupon2" (click)="toCouponCenterPage()">
 			</ion-col>
 		</ion-row>
 
+		<div  class="bottomImages">
 		<ion-row *ngFor="let image of imageUrls_4">
-			<ion-col col-12>
-				<img src="{{image}}" >
+			<ion-col col-12  width="100%">
+				<img src="{{image}}">
 			</ion-col>
 		</ion-row>
+	</div>
 	</ion-grid>
 </ion-content>
 
 <style>
-	ion-content, ion-grid, ion-row, ion-col, img {
+	 * {
 			margin: 0;
-			padding: 9;
+			padding: 0;
 			border: none;
+
 	}
 
-	.coupon {
-		padding: 5px;
-		background-color: white;
+	ion-content {
+		background-color: #efefef;
 	}
 
 	ion-header * {
 		margin: 0;
 		padding: 0;
+		margin: 0;
 	}
 
 	ion-header ion-row {
@@ -94,5 +97,33 @@
 	ion-header ion-searchbar {
 		font-size: 1.3rem;
 	}
+
+
+	.coupon1 {
+		padding-top: 0;
+		padding-bottom: 0;
+		padding-right: 0.4rem;
+		padding-left: 0.8rem;
+		margin-top: 0.8rem;
+		margin-bottom: 0.8rem;
+
+	}
+
+	.coupon2 {
+		padding-top: 0;
+		padding-bottom: 0;
+		padding-left: 0.4rem;
+		padding-right: 0.8rem;
+		margin-top: 0.8rem;
+		margin-bottom: 0.8rem;
+
+	}
+
+	.bottomImages {
+		margin-left: 0.8rem;
+		margin-right: 0.8rem;
+		padding: 0;
+	}
+
 
 </style>

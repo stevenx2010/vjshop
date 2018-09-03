@@ -14,6 +14,12 @@ import { ProductDetailImage } from '../models/product-detail-image.model';
 import { ProductSubCategory } from '../models/product-sub-category.model';
 import { Constants } from '../models/constants.model';
 import { Address } from '../models/address.model';
+import { DistributorAddress } from '../models/distributor-address-model';
+import { DistributorContact } from '../models/distributor-contact-model';
+import { Distributor } from '../models/distributor-model';
+import { CouponType } from '../models/coupon-type-model';
+import { Coupon } from '../models/coupon-model';
+import { CouponNewComer } from '../models/coupon-newcomer-model';
 
 @Injectable()
 export class VJAPI {
@@ -130,7 +136,7 @@ export class VJAPI {
 
 	 }
 
-	 public getProductDetailInfo(productId: number): Observable<ProductDetail[]> {
+	 public getProductById(productId: number): Observable<Product[]> {
 //	 	this.showLoader();
 
 		let headers = new Headers();
@@ -263,5 +269,75 @@ export class VJAPI {
 
 	 	return this.http.get(this.apiUrl + 'api/address/userid/' + mobile, {headers: headers});
 
+	 }
+
+	/********************************************************************************************
+	 *                   API Section: Distributor related data
+	 *
+	 * 1. Interface to get default address of Distributor
+	 *		GET:	http://api_url/api/distributor/address/default
+	 * 2. Interface to find distributor by location
+	 ********************************************************************************************/
+	 public getDistributorDefaultAddress(distributorId: number): Observable<DistributorAddress> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.get(this.apiUrl + 'api/distributor/address/default/' + distributorId, {headers: headers})
+			.pipe(map((data) => data.json()));	 	
+	 }
+
+	 public getDistributorAddressByLocation(city: string): Observable<DistributorAddress[]> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.get(this.apiUrl + 'api/distributor/address/' + city, {headers: headers})
+			.pipe(map((data) => data.json()));	 	
+	 }
+
+	 public getDistributorContactById(distributorId: number): Observable<DistributorContact[]> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.get(this.apiUrl + 'api/distributor/contact/' + distributorId, {headers: headers})
+			.pipe(map((data) => data.json()));	 	
+	 }
+
+	 public getDistributorById(distributorId: number): Observable<Distributor[]> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.get(this.apiUrl + 'api/distributor/distributor/' + distributorId, {headers: headers})
+	 		.pipe(map((data) => data.json()));
+	 }
+
+	/********************************************************************************************
+	 *                   API Section: Coupon related data
+	 *
+	 * 1. Interface to get coupon types
+	 *		GET:	http://api_url/api/coupon/types
+	 * 2. Interface to get coupons by type id
+	 ********************************************************************************************/
+	 public getCouponAllTypes(): Observable<CouponType[]> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.get(this.apiUrl + 'api/coupon/types', {headers: headers})
+			.pipe(map((data) => data.json()));	 	
+	 }
+
+	 public getCouponsByTypeId(typeId: number): Observable<Coupon[]> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.get(this.apiUrl + 'api/coupon/bytype/' + typeId, {headers: headers})
+	 		.pipe(map((data) => data.json()));
+	 }
+
+	 public getPageInforOfNewComer(): Observable<CouponNewComer[]> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.get(this.apiUrl + 'api/coupon/newcomer', {headers: headers})
+	 		.pipe(map((data) => data.json()));
 	 }
 }

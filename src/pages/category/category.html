@@ -10,7 +10,7 @@
 				</ion-col>
 				<ion-col col-2>
 					<div align="center">
-						Loc
+						{{city}}
 					</div>
 				</ion-col>
 				<ion-col col-7>
@@ -25,8 +25,8 @@
 									<ion-icon name="contacts" color="light" (click)="goMulti()"></ion-icon>
 								</div>
 							</ion-col>
-				<!--		</ion-row>
-						<ion-row>-->
+						</ion-row>
+						<ion-row>
 							<ion-col style="align-self: flex-start;"><div style="font-size: 0.8rem; color: white;" align="center" (click)="goMulti()">经销商</div></ion-col>
 						</ion-row>
 				</ion-col>
@@ -51,7 +51,7 @@
 
 			<ion-col col-9>
 				<div  *ngIf="allProductsSelected" class="sort">
-					<ion-list>
+					<ion-list #sortlist>
 					<ion-item-sliding>
 						<ion-item>
 							<div align="right"><ion-icon name="rewind" color="secondary" style="vertical-align: bottom;"></ion-icon><span style="color: white;">s</span>排序</div>
@@ -75,7 +75,7 @@
 				</ion-list>
 				</div>
 
-				<ion-scroll scrollY="true" [style.height]="scrollHeight">
+				<ion-scroll scrollY="true" [style.height]="clickedItemIndex == 0 ? scrollHeightForAll : scrollHeightForCat">
 					<div  class="content-all" *ngIf="clickedItemIndex === 0">
 						<seperator color="white" height="2rem"></seperator>
 						<div *ngFor="let product of products; let i = index">
@@ -183,6 +183,10 @@
 		margin: 0;
 		padding: 0;
 		border: none;
+	}
+
+	ion-header ion-icon {
+		font-size: 2rem;
 	}
 
 	ion-header ion-row {

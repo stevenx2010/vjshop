@@ -2,7 +2,7 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>ConfirmOrder</ion-title>
+    <ion-title>订单确认</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -16,42 +16,104 @@
 					<ion-icon name="pin"></ion-icon>
 				</div>
 			</ion-col>
-			<ion-col col-8>
-				<ion-row>
-					<ion-col>
-						收货人：
+			<ion-col col-11>
+				<ion-row style="flex-wrap: nowrap;">
+					<ion-col col-8 class="shopper">
+						<div align="left">收货人：{{shippingAddress?.username}}</div>
+					</ion-col>
+					<ion-col col-4 style="padding-right: 1rem;">
+						<div align="right">{{mobile}}</div>
 					</ion-col>
 				</ion-row>
 				<ion-row>
 					<ion-col>
-						收货地址： 
+						收货地址： {{shippingAddress?.city}}{{shippingAddress?.street}}
 					</ion-col>
 				</ion-row>
 			</ion-col>
-			<ion-col col-3>
-				mobile
-			</ion-col>
 		</ion-row>
 
-		<ion-row>
-			<ion-col col-12><seperator height="1.2rem"></seperator></ion-col>
-		</ion-row>
 
-		<ion-row>
-			<ion-col col-9>
-				<ion-scroll scrollX="true">
-				</ion-scroll>
+		<seperator height="0.8rem"></seperator>
+
+		
+		<ion-row class="list">
+
+			<ion-col col-9>	
+				<ion-row>
+					<ion-col col-3 *ngFor="let product of products; let i = index">	
+						<img src="{{apiUrl}}{{product[0]?.thumbnail_url}}" *ngIf="i < 3">
+					</ion-col>
+				</ion-row>
 			</ion-col>
+
 			<ion-col col-2>
-				共 件
+				<ion-row>
+					<ion-col>
+				<div align="right">
+				共{{numberOfItems}}件
+				</div>
+			</ion-col>
+				</ion-row>
+				<ion-row>
+				<seperator color="white" height="2rem"></seperator>
+			</ion-row>
+
 			</ion-col>
 			<ion-col col-1>
 				<div align="center">
-					<button ion-button icon-only>
+					<button ion-button icon-only block outline>
 						<ion-icon name="arrow-forward"></ion-icon>
 					</button>
 				</div>
 			</ion-col>
+		</ion-row>
+
+
+		<seperator height="0.8rem"></seperator>
+
+
+		<!-- Distributor info -->
+		<ion-row class="distributor">
+			<ion-col col-3>
+				<div align="center">
+				配送经销商：
+			</div>
+			</ion-col>
+			<ion-col col-9>
+				<ion-row>
+					<ion-col>
+						{{distributors[0]?.name}}
+					</ion-col>
+				</ion-row>
+				<ion-row>
+					<ion-col>
+						{{distributorAddress[0]?.city}}{{distributorAddress[0]?.street}}
+					</ion-col>
+				</ion-row>
+				<ion-row>
+					<ion-col>
+						电话：{{distributorContacts[0]?.phone_area_code}}-{{distributorContacts[0]?.telephone}}
+					</ion-col>
+				</ion-row>
+				<ion-row>
+					<ion-col>
+						手机：+86-{{distributorContacts[0]?.mobile}}
+					</ion-col>
+				</ion-row>
+				<ion-row>
+					<ion-col>
+						联系人：{{distributorContacts[0]?.name}}
+					</ion-col>
+				</ion-row>
+			</ion-col>
+		</ion-row>
+
+		<seperator height="0.8rem"></seperator>
+
+		<!-- invoid info -->
+		<ion-row class="invoice">
+			
 		</ion-row>
 
 	</ion-grid>
@@ -62,12 +124,18 @@
 		margin: 0;
 		padding: 0;
 		border: none;
-		font-size: 1.1rem;
+		font-size: 1.3rem;
 	}
 
 	ion-icon {
-		font-size: 1.5rem;
+		font-size: 2rem;
 	}
+
+	.shopper {
+		font-size: 1.5rem;
+		font-weight: bold;
+	}
+
 
 	.address  {
 		align-items: center;
@@ -75,4 +143,28 @@
 		padding-bottom: 1rem;
 	}
 
+	.list {
+		align-items: center;
+	}
+
+	.list * {
+		align-items: center;
+	}
+
+	.list img {
+		align-items: center;
+		margin-top: 0.2rem;
+		margin-bottom: 0.2rem;
+		padding: 1rem;
+		margin-left: 0.6rem;
+	}
+
+	.list button {
+		font-size: 1.5rem;
+	}
+
+	.distributor {
+		margin: 1rem;
+
+	}
 </style>

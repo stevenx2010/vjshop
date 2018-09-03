@@ -1,0 +1,109 @@
+<!--
+  Generated template for the CouponCenterPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    			<ion-title>领券中心</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+	<ion-grid>
+		<ion-row *ngFor="let type of couponTypes; let i = index;">
+			<ion-col col-12>
+				<ion-card>
+					<ion-card-header>
+						{{type?.type}} 
+					</ion-card-header>
+					<ion-list class="coupon">
+						<ion-row *ngFor="let coupon of couponsByType[i]">
+							<ion-col col-12>
+								<img src="{{baseUrl}}{{coupon?.image_url}}">
+							
+								<button ion-fab mini class="take" color="light"> 领取</button>
+<!--
+								<div class="title" *ngIf="coupon.discount_method==2">{{coupon?.discount_value}}<span class="subtitle">{{coupon?.name}}</span></div>
+								<div class="description" *ngIf="coupon.discount_method==2">{{coupon?.description}}</div>
+								
+								<div class="title-discount" *ngIf="coupon.discount_method==1">{{coupon?.discount_percentage / 10}}<span class="subtitle">{{coupon?.name}}</span></div>
+								<div class="description-discount" *ngIf="coupon.discount_method==1">{{coupon?.description}}</div>-->
+
+							</ion-col>
+					</ion-row>
+					</ion-list>
+				</ion-card>
+			</ion-col>
+		</ion-row>
+	</ion-grid>
+
+</ion-content>
+
+<style>
+
+	* {
+
+	}
+
+	ion-content ion-row {
+		align-items: center;
+	}
+
+	.take {
+		z-index: 2;
+		position: absolute;
+		left: 80%;
+		top: 18%;
+	}
+
+/*
+	.title {
+		z-index: 3;
+		position: absolute;
+		left: 25%;
+		top: 5%;
+		color: #fff;
+		font-size: 3.6rem;
+		font-weight: bold;
+	}
+
+	.subtitle {
+		font-size: 2rem;
+		font-weight: normal;
+		letter-spacing: 0.2rem;
+	}
+
+	.description {
+		z-index: 4;
+		position: absolute;
+		left: 12%;
+		top: 60%;
+		color: #fff;
+		font-size: 1.6rem;
+	}
+
+	.title-discount {
+		z-index: 3;
+		position: absolute;
+		left: 40%;
+		top: 5%;
+		color: #fff;
+		font-size: 3.6rem;
+		font-weight: bold;
+	}
+
+	.description-discount {
+		z-index: 4;
+		position: absolute;
+		left: 30%;
+		top: 60%;
+		color: #fff;
+		font-size: 1.6rem;
+	}*/
+
+</style>

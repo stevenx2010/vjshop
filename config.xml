@@ -85,6 +85,14 @@
     <plugin name="cordova-plugin-inappbrowser" spec="^3.0.0" />
     <allow-navigation href="http://192.168.1.66:8100" />
     <allow-navigation href="http://192.168.1.66:8101" />
+    <plugin name="cordova-plugin-geolocation" spec="^4.0.1">
+        <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="To locate you" />
+    </plugin>
+    <plugin name="cordova-plugin-baidumaplocation" spec="^4.0.2">
+        <variable name="ANDROID_KEY" value="hWUwGckpW0S42kMYiiqYW9srIL8hktOg" />
+        <variable name="IOS_KEY" value="TEv78fc0HREWpzQZvSc5G0mH85N1sUsK" />
+        <variable name="IOS_LOCATION_DESC" value="请点击'好'以允许访问。" />
+    </plugin>
     <engine name="android" spec="^7.1.1" />
-    <engine name="ios" spec="4.5.5" />
+    <engine name="ios" spec="^4.5.5" />
 </widget>

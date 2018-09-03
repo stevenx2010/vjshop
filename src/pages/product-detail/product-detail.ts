@@ -3,7 +3,7 @@ import { IonicPage, NavController, NavParams, App, Events } from 'ionic-angular'
 import { Storage } from '@ionic/storage';
 
 import { VJAPI } from '../../services/vj.services';
-import { ProductDetail } from '../../models/product-detail.model';
+import { Product } from '../../models/product.model';
 import { ProductDetailImage } from '../../models/product-detail-image.model';
 import { ShoppingItem } from '../../models/shopping-item.model';
 import { Constants } from '../../models/constants.model';
@@ -19,7 +19,7 @@ export class ProductDetailPage {
 
   images_1: ProductDetailImage[];
   images_2: ProductDetailImage[];
-  detailInfo: ProductDetail[];
+  products: Product[];
   productId: number;
   numberOfProducts: number;
   shoppingCart: ShoppingItem[];
@@ -32,7 +32,7 @@ export class ProductDetailPage {
               private storage: Storage, private app: App, private events: Events) {
   	this.images_1 = new Array<ProductDetailImage>();
   	this.images_2 = new Array<ProductDetailImage>();
-  	this.detailInfo = new Array<ProductDetail>();
+  	this.products = new Array<Product>(new Product());
     this.shoppingCart = new Array<ShoppingItem>();
     this.shippingAddress = new Address();
 
@@ -67,7 +67,7 @@ export class ProductDetailPage {
 
     this.vjApi.getProductDetailImages(this.productId,1).subscribe(
       (data) => {
-        this.images_1 = data;
+        this.images_1 = data; 
       },
       (err) => {
         console.log(err);
@@ -85,9 +85,9 @@ export class ProductDetailPage {
     );
 
     // Get produt detail info
-  	this.vjApi.getProductDetailInfo(this.productId).subscribe(
+  	this.vjApi.getProductById(this.productId).subscribe(
   		(data) => {
-  			this.detailInfo = data;
+  			this.products = data;
   			//console.log(this.detailInfo);
 
   		},
@@ -118,8 +118,14 @@ export class ProductDetailPage {
 
       if(this.shoppingCart.length < 1) {
  
-        this.shoppingCart.push(new ShoppingItem(this.productId, this.numberOfProducts, this.detailInfo[0].price, 
-                        this.detailInfo[0].weight, this.detailInfo[0].weight_unit, true));
+        let item = new ShoppingItem();
+        item.productId = this.productId;
+        item.quantity = this.numberOfProducts;
+        item.price = this.products[0].price;
+        item.weight = this.products[0].weight;
+        item.weight_unit = this.products[0].weight_unit;
+        item.selected = true;
+        this.shoppingCart.push(item);
 
       } else {
 
@@ -137,11 +143,17 @@ export class ProductDetailPage {
         // if i >= shopping cart length, then we didn't find the product
         if(i >= this.shoppingCart.length) {
           // we create a new item & put it in
-          this.shoppingCart.push(new ShoppingItem(this.productId, this.numberOfProducts, this.detailInfo[0].price, 
-                        this.detailInfo[0].weight, this.detailInfo[0].weight_unit,true));
+          let item = new ShoppingItem();
+          item.productId = this.productId;
+          item.quantity = this.numberOfProducts;
+          item.price = this.products[0].price;
+          item.weight = this.products[0].weight;
+          item.weight_unit = this.products[0].weight_unit;
+          item.selected = true;
+          this.shoppingCart.push(item);
         }
       }
-      //  console.log(this.detailInfo[0]);
+      //  console.log(this.products[0]);
       //      console.log(this.shoppingCart);
 
       this.shoppedItems += Number(this.numberOfProducts);

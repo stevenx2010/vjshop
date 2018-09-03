@@ -1,7 +1,8 @@
 import { Component, ViewChild, Inject } from '@angular/core';
-import { Content, Slides, NavController, App } from 'ionic-angular';
+import { Content, Slides, NavController, App,Platform } from 'ionic-angular';
 
 import { Storage } from '@ionic/storage';
+import { Geolocation } from '@ionic-native/geolocation';
 
 import { VJAPI } from '../../services/vj.services';
 import { Image } from '../../models/image.model';
@@ -9,9 +10,13 @@ import { Constants } from '../../models/constants.model';
 
 import { Http } from '@angular/http';
 
+import { CoordinateTransform } from '../../services/baidu.gps.service';
+
+//declare let cordova: any;
+
 @Component({
   selector: 'page-home',
-  templateUrl: 'home.html'
+  templateUrl: 'home.html',
 })
 export class HomePage {
   @ViewChild(Content) content: Content;
@@ -31,13 +36,30 @@ export class HomePage {
 
   loggedIn: boolean = false;
 
+  city: string = '';
+
   constructor(public navCtrl: NavController, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string, private http: Http, private app: App,
-              private storage: Storage ) 
+              private storage: Storage, private geolocation: Geolocation, private coordtrans: CoordinateTransform, private platform: Platform ) 
   {
   	// initialize arrays
   	this.remoteImages = new Array<Array<Image>>();
   	this.imageUrls = new Array<Array<string>>();
   }
+
+
+  ngOnInit(): void {
+   this.platform.ready().then(() => {
+//     cordova.plugins.baidumap_location.getCurrentPosition((data) => {
+
+  //     let result = data;
+      this.city = '北京市'//result.province;
+       this.storage.ready().then(() => {
+         this.storage.set(Constants.LOCATION_KEY, this.city);
+       })
+     });
+//   });
+  }
+
 
   ionViewDidEnter() {
   	this.contentWidth = this.content.contentWidth;
@@ -97,5 +119,25 @@ export class HomePage {
   //for test
   goMulti(): void {
     this.app.getRootNav().push('AddAdressPage');
+  }
+
+  // Location current address by GPS
+  getLocation() {
+    this.geolocation.getCurrentPosition().then((data) => {
+      console.log(data.coords.latitude);
+      console.log(data.coords.longitude);
+      let gcj = this.coordtrans.wgs84togcj02(data.coords.longitude, data.coords.latitude);
+      let baidu = this.coordtrans.gcj02tobd09(gcj[0], gcj[1]);
+      console.log(baidu);
+      });
+    
+  }
+
+  toCouponCenterPage(){
+    this.app.getRootNav().push('CouponCenterPage');
+  }
+
+  toCouponForNewComerPage() {
+    this.app.getRootNav().push('CouponForNewComerPage');
   }
 }

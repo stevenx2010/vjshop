@@ -16,4 +16,5 @@ export class ShoppingItem {
 			this.selected = obj.selected || false;
 		}
 	}
+
 }

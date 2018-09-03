@@ -1,11 +1,13 @@
-import { Component, ViewChild, Inject } from '@angular/core';
+import { Component, ViewChild, Inject, ElementRef } from '@angular/core';
 import { NavController, Content, App, Events } from 'ionic-angular';
+import { Storage } from '@ionic/storage';
 
 import { VJAPI } from '../../services/vj.services';
 import { ProductCategory } from '../../models/product-category.model';
 import { Product } from '../../models/product.model';
 import { ProductSubCategory } from '../../models/product-sub-category.model';
 import { ProductBySubCategory } from '../../models/product-by-sub-category.model';
+import { Constants } from '../../models/constants.model';
 
 @Component({
   selector: 'page-category',
@@ -13,9 +15,11 @@ import { ProductBySubCategory } from '../../models/product-by-sub-category.model
 })
 export class CategoryPage {
   @ViewChild(Content) content: Content;
+  @ViewChild('sortlist') sortlist: ElementRef;
 
   gridHeight: string;
-  scrollHeight: string;
+  scrollHeightForAll: string;
+  scrollHeightForCat: string;
   scrollHeightMenu: string;
   clickedItemIndex: number;
 
@@ -27,9 +31,10 @@ export class CategoryPage {
   baseUrl: string;
 
   allProductsSelected: boolean = true;
+  city: string = '';
 
   constructor(public navCtrl: NavController, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string,
-            private app: App, private events: Events) {
+            private app: App, private events: Events, private storage: Storage) {
   	this.productCategories = new Array<ProductCategory>();
     this.productBySubCategories = new Array<ProductBySubCategory>();
 
@@ -45,17 +50,19 @@ export class CategoryPage {
     this.vjApi.getProductCategories().subscribe( 
       (data) => {
         this.productCategories = data;
-//      this.vjApi.hideLoader();
       },
       (err) => {
         console.log(err);
-//      this.vjApi.hideLoader();
+
       });  
+  }
 
-
-//   this.vjApi.hideLoader();
-
-
+  ngOnInit() {
+    this.storage.ready().then(() => {
+      this.storage.get(Constants.LOCATION_KEY).then((data) => {
+        this.city = data;
+      })
+    })
   }
 
   ionViewWillLoad() {
@@ -73,11 +80,17 @@ export class CategoryPage {
   ionViewDidEnter() {
   	let scroll = this.content.getScrollElement();
   	scroll.style.overflowY = 'hidden';
-  	let h =  this.content.contentHeight
+
+  	let h =  this.content.contentHeight;
+
     this.scrollHeightMenu = h + 'px';
-    h = h - this.content.contentBottom;
-  	this.gridHeight = h +'px';
-  	this.scrollHeight = this.gridHeight;
+    this.scrollHeightForCat = h + 'px';
+    this.gridHeight = h +'px';
+
+    //console.log(this.sortlist.nativeElement.height);
+
+    h = h - this.content.contentBottom + 7;
+  	this.scrollHeightForAll = h + 'px';
 
 
   }
@@ -88,7 +101,6 @@ export class CategoryPage {
     if(index == 0) this.allProductsSelected = true;
     else this.allProductsSelected = false;
 
-    console.log(index);
     //Set Sub Categories
     this.vjApi.showLoader();
     this.getProducts(id);
@@ -101,10 +113,9 @@ export class CategoryPage {
   }
 
   getProducts(categoryId: number) {
+
     this.vjApi.getProducts(categoryId).subscribe(
       (data) => {
-
-
         this.productBySubCategories = [];
 
         let preRecord: Product;
@@ -114,7 +125,9 @@ export class CategoryPage {
         if(data.length > 0) {
           preRecord = data[0];
           subCategory = new ProductSubCategory(data[0].product_sub_category_id, data[0].product_sub_category_name);
-        } else return;
+        } else {
+          return;
+        }
        
         let index =0;
         let saved = false;
@@ -137,12 +150,12 @@ export class CategoryPage {
         if(!saved) {
           this.productBySubCategories.push(new ProductBySubCategory(subCategory, tempProducts));
         }
-
       },
       (err) => {
           console.log(err);
       }
     );
+
   }
 
   priceSortUp() {

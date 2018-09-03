@@ -7,6 +7,7 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { HttpModule } from '@angular/http';
 import { HttpClientModule } from '@angular/common/http';
 import { IonicStorageModule } from '@ionic/storage';
+import { Geolocation } from '@ionic-native/geolocation';
 
 import { VJAPI } from '../services/vj.services';
 
@@ -19,7 +20,7 @@ import { CategoryPage } from '../pages/category/category';
 import { MyvjPage } from '../pages/myvj/myvj';
 
 import { ComponentsModule } from '../components/components.module';
-
+import { CoordinateTransform } from '../services/baidu.gps.service';
 
 
 @NgModule({
@@ -55,6 +56,8 @@ import { ComponentsModule } from '../components/components.module';
     VJAPI,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     {provide: 'API_BASE_URL', useValue: 'http://192.168.1.66:8000/'},
+    Geolocation,
+    CoordinateTransform,
   ]
 })
 export class AppModule {}

@@ -7,6 +7,8 @@ export class Constants {
     static  USER_MOBILE_KEY			= 'user_mobile';
     static  USER_INFO_KEY			= 'user_info'; 
     static  SHOPPING_CART_KEY		= 'shoppingCart';
+
+    static LOCATION_KEY				= 'location_province';
 }
 
 export class Login { 
@@ -23,3 +25,5 @@ export class Login {
 	static  CREATE_SHIPPING_ADDRESS_SUCCESS	= 1;
 	static  CREATE_SHIPPING_ADDRESS_FAILURE = 0;
 }
+
+export enum InvoiceType  {PERSONAL = 1, ENTERPRISE = 2}
