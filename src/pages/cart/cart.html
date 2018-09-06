@@ -36,14 +36,14 @@
 			<ion-col col-10>
 				<ion-row>
 					<ion-col col-8>
-						<div>收货人: {{address.username}}</div>
+						<div>收货人: {{address?.username}}</div>
 					</ion-col>
 					<ion-col col-4>
 						<div align="right">{{mobile}}</div>
 					</ion-col>
 				</ion-row>
 					<ion-col col-12>
-						<div style="padding-top: 0.5rem;">收货地址： {{address.city}}{{address.street}}</div>
+						<div style="padding-top: 0.5rem;">收货地址： {{address?.city}}{{address?.street}}</div>
 					</ion-col>
 				<ion-row>
 				</ion-row>
@@ -71,22 +71,22 @@
 
 					<ion-col col-2 class="item">
 						<div align="left">
-							<img src="{{baseUrl}}{{product[0].thumbnail_url}}" (click)="toProductDetailPage(product[0].id)">
+							<img src="{{baseUrl}}{{product[0]?.thumbnail_url}}" (click)="toProductDetailPage(product[0]?.id)">
 						</div>
 					</ion-col>
 
 					
 					<ion-col col-8 class="item">
 						<ion-row class="item-intro">
-							<ion-col col-11>
-								{{product[0].model}}{{product[0].product_sub_category_name}}
+							<ion-col col-10>
+								{{product[0]?.model}}{{product[0]?.product_sub_category_name}}
 							</ion-col>
 					<!--		<ion-col col-5>
 								
 							</ion-col>-->
-							<ion-col col-1>
+							<ion-col col-2>
 								<button ion-button outline icon-only (click)="deleteItem(i)">
-									<ion-icon name="close" color="alert"></ion-icon>
+									<ion-icon name="trash" color="alert" style="padding-left: 2rem;"></ion-icon>
 								</button>
 							</ion-col>
 						</ion-row>
@@ -96,7 +96,7 @@
 							</ion-col>
 
 							<ion-col col-5>
-								<div align="center">小计：<span class="price">{{shoppingCart[i].price * shoppingCart[i].quantity | currency:'CNY':'symbol-narrow'}}</span></div>
+								<div align="center">小计：<span class="price">{{shoppingCart[i]?.price * shoppingCart[i]?.quantity | currency:'CNY':'symbol-narrow'}}</span></div>
 							</ion-col>
 							<ion-col col-4>
 								<div align="right">
@@ -123,12 +123,12 @@
 			<ion-row>
 				<ion-col col-2>
 					<div align="center">
-						<ion-checkbox color="primary" checked="true"></ion-checkbox>
+						<ion-checkbox color="primary" [(ngModel)]="checkedAll" (ionChange)="checkAll($event)"></ion-checkbox>
 					</div>
 				</ion-col>
 				<ion-col col-4>
 					<div align="left">
-						合计：<span style="color: blue;">{{totalPrice | currency:'CNY':'symbol-narrow'}}</span>
+						合计：<span style="color: #0463b8;">{{totalPrice | currency:'CNY':'symbol-narrow'}}</span>
 					</div>
 				</ion-col>
 				<ion-col col-3>
@@ -221,7 +221,7 @@
 	}
 
 	.item .price {
-		color:  #0437f1;
+		color:  #0463b8;;
 	}
 
   ion-footer * {

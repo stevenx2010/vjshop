@@ -35,10 +35,17 @@ export class AddAdressPage {
   {
     this.cityColumns = ChineseCities.cities;
     this.address = new Address();
+    this.address.mobile = '';
+
     if(navParams.get('mobile'))
       this.address.mobile = navParams.get('mobile');
-    else
-      this.address.mobile = '';
+    else {
+      this.storage.ready().then(() => {
+        this.storage.get(Constants.USER_MOBILE_KEY).then((data) => {
+          if(data) this.address.mobile = data;
+        })
+      })
+    }
   }
 
   validate(): void {

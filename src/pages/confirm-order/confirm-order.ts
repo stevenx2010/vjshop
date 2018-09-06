@@ -10,6 +10,9 @@ import { Product } from '../../models/product.model';
 import { DistributorAddress } from '../../models/distributor-address-model';
 import { DistributorContact } from '../../models/distributor-contact-model';
 import { Distributor } from '../../models/distributor-model';
+import { CouponItem } from '../../models/coupon-item.model';
+import { Coupon } from '../../models/coupon-model';
+import { CouponDiscountMethod } from '../../models/constants.model';
 
 @IonicPage()
 @Component({
@@ -26,6 +29,26 @@ export class ConfirmOrderPage {
   distributors: Distributor[];
   distributorContacts: DistributorContact[];
   shippingAddress: Address;
+  couponWallet: Array<Coupon>;
+  baseUrl: string;
+  totalPrice: number = 0;
+  totalWeight: number = 0;
+  weightUnit: string = '';
+  shoppingCartEmpty: boolean;
+
+  invoiceChkBox1: boolean;
+  invoiceChkBox2: boolean;
+
+  invoiceRequired: boolean;
+
+  invoiceHead: string;
+  taxNumber: string;
+
+  invHeadDisabled: boolean = true;
+  taxNumDisabled: boolean = true;
+
+  isWechat: boolean;
+  isAlipay: boolean;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI,
   				@Inject('API_BASE_URL') private apiUrl: string) 
@@ -36,6 +59,19 @@ export class ConfirmOrderPage {
     this.distributors = new Array<Distributor>(new Distributor());
     this.distributorContacts = new Array<DistributorContact>(new DistributorContact());
     this.shippingAddress = new Address();
+    this.couponWallet = new Array<Coupon>();
+    this.baseUrl = this.apiUrl;
+
+  }
+
+  ionViewWillEnter() {
+
+    this.invoiceChkBox1 = true;
+    this.invoiceChkBox2 = false;
+    this.invoiceRequired = false;
+
+    this.isWechat = true;
+    this.isAlipay = false;
   }
 
   ionViewWillLoad() {
@@ -56,12 +92,13 @@ export class ConfirmOrderPage {
       });
 
    		// Get shopping cart
-   		this.storage.get(Constants.SHOPPING_CART_KEY).then((data) => {
-   			if(data) {
+   		this.storage.get(Constants.SHOPPING_CART_KEY).then((data: ShoppingItem[]) => {
+   			if(data.length > 0) {
+          this.shoppingCartEmpty = false;
    				this.shoppingCart = data;
-   				for(let item of this.shoppingCart) {
-   					this.numberOfItems += item.quantity;
-   				}
+
+          this.calculateTotle();
+
    				// Get product info of the prodcuts cart
           this.vjApi.showLoader();
    				this.vjApi.getProductsByIds(JSON.stringify(this.shoppingCart)).subscribe((data) => {
@@ -69,7 +106,7 @@ export class ConfirmOrderPage {
    						this.products = data.json();
    					}
    				});        
-   			}
+   			} else this.shoppingCartEmpty = true;
    		})
    	
      // get location
@@ -99,8 +136,97 @@ export class ConfirmOrderPage {
          }
        })
 
+       // Get coupon wallet
+       this.storage.get(Constants.COUPON_WALLET_KEY).then((data: Set<Coupon>) => {
+         if(data.size > 0) {
+             data.forEach((item) => {
+               this.couponWallet.push(item);
+             });
+         }
+       });
+
        this.vjApi.hideLoader();
      })
      })
   }	
+
+  calculateTotle() {
+    this.totalPrice = 0;
+    this.totalWeight = 0;
+    if(!this.shoppingCartEmpty) {
+      for(let item of this.shoppingCart) {
+        if(item.selected) {
+          this.totalPrice += item.price * item.quantity;
+          this.totalWeight += item.weight *item.quantity;
+          this.weightUnit = item.weight_unit;
+          this.numberOfItems += item.quantity;
+        }
+      }
+    }
+  }
+
+  toProductList() {
+    this.navCtrl.push('ProductListPage');
+  }
+
+  invChkBoxSel_1(event) {
+      this.invoiceChkBox1 = event.checked;
+      this.invoiceChkBox2 = !event.checked;
+
+      this.checkIfInvoiceRequired();
+  }
+
+  invChkBoxSel_2(event) {
+      this.invoiceChkBox1 = !event.checked;
+      this.invoiceChkBox2 = event.checked;
+
+      this.checkIfInvoiceRequired();
+  }
+
+  checkIfInvoiceRequired() {
+      if(this.invoiceChkBox2) {        // invoice required
+        this.invoiceRequired = true;
+        this.invHeadDisabled = false;
+        this.taxNumDisabled = false;
+      } else {                        // invoice not required
+        this.invoiceRequired = false;
+        this.invHeadDisabled = true;
+        this.taxNumDisabled = true;       
+      }   
+  }
+
+  wechatChanged(event) {
+    this.isWechat = event.checked;
+    this.isAlipay = !event.checked;
+  }
+
+  alipayChanged(event) {
+    this.isWechat = !event.checked;
+    this.isAlipay = event.checked;
+  }
+
+  onCouponChange(i) {
+    if(this.couponWallet[i].has_used) {
+      switch(this.couponWallet[i].discount_method) {
+        case CouponDiscountMethod.VALUE:
+          this.totalPrice -= this.couponWallet[i].discount_value;
+          break;
+        case CouponDiscountMethod.PERCENTAGE:
+          this.totalPrice *= (this.couponWallet[i].discount_percentage / 100.00);
+          break;
+      }
+    } else {
+      switch(this.couponWallet[i].discount_method) {
+        case CouponDiscountMethod.VALUE:
+          this.totalPrice += this.couponWallet[i].discount_value;
+          break;
+        case CouponDiscountMethod.PERCENTAGE:
+          this.totalPrice /= (this.couponWallet[i].discount_percentage / 100.0);
+      }
+    }
+  }
+
+  submitOrder() {
+
+  }
 }

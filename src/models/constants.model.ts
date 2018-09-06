@@ -8,7 +8,8 @@ export class Constants {
     static  USER_INFO_KEY			= 'user_info'; 
     static  SHOPPING_CART_KEY		= 'shoppingCart';
 
-    static LOCATION_KEY				= 'location_province';
+    static 	LOCATION_KEY			= 'location_province';
+    static  COUPON_WALLET_KEY		= 'coupon_wallet';
 }
 
 export class Login { 
@@ -27,3 +28,8 @@ export class Login {
 }
 
 export enum InvoiceType  {PERSONAL = 1, ENTERPRISE = 2}
+export enum InvoiceStatus { NOT_ISSUED = 1, ISSUED = 2}
+export enum OrderStatus { NOT_PAY_YET, PAYED, CLOSED, CANCELD, COMMENTED, NOT_COMMENTED}
+export enum DeliveryStatus { WAITING_FOR_DELIVERY, IN_DELIVERY, RECEIVED}
+export enum PaymentMethod { WECHAT, ALIPAY }
+export enum CouponDiscountMethod { PERCENTAGE = 1, VALUE = 2}

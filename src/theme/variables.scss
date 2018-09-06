@@ -41,7 +41,8 @@ $colors: (
   dark:       #222,
   shoppingbtn: 	  #0ac300,
   notsolight:	  #a0a0a0,
-  alert: 		  #ff871f
+  alert: 		  #ff871f,
+  myblue:		  #0463b8
 );
 
 
@@ -86,6 +87,7 @@ $item-md-font-size: 1.3rem;
 // http://ionicframework.com/docs/ionicons/
 
 @import "ionic.ionicons";
+//@import "ionicons";
 
 
 // Fonts

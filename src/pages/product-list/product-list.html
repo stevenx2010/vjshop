@@ -1,0 +1,31 @@
+<!--
+  Generated template for the ProductListPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>商品清单</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+	<ion-list>
+		<ion-item *ngFor=" let product of products; let i = index;">
+			<ion-avatar item-start>
+				<img src="{{baseUrl}}{{product[0]?.thumbnail_url}}">
+			</ion-avatar>
+			<h3>{{product[0]?.product_sub_category_name}}</h3>
+			<p>{{product[0]?.model}}</p>
+			<ion-note item-end>
+				{{shoppingCart[i].price | currency:'CNY':symbol-narrow}}x{{shoppingCart[i].quantity}}
+			</ion-note>
+		</ion-item>
+	</ion-list>
+</ion-content>
+
+

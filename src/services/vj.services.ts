@@ -20,6 +20,7 @@ import { Distributor } from '../models/distributor-model';
 import { CouponType } from '../models/coupon-type-model';
 import { Coupon } from '../models/coupon-model';
 import { CouponNewComer } from '../models/coupon-newcomer-model';
+import { CouponItem } from '../models/coupon-item.model';
 
 @Injectable()
 export class VJAPI {
@@ -246,6 +247,14 @@ export class VJAPI {
 	 	return this.http.post(this.apiUrl + 'api/customer/login', body, {headers: headers});
 	 }
 
+	 public checkUserExist(mobile: string): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.get(this.apiUrl + 'api/customer/check_user/' + mobile, {headers: headers})
+			.pipe(map((data) => data.json()));	 	
+	 }
+
 	/********************************************************************************************
 	 *                   API Section: get shipping address related data
 	 *
@@ -261,6 +270,14 @@ export class VJAPI {
 	 	return this.http.get(this.apiUrl + 'api/address/all/' + mobile, {headers: headers})
 	 			.pipe(map((resp: Response) => resp.json()));
 
+	 }
+
+	 public getDefaultAddress(mobile: string): Observable<Address[]> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.get(this.apiUrl + 'api/address/default/' + mobile, {headers: headers})
+				.pipe(map((data) => data.json()));	 	
 	 }
 
 	 public getUserId(mobile: string): Observable<Response> {
@@ -339,5 +356,35 @@ export class VJAPI {
 
 	 	return this.http.get(this.apiUrl + 'api/coupon/newcomer', {headers: headers})
 	 		.pipe(map((data) => data.json()));
+	 }
+
+	 public updateCouponExpireStatus(body): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.post(this.apiUrl + 'api/coupon/update/expire_status', body, {headers: headers});	 	
+	 }
+
+	 public getCouponsByMobile(mobile: string): Observable<CouponItem[]> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.get(this.apiUrl + 'api/coupon/coupons/mobile/' + mobile, {headers: headers})
+			.pipe(map((data) => data.json()));	 	
+	 }
+
+	 public setCouponCustomerRelation(body): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.post(this.apiUrl + 'api/coupon/coupon_customer', body, {headers: headers});	 	
+	 }
+
+	 public getCouponsFiltered(mobile: string): Observable<Coupon[]> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.get(this.apiUrl + 'api/coupon/coupons_filtered/' + mobile, {headers: headers})
+	 		.pipe(map((data)=>data.json()));
 	 }
 }

@@ -4,13 +4,9 @@ import { Storage } from '@ionic/storage';
 
 import { Constants, Login } from '../../models/constants.model';
 import { VJAPI } from '../../services/vj.services';
+import { InitEnv } from '../../utils/initEnv';
+import { CouponItem } from '../../models/coupon-item.model';
 
-/**
- * Generated class for the LoginPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 
 @IonicPage()
 @Component({
@@ -18,6 +14,7 @@ import { VJAPI } from '../../services/vj.services';
   templateUrl: 'login.html',
 })
 export class LoginPage {
+
   caption: string = '获取验证码';
   smsBtnDisabled: boolean = true;
   smsCode: string ='';
@@ -26,8 +23,11 @@ export class LoginPage {
   mobileIsValide: boolean = false;
   smsCodeIsValide: boolean = false;
 
+  couponWallet: Set<CouponItem>;
+
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI, private alertCtrl: AlertController,
-  				private events: Events) {
+  				private events: Events, private init: InitEnv) {
+    this.couponWallet = new Set<CouponItem>();
   }
 
   ionViewDidLoad() {
@@ -46,7 +46,7 @@ export class LoginPage {
   	// Re-enable to get SMS code after 1 minute
   	let count = 1;
   	this.smsBtnDisabled = true;
-	let timer = setInterval(() => {
+  	let timer = setInterval(() => {
 	  				this.caption = count + '秒';
 	  				count += 1;
 	  				if(count > 5) {
@@ -69,11 +69,7 @@ export class LoginPage {
 
   	this.vjApi.auth(JSON.stringify(body)).subscribe((data) => {
 
-  		console.log(data); 
-
   		let response = data.json();
-
-      console.log(response['status']);
   		// step A: check if it's a new user, if so, store the access_token locally
       // for new users, an access_token will be returned.
   		if(response.access_token != '') {
@@ -91,6 +87,17 @@ export class LoginPage {
 
           // setp 1-2: set Login key as true
           this.storage.set(Constants.LOGIN_KEY, 1);
+
+          // step 1-3: get coupon wallet by mobile
+        
+          this.init.getCouponWallet(this.mobile).subscribe((r) => {
+            console.log(r);
+            if(r) {
+               this.couponWallet = r;
+               this.events.publish('login_success');
+            }
+          })
+
         }).catch(console.log);
 
         // step 2: check if the user has inputted his/her address
@@ -110,9 +117,20 @@ export class LoginPage {
   					this.storage.set(Constants.LOGIN_KEY, 1);
   				}).catch(console.log);
 
-  				this.navCtrl.pop().then(() => {
-  					this.events.publish('login_success', {'logged_in': true, 'mobile': this.mobileIsValide});
-  				});
+          this.vjApi.showLoader();
+          // retrieve shipping address from server
+          this.vjApi.getDefaultAddress(this.mobile).subscribe((data) => {
+
+            if(data.length > 0) {
+              this.storage.ready().then(() => {
+                this.storage.set(Constants.SHIPPING_ADDRESS_KEY, data[0]);
+                this.navCtrl.pop().then(() => {
+                    this.events.publish('login_success', true, this.mobile, data[0]);
+                });
+              })
+            }
+          })
+          this.vjApi.hideLoader(); 				
   			}
   		} else
   		  	this.doPrompt('登录信息错误，请检查后重新登录');

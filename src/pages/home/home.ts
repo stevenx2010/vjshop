@@ -1,5 +1,6 @@
 import { Component, ViewChild, Inject } from '@angular/core';
 import { Content, Slides, NavController, App,Platform } from 'ionic-angular';
+import { Observable } from 'rxjs';
 
 import { Storage } from '@ionic/storage';
 import { Geolocation } from '@ionic-native/geolocation';
@@ -7,6 +8,9 @@ import { Geolocation } from '@ionic-native/geolocation';
 import { VJAPI } from '../../services/vj.services';
 import { Image } from '../../models/image.model';
 import { Constants } from '../../models/constants.model';
+import { CouponItem } from '../../models/coupon-item.model';
+import { InitEnv } from '../../utils/initEnv';
+import { Address } from '../../models/address.model';
 
 import { Http } from '@angular/http';
 
@@ -37,13 +41,19 @@ export class HomePage {
   loggedIn: boolean = false;
 
   city: string = '';
+  mobile: string = '';
+  couponWallet: Set<CouponItem>;
+  address: Address;
 
-  constructor(public navCtrl: NavController, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string, private http: Http, private app: App,
-              private storage: Storage, private geolocation: Geolocation, private coordtrans: CoordinateTransform, private platform: Platform ) 
+  constructor(public navCtrl: NavController, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string, 
+              private http: Http, private app: App, private storage: Storage, private geolocation: Geolocation, 
+              private coordtrans: CoordinateTransform, private platform: Platform, private init: InitEnv ) 
   {
   	// initialize arrays
   	this.remoteImages = new Array<Array<Image>>();
   	this.imageUrls = new Array<Array<string>>();
+
+    this.couponWallet = new Set<CouponItem>();
   }
 
 
@@ -58,6 +68,8 @@ export class HomePage {
        })
      });
 //   });
+
+this.initialize();
   }
 
 
@@ -70,19 +82,47 @@ export class HomePage {
 
   image_2: string;
 
-  ionViewWillLoad() {
+  initialize() {
+    //this.storage.remove(Constants.LOGIN_KEY);
+    //this.storage.remove(Constants.SHOPPING_CART_KEY);
     // Step 1: check if user has logged in
     this.storage.ready().then((data) => {
       this.storage.get(Constants.LOGIN_KEY).then((data) => {
         if(data) {
+          console.log('login_key', data);
           this.loggedIn = true;
+          //get mobile          
+          this.init.getMobile().subscribe((result) => {
+            if(result) {
+              this.mobile = result;
+              console.log('mobile', result);
+
+              // check if there's user in the remote server
+              this.vjApi.checkUserExist(this.mobile).subscribe((r0) => {
+
+                if(!(r0.status)) {
+                  this.loggedIn = false;
+                  this.storage.remove(Constants.LOGIN_KEY);
+                  this.storage.remove(Constants.SHIPPING_ADDRESS_KEY); 
+                } else {
+                  // Get default address;
+                  this.init.getUserAddresses(this.mobile).subscribe((r1) => {
+                    console.log('address', r1);
+                    if(r1) this.address = r1;
+                  });
+                } 
+              })   
+            }
+          });
         } else {
           this.loggedIn = false;
           this.storage.remove(Constants.LOGIN_KEY);
           this.storage.remove(Constants.SHIPPING_ADDRESS_KEY);
+          this.storage.remove(Constants.COUPON_WALLET_KEY);
         }
       })
     })
+
   	this.vjApi.getHomePageImages().subscribe(
   		(data) => { 
   			this.remoteImages = data.json();
@@ -100,9 +140,6 @@ export class HomePage {
   			this.imageUrls_4 = this.imageUrls[4];
 
   			this.http.get(this.imageUrls_2[0]).subscribe((data1) => this.image_2 = data1.json());
-  			console.log(this.imageUrls_2[0]);
-
-  			console.log(this.imageUrls);
 
   			this.vjApi.hideLoader();
   		},
@@ -111,6 +148,7 @@ export class HomePage {
   			this.vjApi.hideLoader();
   		});
   }
+
 
   toSearchPage(): void {
     this.app.getRootNav().push('SearchPage');

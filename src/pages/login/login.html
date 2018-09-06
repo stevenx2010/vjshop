@@ -26,8 +26,14 @@
 		</ion-item>
 	</ion-list>
 
-	<button ion-button full (click)="confirmLogin()" [disabled]="confirmDisabled">确认</button>
+	
 </ion-content>
+
+<ion-footer>
+	<ion-toolbar>
+		<button ion-button full block (click)="confirmLogin()" [disabled]="confirmDisabled">确认</button>
+	</ion-toolbar>
+</ion-footer>
 
 <style>
 	* {
@@ -38,6 +44,22 @@
 		font-size: 1.1rem;
 		width: 6.9rem;
 		height: 2.5rem;
+	}
+
+
+
+	ion-footer * {
+		margin: 0;
+		padding: 0;
+		border: none;
+	}
+
+	ion-toolbar {
+				min-height: 3.6rem;
+	}
+
+	ion-toobar button {
+		font-size: 1.6rem;
 	}
 
 </style>

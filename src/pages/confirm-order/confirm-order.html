@@ -50,19 +50,20 @@
 			<ion-col col-2>
 				<ion-row>
 					<ion-col>
-				<div align="right">
-				共{{numberOfItems}}件
-				</div>
-			</ion-col>
+						<div align="right" style="color: #747474">
+							共{{numberOfItems}}件
+						</div>
+					</ion-col>
 				</ion-row>
+
 				<ion-row>
-				<seperator color="white" height="2rem"></seperator>
-			</ion-row>
+					<seperator color="white" height="3rem"></seperator>
+				</ion-row>
 
 			</ion-col>
 			<ion-col col-1>
 				<div align="center">
-					<button ion-button icon-only block outline>
+					<button ion-button icon-only block outline (click)="toProductList()">
 						<ion-icon name="arrow-forward"></ion-icon>
 					</button>
 				</div>
@@ -78,7 +79,7 @@
 			<ion-col col-3>
 				<div align="center">
 				配送经销商：
-			</div>
+				</div>
 			</ion-col>
 			<ion-col col-9>
 				<ion-row>
@@ -113,11 +114,166 @@
 
 		<!-- invoid info -->
 		<ion-row class="invoice">
-			
+			<ion-col col-3>
+				<div align="center" class="note">
+				备注信息：
+				</div>
+			</ion-col>
+			<ion-col col-9>
+				<ion-row>
+					<ion-col col-6>
+						<ion-item no-lines>
+							<ion-checkbox name="non_required" checked="true" [(ngModel)]="invoiceChkBox1" (ionChange)="invChkBoxSel_1($event)"></ion-checkbox>
+							<ion-label>不需要发票</ion-label>
+						</ion-item>
+					</ion-col>
+					<ion-col col-6>
+						<ion-item no-lines>
+							<ion-checkbox name="required" [(ngModel)]="invoiceChkBox2" (ionChange)="invChkBoxSel_2($event)">></ion-checkbox>
+							<ion-label>需要发票</ion-label>
+						</ion-item>
+					</ion-col>
+				</ion-row>
+				<ion-row>
+					<ion-col col-3>
+						发票抬头
+					</ion-col>
+					<ion-col col-9>
+						<ion-input type="text" [(ngModel)]="invoiceHead" [disabled]="invHeadDisabled" placeholder="个人"></ion-input>
+					</ion-col>
+				</ion-row>
+				<ion-row style="margin-top: 1rem;">
+					<ion-col col-3>
+						企业税号
+					</ion-col>
+					<ion-col col-9>
+						<ion-input type="text" [(ngModel)]="taxNumber" [disabled]="taxNumDisabled"></ion-input>
+					</ion-col>
+				</ion-row>
+			</ion-col>
 		</ion-row>
+
+		<seperator height="0.8rem"></seperator>
+
+		<!-- coupon info -->
+		<ion-row class="coupon">
+			<ion-col col-3>
+				<div align="center" class="note">
+					可用优惠券：
+				</div>
+			</ion-col>
+			<ion-col col-9>
+				<ion-row>
+					<ion-col col-2>
+					</ion-col>
+					<ion-col col-6>
+						<div style="padding-left: 1rem;">卡券名称</div>
+					</ion-col>
+					<ion-col col-2>
+						<div align="right">面额</div>
+					</ion-col>
+					<ion-col col-2>
+						<div align="right">使用</div>
+					</ion-col>
+				</ion-row>
+
+				<ion-row *ngFor="let coupon of couponWallet; let i = index;" class="coupon-detail">
+					<ion-col col-2>
+						<img src="{{baseUrl}}{{coupon.image_url}}" class="coupon-image">
+					</ion-col>
+
+					<ion-col col-6>
+						<div style="padding-left: 1rem;">
+							<span style="color: #0463b8;">{{coupon.name}}</span>
+						</div>
+					</ion-col>
+
+					<ion-col col-2>
+						<div align="right" style="padding-right: 0.5rem;">
+							<span style="color: orange" *ngIf="coupon.discount_method==2">{{coupon.discount_value}}</span>
+							<span style="color: orange" *ngIf="coupon.discount_method==1">{{coupon.discount_percentage/100}}</span>
+						</div>
+					</ion-col>
+
+					<ion-col col-2>
+						<div align="right" style="padding-right: 0.5rem;">
+							<ion-checkbox [(ngModel)]="couponWallet[i].has_used" checked=false (ionChange)="onCouponChange(i)"></ion-checkbox>
+						</div>
+					</ion-col>
+				</ion-row>
+			</ion-col>	
+		</ion-row>
+
+		<seperator height="0.8rem"></seperator>
+
+		<!-- payment info -->	
+		<ion-row class="payment">
+			<ion-col col-3>
+				<div  align="center" class="note">
+					支付方式：
+				</div>
+			</ion-col>
+			<ion-col col-9>
+				<ion-row>
+					<ion-col col-12>
+						<div  class="filling-text">WHITE SPACE</div>
+					</ion-col>
+				</ion-row>
+				<ion-row class="payment-method">
+					<ion-col col-2>
+						<ion-icon name="custom-wechat" color="secondary" class="myicon"></ion-icon>						
+					</ion-col>
+					<ion-col co-9>
+						微信支付
+					</ion-col>
+					<ion-col col-1>
+						<ion-checkbox [(ngModel)]="isWechat" (ionChange)="wechatChanged($event)"></ion-checkbox>
+					</ion-col>
+				</ion-row>
+				<ion-row class="payment-method">
+					<ion-col col-2>
+						<ion-icon name="custom-alipay" color="primary" class="myicon"></ion-icon>
+					</ion-col>
+					<ion-col col-9>
+						支付宝支付
+					</ion-col>
+				
+					<ion-col col-1>
+						<ion-checkbox [(ngModel)]="isAlipay" (ionChange)="alipayChanged($event)"></ion-checkbox>
+					</ion-col>
+				</ion-row>
+			</ion-col>
+		</ion-row>
+
 
 	</ion-grid>
 </ion-content>
+
+<ion-footer>
+	<ion-toolbar>
+		<ion-grid>
+			<ion-row class="submit">
+				<ion-col col-2>
+					<div align="center">合计：</div>
+				</ion-col>
+				<ion-col col-2>
+					<div align="left" style="color: #0463b8;">{{totalPrice | currency:'CNY':symbol-narrow}}</div>
+				</ion-col>
+				<ion-col col-2>
+					<div align="center">重量：</div>
+				</ion-col>
+				<ion-col col-2>
+					<div align="left">{{totalWeight}}{{weightUnit}}</div>
+				</ion-col>
+				<ion-col col-4>
+					<button ion-button full block color="secondary" style="font-size: 1.4rem;" (click)="submitOrder()">
+						提交订单
+					</button>
+				</ion-col>
+			</ion-row>
+		</ion-grid>
+	</ion-toolbar>
+</ion-footer>
 
 <style>
 	* {
@@ -129,6 +285,10 @@
 
 	ion-icon {
 		font-size: 2rem;
+	}
+
+	ion-row {
+		flex-wrap: nowrap;
 	}
 
 	.shopper {
@@ -167,4 +327,71 @@
 		margin: 1rem;
 
 	}
+
+	.invoice .note {
+		padding-top: 1rem;
+	}
+
+	.invoice {
+		margin-bottom: 1rem;
+		padding-right: 1rem;
+	}
+
+	.invoice ion-input {
+		border-bottom: 1px solid #efefef;
+		margin-right: 1rem;
+	}
+
+	.coupon {
+		margin-top: 1rem;
+		margin-bottom: 1rem;
+		margin-right: 1rem;
+	}
+
+	.coupon-image {
+		padding-top: 0.5rem;
+	}
+
+	.coupon-detail {
+		margin-top: 0.5rem;
+		align-items: center;
+		border-bottom: 1px solid #efefef;
+	}
+
+	.coupon .note {
+		margin-left: 0.5rem;
+	}
+
+	.payment {
+		margin-top: 1rem;
+		margin-right: 1rem;
+	}
+
+	.payment .myicon {
+		margin-top: 0.5rem;
+	}
+	.payment .filling-text {
+		color: white;
+	}
+
+	.submit {
+		align-items: center;
+	}
+
+	.submit * {
+		margin: 0;
+		padding: 0;
+		border: none;
+	}
+
+ 	 ion-toolbar {
+  		min-height: 3.6rem;
+  	}
+
+  	.payment-method {
+	  	margin-top: 0.5rem;
+	  	border-bottom: 1px solid #efefef;
+	  	align-items: center;
+  }
+
 </style>

@@ -7,7 +7,7 @@
 <ion-header>
 
   <ion-navbar>
-    			<ion-title>领券中心</ion-title>
+    	<ion-title>领券中心</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -19,21 +19,17 @@
 			<ion-col col-12>
 				<ion-card>
 					<ion-card-header>
-						{{type?.type}} 
+						<div align="center">{{type?.type}} </div>
 					</ion-card-header>
 					<ion-list class="coupon">
-						<ion-row *ngFor="let coupon of couponsByType[i]">
-							<ion-col col-12>
+						<ion-row *ngFor="let coupon of couponsByType[i]; let j = index;">
+							<ion-col col-12  *ngIf="!coupon.expired">
 								<img src="{{baseUrl}}{{coupon?.image_url}}">
 							
-								<button ion-fab mini class="take" color="light"> 领取</button>
-<!--
-								<div class="title" *ngIf="coupon.discount_method==2">{{coupon?.discount_value}}<span class="subtitle">{{coupon?.name}}</span></div>
-								<div class="description" *ngIf="coupon.discount_method==2">{{coupon?.description}}</div>
-								
-								<div class="title-discount" *ngIf="coupon.discount_method==1">{{coupon?.discount_percentage / 10}}<span class="subtitle">{{coupon?.name}}</span></div>
-								<div class="description-discount" *ngIf="coupon.discount_method==1">{{coupon?.description}}</div>-->
+								<button ion-fab mini class="take" color="light" (click)="takeCoupon(i,j)" disabled="{{coupon.btn_disabled}}"> 领取</button>
 
+								<button ion-button outline color="alert" class="takenIOs" [style.z-index]="coupon.z_index" showWhen="ios">已领取</button>
+								<button ion-button outline color="alert" class="takenMD" [style.z-index]="coupon.z_index" showWhen="android">已领取</button>
 							</ion-col>
 					</ion-row>
 					</ion-list>
@@ -50,6 +46,20 @@
 
 	}
 
+	ion-header * {
+		margin: 0;
+		padding: 0;
+		border: none;
+	}
+
+	ion-header ion-row {
+		align-items: center;
+	}
+
+	ion-header div {
+		font-size: 2.5rem;
+	}
+
 	ion-content ion-row {
 		align-items: center;
 	}
@@ -61,49 +71,22 @@
 		top: 18%;
 	}
 
-/*
-	.title {
-		z-index: 3;
-		position: absolute;
-		left: 25%;
-		top: 5%;
-		color: #fff;
-		font-size: 3.6rem;
-		font-weight: bold;
+	ion-content {
+		background-color: #efefef;
 	}
 
-	.subtitle {
-		font-size: 2rem;
-		font-weight: normal;
-		letter-spacing: 0.2rem;
+	.takenIOs {
+		z-index: -1;
+		position: absolute;
+		left: 35%;
+		top: 17%;
 	}
 
-	.description {
-		z-index: 4;
+	.takenMD {
+		z-index: -1;
 		position: absolute;
-		left: 12%;
-		top: 60%;
-		color: #fff;
-		font-size: 1.6rem;
+		left: 38%;
+		top: 23%;
 	}
-
-	.title-discount {
-		z-index: 3;
-		position: absolute;
-		left: 40%;
-		top: 5%;
-		color: #fff;
-		font-size: 3.6rem;
-		font-weight: bold;
-	}
-
-	.description-discount {
-		z-index: 4;
-		position: absolute;
-		left: 30%;
-		top: 60%;
-		color: #fff;
-		font-size: 1.6rem;
-	}*/
 
 </style>

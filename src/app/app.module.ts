@@ -10,6 +10,7 @@ import { IonicStorageModule } from '@ionic/storage';
 import { Geolocation } from '@ionic-native/geolocation';
 
 import { VJAPI } from '../services/vj.services';
+import { InitEnv } from '../utils/initEnv';
 
 import { MyApp } from './app.component';
 
@@ -34,7 +35,9 @@ import { CoordinateTransform } from '../services/baidu.gps.service';
   ],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(MyApp),
+    IonicModule.forRoot(MyApp, {
+      backButtonText: '返回'
+    }),
     HttpModule,
     HttpClientModule,
     IonicStorageModule.forRoot(),
@@ -54,6 +57,7 @@ import { CoordinateTransform } from '../services/baidu.gps.service';
     SplashScreen,
     InAppBrowser,
     VJAPI,
+    InitEnv,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     {provide: 'API_BASE_URL', useValue: 'http://192.168.1.66:8000/'},
     Geolocation,
