@@ -1,9 +1,10 @@
 import { Component, Inject } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
+import { Observable } from 'rxjs';
 
 import { VJAPI } from '../../services/vj.services';
-import { Constants } from '../../models/constants.model';
+import { Constants, InvoiceType, InvoiceStatus, OrderStatus, PaymentMethod } from '../../models/constants.model';
 import { ShoppingItem } from '../../models/shopping-item.model';
 import { Address } from '../../models/address.model';
 import { Product } from '../../models/product.model';
@@ -13,6 +14,7 @@ import { Distributor } from '../../models/distributor-model';
 import { CouponItem } from '../../models/coupon-item.model';
 import { Coupon } from '../../models/coupon-model';
 import { CouponDiscountMethod } from '../../models/constants.model';
+import { Order } from '../../models/order-model';
 
 @IonicPage()
 @Component({
@@ -39,6 +41,7 @@ export class ConfirmOrderPage {
   invoiceChkBox1: boolean;
   invoiceChkBox2: boolean;
 
+  invoiceType: InvoiceType = InvoiceType.PERSONAL;
   invoiceRequired: boolean;
 
   invoiceHead: string;
@@ -49,6 +52,10 @@ export class ConfirmOrderPage {
 
   isWechat: boolean;
   isAlipay: boolean;
+
+  order: Order;
+  customer_id: number;
+  couponUsedIds: Set<number>;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI,
   				@Inject('API_BASE_URL') private apiUrl: string) 
@@ -61,6 +68,8 @@ export class ConfirmOrderPage {
     this.shippingAddress = new Address();
     this.couponWallet = new Array<Coupon>();
     this.baseUrl = this.apiUrl;
+    this.order = new Order();
+    this.couponUsedIds = new Set<number>();
 
   }
 
@@ -77,8 +86,15 @@ export class ConfirmOrderPage {
   ionViewWillLoad() {
    	this.storage.ready().then(() => {
    		// Get mobile which was stored locally
-   		this.storage.get('mobile').then((data) => {
-   			if(data) this.mobile = data;
+   		this.storage.get(Constants.USER_MOBILE_KEY).then((data) => {
+   			if(data) {
+           this.mobile = data;
+           this.vjApi.getUserId(this.mobile).subscribe((resp) => {
+             if(resp) {
+               this.customer_id = (resp.json()).user_id;
+             }
+           })
+         }
    			else this.mobile = '';
    		})
 
@@ -97,7 +113,7 @@ export class ConfirmOrderPage {
           this.shoppingCartEmpty = false;
    				this.shoppingCart = data;
 
-          this.calculateTotle();
+          this.calculateTotal();
 
    				// Get product info of the prodcuts cart
           this.vjApi.showLoader();
@@ -138,7 +154,7 @@ export class ConfirmOrderPage {
 
        // Get coupon wallet
        this.storage.get(Constants.COUPON_WALLET_KEY).then((data: Set<Coupon>) => {
-         if(data.size > 0) {
+         if(data && data.size > 0) {
              data.forEach((item) => {
                this.couponWallet.push(item);
              });
@@ -150,7 +166,7 @@ export class ConfirmOrderPage {
      })
   }	
 
-  calculateTotle() {
+  calculateTotal() {
     this.totalPrice = 0;
     this.totalWeight = 0;
     if(!this.shoppingCartEmpty) {
@@ -166,7 +182,7 @@ export class ConfirmOrderPage {
   }
 
   toProductList() {
-    this.navCtrl.push('ProductListPage');
+    this.navCtrl.push('ProductListPage', {shoppingCart: this.shoppingCart});
   }
 
   invChkBoxSel_1(event) {
@@ -206,7 +222,10 @@ export class ConfirmOrderPage {
   }
 
   onCouponChange(i) {
-    if(this.couponWallet[i].has_used) {
+    if(this.couponWallet[i].has_used) {    // use coupon: i
+      
+      this.couponUsedIds.add(this.couponWallet[i].id);
+
       switch(this.couponWallet[i].discount_method) {
         case CouponDiscountMethod.VALUE:
           this.totalPrice -= this.couponWallet[i].discount_value;
@@ -215,7 +234,12 @@ export class ConfirmOrderPage {
           this.totalPrice *= (this.couponWallet[i].discount_percentage / 100.00);
           break;
       }
-    } else {
+    } else {      // don't use coupon: i
+      this.couponUsedIds.forEach((id) => {
+        if(id == this.couponWallet[i].id) {
+          this.couponUsedIds.delete(id);
+        }
+      })
       switch(this.couponWallet[i].discount_method) {
         case CouponDiscountMethod.VALUE:
           this.totalPrice += this.couponWallet[i].discount_value;
@@ -226,7 +250,74 @@ export class ConfirmOrderPage {
     }
   }
 
-  submitOrder() {
+  genOrderSerialNumber() {
+   // console.log(Date.now() + '' + this.getRandomInt(1000, 9999));
+   // console.log(Number(this.shippingAddress.mobile) + 1);
+    return(Date.now() + '' + (Number(this.shippingAddress.mobile)  & this.getRandomInt(100, 999)));
+  }
 
+  getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+  }
+
+  submitOrder() {
+    // Order basic info
+    this.order.customer_id = this.customer_id;
+    this.order.order_serial = this.genOrderSerialNumber();
+    let dateString = new Date().toISOString();
+    let regexp = /^(.*)T(.*)Z$/gi;
+    dateString = dateString.replace(regexp, '$1 $2');
+    this.order.order_date = dateString;
+
+    this.order.total_price = this.totalPrice;
+    this.order.total_weight = this.totalWeight;
+
+
+    // Order shipping address
+    this.order.shipping_address = this.shippingAddress;
+
+
+    // Products in this order
+    this.order.products = this.shoppingCart;
+
+    // Distributor info
+    this.order.distributor_id = this.distributors[0].id;
+
+    // Invoice info
+    this.order.is_invoice_required = this.invoiceRequired;
+
+    if(this.invoiceRequired) {
+      if(this.invoiceHead == '个人') {
+        this.invoiceType = InvoiceType.PERSONAL;
+      }
+      else {
+        this.invoiceType = InvoiceType.ENTERPRISE;
+        this.order.invoice_tax_number = this.taxNumber;
+      }
+      
+      this.order.invoice_type = this.invoiceType;
+      this.order.invoice_head = this.invoiceHead;
+      this.order.invoice_status = InvoiceStatus.NOT_ISSUED;
+    }
+
+    // Coupons used
+    this.order.coupon_used_ids = [];
+    this.couponUsedIds.forEach((id) => {
+      this.order.coupon_used_ids.push(id);
+    })
+
+
+    // Payment
+    if(this.isAlipay)
+      this.order.payment_method = PaymentMethod.ALIPAY;
+    if(this.isWechat)
+      this.order.payment_method = PaymentMethod.WECHAT;
+
+    this.order.order_status = OrderStatus.NOT_PAY_YET;
+
+    console.log(this.order);
+    this.vjApi.submitOrder(JSON.stringify(this.order)).subscribe((r) => console.log(r));
   }
 }

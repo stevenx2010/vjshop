@@ -14,6 +14,9 @@
 // To declare rules for a specific mode, create a child rule
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
+
+@import "../theme/icons";
+
 ion-icon {
 	&[class*="custom-"] {
 		mask-size: contain;
@@ -30,4 +33,26 @@ ion-icon {
 	&[class*="alipay"] {
 		mask-image: url(../assets/fonts/alipay.svg);
 	}
+	&[class*="logo"] {
+		-webkit-mask-image: url(../assets/fonts/logo.svg);
+	}
+	&[class*="goback"] {
+		mask-image: url(../assets/fonts/goback.svg);
+	}
+	&[class*="inventory"] {
+		mask-image: url(../assets/fonts/inventory.svg);
+	}
+	&[class*="thumb-up"] {
+		mask-image: url(../assets/fonts/thumbs-o-up.svg);
+	}
+	&[class*="goforward"] {
+		mask-image: url(../assets/fonts/goforward.svg);
+	}
+	&[class*="arrow-up"] {
+		mask-image: url(../assets/fonts/arrowup.svg);
+	}
+	&[class*="exit"] {
+		mask-image: url(../assets/fonts/exit.svg);
+	}
 }
+

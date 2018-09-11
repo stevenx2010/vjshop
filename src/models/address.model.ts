@@ -1,4 +1,5 @@
 export class Address {
+	public id: number= 0;
 	public username: string = '';
 	public mobile: string ='';
 	public tel: string = '';
@@ -9,6 +10,7 @@ export class Address {
 
 	constructor(obj?) {
 		if(obj) {
+			this.id = obj.id || 0;
 			this.username = obj.username;
 			this.mobile = obj.mobile;
 			this.tel = obj.tel;

@@ -21,6 +21,7 @@ import { CouponType } from '../models/coupon-type-model';
 import { Coupon } from '../models/coupon-model';
 import { CouponNewComer } from '../models/coupon-newcomer-model';
 import { CouponItem } from '../models/coupon-item.model';
+import { Order } from '../models/order-model';
 
 @Injectable()
 export class VJAPI {
@@ -327,6 +328,22 @@ export class VJAPI {
 	 		.pipe(map((data) => data.json()));
 	 }
 
+	 public getDistributorLogin(mobile: string): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.get(this.apiUrl + 'api/distributor/login/' + mobile, {headers: headers});	
+	//		.pipe(map((data) =>data.json())); 	
+	 }
+
+	 public getOrdersOfDistributor(mobile: string): Observable<Order[]>{
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.get(this.apiUrl + 'api/distributor/orders/' + mobile, {headers: headers})
+	 		.pipe(map((data) => data.json()));
+	 }
+
 	/********************************************************************************************
 	 *                   API Section: Coupon related data
 	 *
@@ -386,5 +403,26 @@ export class VJAPI {
 
 	 	return this.http.get(this.apiUrl + 'api/coupon/coupons_filtered/' + mobile, {headers: headers})
 	 		.pipe(map((data)=>data.json()));
+	 }
+
+	/********************************************************************************************
+	 *                   API Section: Order related data
+	 *
+	 * 1. Interface to SUBMIT Order
+	 *		POST:	http://api_url/api/order/submit
+	 * 2. Interface to 
+	 ********************************************************************************************/
+	 public submitOrder(body): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.post(this.apiUrl + 'api/order/submit', body, {headers: headers});	 	
+	 }
+
+	 public updateOrderDeliveryStatus(orderId, status, datetime): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.get(this.apiUrl + 'api/order/update/delivery/' + orderId + '/' + status + '/' + datetime, {headers: headers});	 	
 	 }
 }

@@ -1,7 +1,17 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Category
+    	<ion-grid>
+    		<ion-row>
+    			<ion-col col-5 style="padding-right: 0;">
+      				<div align="right">我的</div>
+      			</ion-col>
+      			<ion-col col-7 style="padding-left: 0;">
+      				<div align="left"><img src="assets/imgs/venjong.png" width="100rem;"></div>
+      			</ion-col>
+
+      		</ion-row>
+      	</ion-grid>
     </ion-title>
   </ion-navbar>
 </ion-header>
@@ -12,4 +22,16 @@
 	<div><counter size="5rem" count=5></counter></div>
 
 	<button ion-button (click)="logout()">logout</button>
+
+	<ion-icon name="custom-logo"></ion-icon>
+	<img src="assets/imgs/venjong.png">
+	<ion-icon name="custom-goback"></ion-icon>
+	<ion-icon name="custom-computer"></ion-icon>
 </ion-content>
+
+
+<style>
+	img {
+		margin-top: 0.4rem;
+	}
+</style>

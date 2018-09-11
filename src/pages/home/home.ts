@@ -69,6 +69,7 @@ export class HomePage {
      });
 //   });
 
+
 this.initialize();
   }
 
@@ -88,10 +89,12 @@ this.initialize();
     // Step 1: check if user has logged in
     this.storage.ready().then((data) => {
       this.storage.get(Constants.LOGIN_KEY).then((data) => {
+         console.log('aaaaaaaaaaaaaaaa', data);
         if(data) {
           console.log('login_key', data);
           this.loggedIn = true;
           //get mobile          
+
           this.init.getMobile().subscribe((result) => {
             if(result) {
               this.mobile = result;
@@ -99,11 +102,13 @@ this.initialize();
 
               // check if there's user in the remote server
               this.vjApi.checkUserExist(this.mobile).subscribe((r0) => {
-
+                console.log('rrrrrrrrrrrrrrrrrr', r0);
                 if(!(r0.status)) {
                   this.loggedIn = false;
                   this.storage.remove(Constants.LOGIN_KEY);
                   this.storage.remove(Constants.SHIPPING_ADDRESS_KEY); 
+                  this.storage.remove(Constants.USER_MOBILE_KEY);
+                  this.storage.remove(Constants.COUPON_WALLET_KEY);
                 } else {
                   // Get default address;
                   this.init.getUserAddresses(this.mobile).subscribe((r1) => {
@@ -118,6 +123,7 @@ this.initialize();
           this.loggedIn = false;
           this.storage.remove(Constants.LOGIN_KEY);
           this.storage.remove(Constants.SHIPPING_ADDRESS_KEY);
+          this.storage.remove(Constants.USER_MOBILE_KEY);
           this.storage.remove(Constants.COUPON_WALLET_KEY);
         }
       })
@@ -156,7 +162,8 @@ this.initialize();
 
   //for test
   goMulti(): void {
-    this.app.getRootNav().push('AddAdressPage');
+   this.app.getRootNav().push('LoginPage', {user: 'distributor'});
+   //this.app.getRootNav().push('DistributorToolsPage');
   }
 
   // Location current address by GPS

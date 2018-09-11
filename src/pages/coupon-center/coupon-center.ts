@@ -154,11 +154,11 @@ export class CouponCenterPage {
         this.couponsByType[i][j].z_index = 2;
 
         // save coupon wallet to local
-        /*
+        
         this.storage.ready().then(() => {
           this.storage.set(Constants.COUPON_WALLET_KEY, this.couponWallet);
-        })
-  */
+        });
+  
         // relate records in db at server
         let body = {
           'id': this.couponsByType[i][j].id,

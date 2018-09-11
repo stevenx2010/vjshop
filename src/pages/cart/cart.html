@@ -137,8 +137,8 @@
 					</div>
 				</ion-col>
 				<ion-col col-3>
-					<button ion-button full block color="secondary" style="font-size: 1.4rem;"  icon-start (click)="toPaymentPage()">
-						去结算 <!--[disabled]="!loggedIn"-->
+					<button ion-button full block color="secondary" style="font-size: 1.4rem;"  [disabled]="!loggedIn" icon-start (click)="toPaymentPage()">
+						去结算 
 					</button>
 				</ion-col>
 			</ion-row>

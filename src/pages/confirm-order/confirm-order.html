@@ -64,7 +64,7 @@
 			<ion-col col-1>
 				<div align="center">
 					<button ion-button icon-only block outline (click)="toProductList()">
-						<ion-icon name="arrow-forward"></ion-icon>
+						<ion-icon name="custom-goforward"></ion-icon>
 					</button>
 				</div>
 			</ion-col>
@@ -139,7 +139,7 @@
 						发票抬头
 					</ion-col>
 					<ion-col col-9>
-						<ion-input type="text" [(ngModel)]="invoiceHead" [disabled]="invHeadDisabled" placeholder="个人"></ion-input>
+						<ion-input type="text" [(ngModel)]="invoiceHead" [disabled]="invHeadDisabled" value="个人"></ion-input>
 					</ion-col>
 				</ion-row>
 				<ion-row style="margin-top: 1rem;">

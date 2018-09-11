@@ -122,8 +122,10 @@ export class AddAdressPage {
             console.log(response.status);
             console.log(Login.CREATE_SHIPPING_ADDRESS_SUCCESS);
             if(response.status === Login.CREATE_SHIPPING_ADDRESS_SUCCESS) {
+              // get the address id
+              this.address.id = response.address.id;
                //save to local, note: only default address is saved locally
-              this.storage.set(Constants.SHIPPING_ADDRESS_KEY, this.address);
+              this.storage.set(Constants.SHIPPING_ADDRESS_KEY, response.address);
               this.saveBtnDisable = true;
               this.doPromptFinish();          
             } else {

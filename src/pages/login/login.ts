@@ -15,6 +15,7 @@ import { CouponItem } from '../../models/coupon-item.model';
 })
 export class LoginPage {
 
+  pageCaption: string='登录';
   caption: string = '获取验证码';
   smsBtnDisabled: boolean = true;
   smsCode: string ='';
@@ -31,7 +32,7 @@ export class LoginPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad LoginPage');
+    if(this.navParams.get('user') == 'distributor') this.pageCaption = '经销商登录';
   }
 
   getSMSCode() {
@@ -58,7 +59,16 @@ export class LoginPage {
 
   }
 
-  confirmLogin(): void {
+  confirmLogin() {
+    if(this.navParams.get('user') == 'distributor') {
+
+      this.confirmLoginDistributor();
+    } else {
+      this.confirmLoginUser();
+    }
+  }
+
+  confirmLoginUser(): void {
   	// step 1: send received SMS code to server to verification
 
   	let body = {
@@ -145,6 +155,17 @@ export class LoginPage {
 
       this.doPrompt(msg);
     });
+  }
+
+  confirmLoginDistributor() {
+    this.vjApi.getDistributorLogin(this.mobile).subscribe((data) => {
+      if(data.status == 200) this.navCtrl.push('DistributorToolsPage', {mobile: this.mobile});
+    },
+    (err) => {
+      console.log(err.status);
+      this.doPrompt('您输入有误或者您不是合法的经销商');
+    });
+    //this.navCtrl.push('DistributorToolsPage', {mobile: '18910109898'});
   }
 
   validate(): void {

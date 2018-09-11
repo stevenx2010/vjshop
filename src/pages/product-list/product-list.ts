@@ -31,8 +31,11 @@ export class ProductListPage {
   	this.shoppingCart = new Array<ShoppingItem>(new ShoppingItem());
   	this.baseUrl = this.apiUrl;
 
+    this.shoppingCart = this.navParams.get('shoppingCart');
+
   }
 
+/*
   ionViewDidLoad() {
     this.storage.ready().then(() => {
     	this.storage.get(Constants.SHOPPING_CART_KEY).then((data: ShoppingItem[]) => {
@@ -48,6 +51,17 @@ export class ProductListPage {
     		}
     	})
     })
+  }*/
+
+  ionViewDidLoad() {
+    if(this.shoppingCart && this.shoppingCart.length > 0) {
+                // get back products info from server
+          this.vjApi.getProductsByIds(JSON.stringify(this.shoppingCart)).subscribe((p) => {
+            if(p) this.products = p.json();
+            console.log(this.products);
+            console.log(this.shoppingCart);
+          })
+    }
   }
 
 }

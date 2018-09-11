@@ -7,15 +7,15 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>登录</ion-title>
+    <ion-title>{{pageCaption}}</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
-<ion-content padding>
+<ion-content>
 
-	<ion-list>
+	<ion-list class="login">
 		<ion-item>
 			<ion-label>+86</ion-label>
 			<ion-input type="text" placeholder="手机号" [(ngModel)]="mobile" (input)="validate()"></ion-input>
@@ -26,40 +26,39 @@
 		</ion-item>
 	</ion-list>
 
-	
+	<ion-grid>
+		<ion-row>
+			<ion-col col-1></ion-col>
+			<ion-col col-10>
+	<button ion-button block (click)="confirmLogin()" [disabled]="confirmDisabled">确认</button>
+</ion-col>
+<ion-col col-1></ion-col>
+</ion-row>
+</ion-grid>
+
 </ion-content>
 
-<ion-footer>
-	<ion-toolbar>
-		<button ion-button full block (click)="confirmLogin()" [disabled]="confirmDisabled">确认</button>
-	</ion-toolbar>
-</ion-footer>
 
 <style>
 	* {
 		font-size: 1.3rem;
 	}
 
+	ion-content {
+		background-color: #efefef;
+		margin: 0;
+	}
+
+	.login {
+		margin-top: 1rem;
+		background-color: white;
+		margin-bottom: 0;
+	}
+
 	.counter {
 		font-size: 1.1rem;
 		width: 6.9rem;
 		height: 2.5rem;
-	}
-
-
-
-	ion-footer * {
-		margin: 0;
-		padding: 0;
-		border: none;
-	}
-
-	ion-toolbar {
-				min-height: 3.6rem;
-	}
-
-	ion-toobar button {
-		font-size: 1.6rem;
 	}
 
 </style>
