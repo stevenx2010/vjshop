@@ -344,6 +344,22 @@ export class VJAPI {
 	 		.pipe(map((data) => data.json()));
 	 }
 
+	 public getInventoriesOfDistributor(mobile: string): Observable<Product[]> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.get(this.apiUrl + 'api/distributor/inventories/' + mobile, {headers: headers})
+	 		.pipe(map((data) => data.json()));	 	
+	 }
+
+	 public getDistributorInfoByMobile(mobile: string): Observable<Distributor> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.get(this.apiUrl + 'api/distributor/info/mobile/' + mobile, {headers: headers})
+	 		.pipe(map((data) => data.json()));		 	
+	 }
+
 	/********************************************************************************************
 	 *                   API Section: Coupon related data
 	 *

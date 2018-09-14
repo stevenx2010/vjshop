@@ -1,5 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
+
+import { VJAPI } from '../../services/vj.services';
+import { Distributor } from '../../models/distributor-model';
+import { TabsPage } from '../tabs/tabs';
 
 /**
  * Generated class for the DistributorMyPage page.
@@ -15,11 +19,26 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class DistributorMyPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  distributor: Distributor;
+  mobile: string;
+  myInfo: any
+
+  constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI, private app: App) {
+  	this.distributor = new Distributor();
+  	this.mobile = this.navParams.data;
+  	this.myInfo = '1';
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad DistributorMyPage');
+  ionViewWillLoad() {
+    this.vjApi.getDistributorInfoByMobile(this.mobile).subscribe((data) => {
+    	if(data) {
+    		this.distributor = data;
+    		console.log(this.distributor);
+    	}
+    });
   }
 
+  exit() {
+    this.app.getRootNav().push(TabsPage);
+  }
 }

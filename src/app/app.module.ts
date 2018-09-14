@@ -36,7 +36,8 @@ import { CoordinateTransform } from '../services/baidu.gps.service';
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp, {
-      backButtonText: '返回'
+      backButtonText: '返回',
+      backButtonIcon: 'custom-goback'
     }),
     HttpModule,
     HttpClientModule,

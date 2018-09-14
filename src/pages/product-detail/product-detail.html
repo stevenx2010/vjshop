@@ -19,7 +19,7 @@
 				</ion-slides>
 			</ion-col>
 		</ion-row>
-		<div  *ngFor="let info of detailInfo" class="info">
+		<div  *ngFor="let info of products" class="info">
 			<ion-row>
 				<ion-col col-12>
 					<div class="title"> {{ info.name }} </div>				
@@ -32,10 +32,10 @@
 			</ion-row>
 			<ion-row>
 				<ion-col col-6>
-					<div>销售量：{{ info.saled_amount }} </div>				
+					<div>销售量：{{ info.sold_amount }} </div>				
 				</ion-col>
 				<ion-col col-6 class="price">
-					<div align="right">&yen;{{info.price}}</div>
+					<div align="right">{{info.price| currency:'CNY':'symbol-narrow'}}</div>
 				</ion-col>
 			</ion-row>
 			<ion-row>
@@ -49,16 +49,24 @@
 
 		</div>
 		<div style="margin-top: 1.2rem">
-		<seperator></seperator>
-		<ion-row class="delivery">
-			<ion-col col-8 style="align-self: center;">配送：{{shippingAddress?.city}}{{shippingAddress?.street}}</ion-col>
-			<ion-col col-4 style="align-self: center;">
-				<div align="right">
-				<button ion-button outline color="blue" small style="font-size: 1.2rem;margin: 0;" (click)="createAddress()">新建地址</button>
-				</div>
-			</ion-col>
-		</ion-row>
-		<seperator></seperator>
+			<seperator></seperator>
+
+			<ion-row class="delivery">
+				<ion-col col-8 style="align-self: center;">配送地址：{{shippingAddress?.city}}{{shippingAddress?.street}}</ion-col>
+				<ion-col col-4 style="align-self: center;">
+					<div align="right">
+					<button ion-button outline color="blue" small style="font-size: 1.2rem;margin: 0;" (click)="createAddress()">新建地址</button>
+					</div>
+				</ion-col>
+			</ion-row>
+
+			<seperator></seperator>
+			
+			<ion-row class="distributor">
+				<ion-col col-12>经销商：</ion-col>
+			</ion-row>
+
+			<seperator></seperator>
 		</div>
 
 		<ion-row *ngFor="let image of images_2">

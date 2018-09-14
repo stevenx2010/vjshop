@@ -1,18 +1,67 @@
-<!--
-  Generated template for the DistributorMyPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
+	<ion-navbar>
+		<ion-grid>
+			<ion-row style="align-items: center">
+				<ion-col col-4 style="font-size: 1.5rem;">
+					<button ion-button ion-only ion-start  outline style="border: none" (click)="exit()">
+					<ion-icon name="custom-exit"></ion-icon>
+						退出
+					</button>
+				</ion-col>
+				<ion-col col-8>
+					<div style="font-size: 1.7rem; font-weight: bold">经销商信息</div>		
+				</ion-col>
+			</ion-row>
+		</ion-grid>
+	</ion-navbar>
 
-  <ion-navbar>
-    <ion-title>经销商信息</ion-title>
-  </ion-navbar>
+   <ion-segment [(ngModel)]="myInfo">
+   		<ion-segment-button value="1" full>
+   			公司名称
+   		</ion-segment-button>
+    	<ion-segment-button value="2" full>
+    		通讯地址
+    	</ion-segment-button>
+    	<ion-segment-button value="3" full>
+    		联系人
+    	</ion-segment-button>
+    </ion-segment>
 
 </ion-header>
 
 
-<ion-content padding>
+<ion-content>
+	<div [ngSwitch]="myInfo">
+		<div *ngSwitchCase="1">
+			<ion-card>
+				<ion-card-header>
+					{{distributor?.name}}
+				</ion-card-header>
+				<ion-card-content>
+					{{distributor?.description}}
+				</ion-card-content>
+			</ion-card>
+		</div>
 
+		<div *ngSwitchCase="2">
+			<ion-list radio-group>
+				<ion-item *ngFor="let address of distributor?.addresses">
+					<ion-label>{{address?.city}}</ion-label>
+					<ion-label>{{address?.street}}</ion-label>
+					<ion-radio [checked]="address.default_address" disabled></ion-radio>
+				</ion-item>
+			</ion-list>
+		</div>
+
+		<div *ngSwitchCase="3">
+			<ion-list radio-group>
+				<ion-item *ngFor="let contact of distributor?.contacts">
+					<ion-label>{{contact?.name}}</ion-label>
+					<ion-label>{{contact?.mobile}}</ion-label>
+					<ion-label>{{contact?.phone_area_code}}-{{contact?.telephone}}</ion-label>
+					<ion-radio [checked]="contact.default_contact" disabled></ion-radio>
+				</ion-item>
+			</ion-list>
+		</div>
+	</div>
 </ion-content>

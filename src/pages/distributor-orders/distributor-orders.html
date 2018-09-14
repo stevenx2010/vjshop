@@ -2,7 +2,7 @@
 	<ion-navbar>
 		<ion-grid>
 			<ion-row style="align-items: center">
-				<ion-col col-4>
+				<ion-col col-4 style="font-size: 1.5rem;">
 					<button ion-button ion-only ion-start  outline style="border: none" (click)="exit()">
 					<ion-icon name="custom-exit"></ion-icon>
 						退出
@@ -14,12 +14,13 @@
 			</ion-row>
 		</ion-grid>
 	</ion-navbar>
-		<ion-segment [(ngModel)]="displayType">
-			<ion-segment-button value="1" full>全部</ion-segment-button>
-			<ion-segment-button value="2" full>待发货</ion-segment-button>
-			<ion-segment-button value="3" full>待确认</ion-segment-button>
-			<ion-segment-button value="4" full>已确认</ion-segment-button>
-		</ion-segment>
+		
+	<ion-segment [(ngModel)]="displayType">
+		<ion-segment-button value="1" full>全部</ion-segment-button>
+		<ion-segment-button value="2" full>待发货</ion-segment-button>
+		<ion-segment-button value="3" full>待确认</ion-segment-button>
+		<ion-segment-button value="4" full>已确认</ion-segment-button>
+	</ion-segment>
 </ion-header>
 
 
@@ -466,13 +467,8 @@
 
 
 <style>
-	* {
+	*:not(ion-segment) {
 		font-size: 1.3rem;
-	}
-
-	ion-header ion-row {
-		align-items: center;
-		flex-wrap: nowrap;
 	}
 
 	ion-content *:not(.btn) {

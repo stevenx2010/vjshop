@@ -59,9 +59,12 @@ export class ProductDetailPage {
       this.storage.get(Constants.SHIPPING_ADDRESS_KEY).then(
           (address) => {
             if(address) this.shippingAddress = address;
+
+            // step 1-3: Get distributor according to this address
           }
         )
     });
+
     // step 3: get product information from server
     this.vjApi.showLoader();
 
@@ -88,6 +91,7 @@ export class ProductDetailPage {
   	this.vjApi.getProductById(this.productId).subscribe(
   		(data) => {
   			this.products = data;
+        console.log(this.products);
   			//console.log(this.detailInfo);
 
   		},

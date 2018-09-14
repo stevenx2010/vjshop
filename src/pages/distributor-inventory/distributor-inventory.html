@@ -7,12 +7,40 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>经销商产品库存</ion-title>
+		<ion-grid>
+			<ion-row style="align-items: center">
+				<ion-col col-4>
+					<button ion-button ion-only ion-start  outline style="border: none" (click)="exit()">
+					<ion-icon name="custom-exit"></ion-icon>
+						退出
+					</button>
+				</ion-col>
+				<ion-col col-8>
+					<div style="font-size: 1.7rem; font-weight: bold">经销商产品库存</div>		
+				</ion-col>
+			</ion-row>
+		</ion-grid>
   </ion-navbar>
 
 </ion-header>
 
 
 <ion-content padding>
-
+	<ion-list>
+		<ion-item *ngFor="let product of products">
+			<ion-avatar item-start>
+				<img src="{{baseUrl}}{{product?.thumbnail_url}}">
+			</ion-avatar>
+			<h2>{{product?.product_sub_category_name}}</h2>
+			<p>{{product?.model}}</p>
+			<ion-note item-end>
+				{{product?.pivot?.inventory}}
+			</ion-note>
+		</ion-item>
+	</ion-list>
 </ion-content>
+
+
+<style>
+
+</style>

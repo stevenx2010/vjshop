@@ -70,7 +70,7 @@ export class HomePage {
 //   });
 
 
-this.initialize();
+    this.initialize();
   }
 
 
@@ -160,7 +160,7 @@ this.initialize();
     this.app.getRootNav().push('SearchPage');
   }
 
-  //for test
+  //To Login
   goMulti(): void {
    this.app.getRootNav().push('LoginPage', {user: 'distributor'});
    //this.app.getRootNav().push('DistributorToolsPage');
