@@ -1,7 +1,13 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      购物车
+    	<ion-grid>
+    		<ion-row>
+    			<ion-col col-12>
+      				<div align="center" style="font-size: 1.8rem;">购物车</div>
+      			</ion-col>
+      		</ion-row>
+      	</ion-grid>
     </ion-title>
   </ion-navbar>
 </ion-header>
@@ -33,6 +39,7 @@
 					<ion-icon name="paper-plane"></ion-icon>
 				</div>
 			</ion-col>
+
 			<ion-col col-10>
 				<ion-row>
 					<ion-col col-8>
@@ -42,15 +49,16 @@
 						<div align="right">{{mobile}}</div>
 					</ion-col>
 				</ion-row>
+				<ion-row>
 					<ion-col col-12>
 						<div style="padding-top: 0.5rem;">收货地址： {{address?.city}}{{address?.street}}</div>
-					</ion-col>
-				<ion-row>
+					</ion-col>				
 				</ion-row>
 			</ion-col>
+
 			<ion-col col-1>
-				<button ion-button icon-only full outline>
-					<ion-icon name="arrow-forward" (click)="goManageAddressPage()"></ion-icon>
+				<button ion-button icon-only full outline (click)="toManageAddressPage()">
+					<ion-icon name="arrow-forward"></ion-icon>
 				</button>
 			</ion-col>
 		</ion-row>

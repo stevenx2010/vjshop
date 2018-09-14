@@ -63,7 +63,6 @@ export class CartPage {
   ionViewWillEnter() {
 
     this.storage.ready().then(() => {
-
       // check if loggin
       this.storage.get(Constants.LOGIN_KEY).then((l) => {
         if(l) this.loggedIn = true;
@@ -113,6 +112,13 @@ export class CartPage {
 
   }
 
+  ionViewDidEnter() {
+    this.events.subscribe('address_changed', () => {
+      this.getShippingAddressAndMobile();
+      console.log('xxxxxxxxxxxxxxxxxxx');
+    })
+  }
+
   hidePartOfMobile() {
     if(this.mobile) {
        let regex = /^(\d{3})\d{4}(\d{4})$/gi;
@@ -142,8 +148,8 @@ export class CartPage {
      //this.navCtrl.push('LoginPage');
   }
 
-  goManageAddressPage() {
-  	this.navCtrl.push('ManageAddressPage');
+  toManageAddressPage() {
+  	this.app.getRootNav().push('ManageAddressPage');
   }
 
   toProductDetailPage(productId: number) {

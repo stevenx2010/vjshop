@@ -1,9 +1,4 @@
-<!--
-  Generated template for the ProductDetailPage page.
 
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-content>
 	<ion-fab top left>
 		<button ion-fab (click)="goBack()" mini><ion-icon name="arrow-back"></ion-icon></button>
@@ -40,33 +35,37 @@
 			</ion-row>
 			<ion-row>
 				<ion-col col-4>
-					<div>库存：{{ info.saled_amount }} </div>				
+					<div>库存量：{{ inventory }} </div>				
 				</ion-col>
 				<ion-col col-8>
 					<div align="right">重量：{{info.weight}}{{info.weight_unit}}</div>
 				</ion-col>
 			</ion-row>
-
+			<ion-row>
+				<ion-col col-12>
+					<div>经销商：{{distributorAddress?.city}}{{distributorAddress?.street}}</div>				
+				</ion-col>
+			</ion-row>
 		</div>
 		<div style="margin-top: 1.2rem">
-			<seperator></seperator>
+			<seperator height="1.2rem;"></seperator>
 
 			<ion-row class="delivery">
-				<ion-col col-8 style="align-self: center;">配送地址：{{shippingAddress?.city}}{{shippingAddress?.street}}</ion-col>
-				<ion-col col-4 style="align-self: center;">
+				<ion-col col-3>
+					<div>配送地址：</div>
+				</ion-col>
+				<ion-col col-6>
+					<div align="left">{{shippingAddress?.city}}{{shippingAddress?.street}}</div>
+				</ion-col>
+				<ion-col col-3 >
 					<div align="right">
-					<button ion-button outline color="blue" small style="font-size: 1.2rem;margin: 0;" (click)="createAddress()">新建地址</button>
+					<button ion-button outline color="blue" small style="font-size: 1.2rem;margin: 0;" (click)="manageAddress()">{{addressBtnCaption}}</button>
 					</div>
 				</ion-col>
 			</ion-row>
 
-			<seperator></seperator>
+			<seperator height="1.2rem"></seperator>
 			
-			<ion-row class="distributor">
-				<ion-col col-12>经销商：</ion-col>
-			</ion-row>
-
-			<seperator></seperator>
 		</div>
 
 		<ion-row *ngFor="let image of images_2">

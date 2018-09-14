@@ -11,12 +11,6 @@ import { CouponItem } from '../../models/coupon-item.model';
 import { Constants } from '../../models/constants.model';
 
 
-/**
- * Generated class for the CouponCenterPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 
 @IonicPage()
 @Component({
@@ -36,29 +30,14 @@ export class CouponCenterPage {
   constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string, 
               private storage: Storage, private alertCtrl: AlertController, private init: InitEnv, private events: Events) 
   {
-  	this.couponTypes = new Array<CouponType>(new CouponType());
+  	this.couponTypes = new Array<CouponType>();
   	this.couponsByType= new Array<Coupon[]>();
   	this.baseUrl = this.apiUrl;
     this.couponWallet = new Set<Coupon>();
-
-    this.events.subscribe('login_success', ()=> {
-          this.getListOfCoupons();
-          this.events.unsubscribe('login_success');
-    })
-  }
-
-  ngOnInit() {
-
-    // Get list of coupon had taken from remote server
-    this.initEnvironment();
-
-
-
   }
 
   ionViewWillLoad() {
-      this.getListOfCoupons();
-
+    this.initEnvironment();
   }
 
   initEnvironment() {
@@ -68,14 +47,25 @@ export class CouponCenterPage {
         this.init.getMobile().subscribe((data) => {
           if(data) {
             this.mobile = data;
-            this.init.getCouponWallet(this.mobile).subscribe((data) => {
-              if(data) this.couponWallet = data;
-            });
+            this.vjApi.getCouponsByMobile(this.mobile).subscribe((coupons) => {
+              if(coupons.length > 0) {
+                coupons.forEach((item) =>{
+                  this.couponWallet.add(item);
+                });
 
+                this.storage.ready().then(() => {
+                  this.storage.remove(Constants.COUPON_WALLET_KEY);
+                  this.storage.set(Constants.COUPON_WALLET_KEY, this.couponWallet);
+                });
+              }
 
+              this.getListOfCoupons();
+            })
           }
         });
-      }      
+      } else {
+        this.getListOfCoupons();
+      }     
     });        
   }
 
@@ -83,52 +73,55 @@ export class CouponCenterPage {
   getListOfCoupons() {
     this.vjApi.showLoader();
 
-    this.vjApi.getCouponAllTypes().subscribe((data_types) => {
-      if(data_types.length > 0) {
-        this.couponTypes = data_types;
+    this.vjApi.getCouponAllTypes().subscribe((types) => {
+      if(types && types.length > 0) {
 
+        this.couponTypes = types;
+
+        let i = 0;
+        let j = 0;
         for(let couponType of this.couponTypes) {
-          this.vjApi.getCouponsByTypeId(couponType.id).subscribe((data) => {
-            if(data.length > 0) {
+          for(let coupon of couponType.coupons) {
+            // check if this coupon has exipred
+            if(!coupon.expired) {
+              let now = Date.now();
+              let future = (new Date(coupon.expire_date)).getTime();
 
-              // Check if this coupon has expired
-              for( let i =0; i< data.length; i++) {
-                if(!(data[i].expired)) {
-                  let now =Date.now();
-                  let future = (new Date(data[i].expire_date)).getTime();
+              if(future < now ) {
+                // expired
+                this.couponTypes[i].coupons[j].expired = true;
 
-                  if(future < now) {
-                    // this coupon has expired,
-                    data[i].expired = true;
-                    let status = {
-                      'id': data[i].id,
-                      'type_id': data[i].coupon_type_id,
-                      'expired': true
-                    }
-                    // update remote db
-                    this.vjApi.updateCouponExpireStatus(JSON.stringify(status)).subscribe((data)=>console.log(data));
-                  }
+                let status = {
+                  'id': coupon.id,
+                  'coupon_type_id': coupon.coupon_type_id,
+                  'expired': true
                 }
 
-                this.couponWallet.forEach((r) => {
-                  if(r.id == data[i].id && r.coupon_type_id == data[i].coupon_type_id) {
-                    data[i].btn_disabled = true;
-                    data[i].z_index = 2;
-                  }
-                })
-
-              }      
-
-              this.couponsByType.push(data);
+               // this.vjApi.showLoader();
+                this.vjApi.updateCouponExpireStatus(JSON.stringify(status)).subscribe((data)=>console.log(data));    
+              }
             }
-          })
+
+            // for each coupon in CouponWallet, disable this coupon to avoid select again & to show 'taken' sign
+            if(this.couponWallet) {
+              this.couponWallet.forEach((item) => {
+                if(item.id == coupon.id && item.coupon_type_id == coupon.coupon_type_id) {
+                  if(this.couponTypes[i].coupons[j])  {
+                    this.couponTypes[i].coupons[j].btn_disabled = true;
+                    this.couponTypes[i].coupons[j].z_index = 2;
+                  }
+                }
+              });
+            }
+
+            j++;
+          }
+          j = 0;
+          i++;
         }
       }
     });
-
-
-    this.vjApi.hideLoader();    
-
+    this.vjApi.hideLoader();
   }
 
   takeCoupon(i: number, j: number) {
@@ -137,21 +130,21 @@ export class CouponCenterPage {
     else {
 
       let item = new CouponItem();
-      item.id = this.couponsByType[i][j].id;
-      item.name = this.couponsByType[i][j].name;
-      item.description = this.couponsByType[i][j].description;
-      item.discount_method = this.couponsByType[i][j].discount_method;
-      item.discount_percentage = this.couponsByType[i][j].discount_percentage;
-      item.discount_value = this.couponsByType[i][j].discount_value;
-      item.expired = this.couponsByType[i][j].expired;
-      item.expire_date = this.couponsByType[i][j].expire_date;
-      item.image_url = this.couponsByType[i][j].image_url;
-      item.coupon_type_id = this.couponsByType[i][j].coupon_type_id;
+      item.id = this.couponTypes[i].coupons[j].id;
+      item.name = this.couponTypes[i].coupons[j].name;
+      item.description = this.couponTypes[i].coupons[j].description;
+      item.discount_method = this.couponTypes[i].coupons[j].discount_method;
+      item.discount_percentage = this.couponTypes[i].coupons[j].discount_percentage;
+      item.discount_value = this.couponTypes[i].coupons[j].discount_value;
+      item.expired = this.couponTypes[i].coupons[j].expired;
+      item.expire_date = this.couponTypes[i].coupons[j].expire_date;
+      item.image_url = this.couponTypes[i].coupons[j].image_url;
+      item.coupon_type_id = this.couponTypes[i].coupons[j].coupon_type_id;
 
       if(!this.couponWallet.has(item)) {
         this.couponWallet.add(item);
-        this.couponsByType[i][j].btn_disabled = true;
-        this.couponsByType[i][j].z_index = 2;
+        this.couponTypes[i].coupons[j].btn_disabled = true;
+        this.couponTypes[i].coupons[j].z_index = 2;
 
         // save coupon wallet to local
         
@@ -161,7 +154,7 @@ export class CouponCenterPage {
   
         // relate records in db at server
         let body = {
-          'id': this.couponsByType[i][j].id,
+          'id': this.couponTypes[i].coupons[j].id,
           'mobile': this.mobile
         }
         this.vjApi.setCouponCustomerRelation(JSON.stringify(body)).subscribe((data)=>console.log(data));

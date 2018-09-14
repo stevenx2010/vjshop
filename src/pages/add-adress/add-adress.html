@@ -7,7 +7,7 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>新建收货地址</ion-title>
+    <ion-title>{{caption}}</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -32,7 +32,7 @@
 
     <ion-item>
       <ion-label>收货地址：</ion-label>
-      <ion-multi-picker item-content [multiPickerColumns]="cityColumns" cancelText="取消" doneText="确定" placeholder="省/市/区"  (ionChange)="validate()"></ion-multi-picker>
+      <ion-multi-picker item-content [multiPickerColumns]="cityColumns" cancelText="取消" doneText="确定" placeholder="{{placeholder}}"  (ionChange)="setCity()"></ion-multi-picker>
     </ion-item>
 
     <ion-item>
@@ -42,7 +42,7 @@
 
     <ion-item>
       <ion-label>设为常用地址</ion-label>
-      <ion-toggle checked="true" [(ngModel)]="address.default_address" (checked)="validate()"></ion-toggle>
+      <ion-toggle checked="true" [(ngModel)]="address.default_address" (ionChange)="validate()"></ion-toggle>
     </ion-item>
   </ion-list>
 </ion-content>

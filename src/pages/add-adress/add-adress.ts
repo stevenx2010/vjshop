@@ -22,13 +22,20 @@ import { VJAPI } from '../../services/vj.services';
 })
 export class AddAdressPage {
   @ViewChild(MultiPicker) multiPicker: MultiPicker;
-  @ViewChild('mobile') mobile;
+  @ViewChild('mobile') mobileElement;
   @ViewChild('tel') tel;
 
 	cityColumns: any;
   simpleColumns: any;
   address: Address;
   saveBtnDisable: boolean = true;
+  action: string;
+
+  placeholder='省/市/区';
+  caption='新建收货地址';
+
+  mobile: string;
+  userId: number;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private alertCtrl: AlertController, private storage: Storage, private vjApi: VJAPI,
               private events: Events) 
@@ -37,30 +44,55 @@ export class AddAdressPage {
     this.address = new Address();
     this.address.mobile = '';
 
-    if(navParams.get('mobile'))
-      this.address.mobile = navParams.get('mobile');
-    else {
-      this.storage.ready().then(() => {
-        this.storage.get(Constants.USER_MOBILE_KEY).then((data) => {
-          if(data) this.address.mobile = data;
+    this.action = this.navParams.get('action');
+    this.mobile = this.navParams.get('mobile');
+  }
+
+  ionViewWillLoad() {
+    if(this.action == 'create')    // Create new Address
+    {
+      if(this.navParams.get('mobile')) {
+        this.address.mobile = this.navParams.get('mobile');
+      }
+      else {
+        this.storage.ready().then(() => {
+          this.storage.get(Constants.USER_MOBILE_KEY).then((data) => {
+            if(data) {
+              this.address.mobile = data;
+              this.mobile = data;
+            }
+          })
         })
-      })
-    }
+      }
+    } else if(this.action == 'edit') {      // Edit current address
+      this.address = this.navParams.get('address');
+      this.placeholder = this.address.city;
+      this.caption = '编辑收货地址';
+    }   
+
+    // Get current user id
+    this.vjApi.showLoader();
+    this.vjApi.getUserId(this.mobile).subscribe((resp) => {
+      if(resp.json()) {
+        this.userId = (resp.json()).user_id;
+      }
+    });
+    this.vjApi.hideLoader();
+
   }
 
   validate(): void {
-    this.address.city = this.multiPicker._text;
 
     //check mobile number validity
     let regex_mobile ='^1[0-9]{10}';
-    if(!(this.address.mobile.match(regex_mobile)) && this.address.mobile != '') {
+    if(this.address.mobile && !(this.address.mobile.match(regex_mobile))) {
       this.address.mobile="";
-      this.doPromptMobile(this.mobile);
+      this.doPromptMobile(this.mobileElement);
     } 
 
     //check validity of tel
     let regex_tel = '^0[1-9]{1,2}[0-9]-[1-9][0-9]{7}';
-    if(!(this.address.tel.match(regex_tel)) && this.address.tel != '') {
+    if(this.address.tel && !(this.address.tel.match(regex_tel))) {
       this.address.tel = "";
       this.doPromptTel(this.tel);
     }
@@ -69,6 +101,18 @@ export class AddAdressPage {
     if(this.address.username != '' && this.address.mobile != '' && this.address.city != '' && this.address.street != '') {
       this.saveBtnDisable = false;
     }
+
+    //check if there's no default address, if so, cannot untoggle this address.
+    this.vjApi.getDefaultAddress(this.mobile).subscribe((d) => {
+      if(!d || d.length <= 0) {
+        this.address.default_address = true;
+      }
+    })
+  }
+
+  setCity() {
+    this.address.city = this.multiPicker._text;
+    this.validate();
   }
 
   doPromptMobile(obj) {
@@ -103,8 +147,11 @@ export class AddAdressPage {
         if(data == null)
           this.address.default_address = true;
         
+        //get user id
+
         //save to server -- this must be done after login
         let body = {
+          "user_id": this.userId,
           "command": Login.CREATE_SHIPPING_ADDDRESS,
           "username": this.address.username,
           "mobile": this.address.mobile,
@@ -114,7 +161,7 @@ export class AddAdressPage {
           "default_address": this.address.default_address
         }
 
-          console.log(JSON.stringify(body));
+        this.vjApi.showLoader();
         this.vjApi.auth(JSON.stringify(body)).subscribe((data) => {
             console.log(data);
             let response = data.json();
@@ -135,8 +182,8 @@ export class AddAdressPage {
         (err) => {
           this.doPromptError();
         });
-          
 
+        this.vjApi.hideLoader();
       })     
     });  
   }

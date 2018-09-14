@@ -99,14 +99,14 @@ export class LoginPage {
           this.storage.set(Constants.LOGIN_KEY, 1);
 
           // step 1-3: get coupon wallet by mobile
-        
+        /*
           this.init.getCouponWallet(this.mobile).subscribe((r) => {
             console.log(r);
             if(r) {
                this.couponWallet = r;
                this.events.publish('login_success');
             }
-          })
+          })*/
 
         }).catch(console.log);
 
@@ -119,7 +119,7 @@ export class LoginPage {
   					})}
   				);
 
-  				this.navCtrl.push('AddAdressPage', { mobile: this.mobile });
+  				this.navCtrl.push('AddAdressPage', { mobile: this.mobile, 'action': 'create' });
   			} else {
 
           // step 3-2: the user has inputted his/her address, then set LOGIN_KEY = 1(true)

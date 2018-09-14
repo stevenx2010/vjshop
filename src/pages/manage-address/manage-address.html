@@ -5,14 +5,75 @@
   Ionic pages and navigation.
 -->
 <ion-header>
-
   <ion-navbar>
-    <ion-title>ManageAddress</ion-title>
+	<ion-title>收货地址</ion-title>
   </ion-navbar>
-
 </ion-header>
 
 
 <ion-content padding>
-
+	<ion-list>
+		<ion-item-sliding *ngFor="let address of addresses; let i = index;">
+			<button ion-item  (click)="editAddress(i)">	
+				<ion-grid>
+					<ion-row>
+					 	<ion-col col-3>
+					 		<div align="left"><h4>收货人:</h4></div>
+					 	</ion-col>
+					 	<ion-col col-3>
+					 		<h4>{{address?.username}}</h4>
+					 	</ion-col>
+					 	<ion-col col-5>
+					 		<h4>{{address?.mobile}}</h4>
+					 	</ion-col>
+					 	<ion-col col-1>
+					 		<ion-icon name="checkmark" *ngIf="address?.default_address" class="checkmark"></ion-icon>
+					 	</ion-col>
+					</ion-row>
+					<ion-row>
+						<p>{{address?.city}}{{address?.street}}</p>
+					</ion-row>
+				</ion-grid>		
+			</button>
+			
+			<ion-item-options side="left">
+				<button ion-button (click)="deleteAddress(i)">
+					<ion-icon name="close" color="alert"></ion-icon>删除
+				</button>
+			</ion-item-options>
+		</ion-item-sliding>	
+	</ion-list>
 </ion-content>
+
+<ion-footer>
+	<ion-toolbar>
+		<button ion-button full color="secondary" (click)="createAddress()">增加新地址</button>
+	</ion-toolbar>
+</ion-footer>
+
+<style>
+	ion-grid {
+		margin-left: 0;
+		padding-left: 0;
+	}
+
+	ion-row {
+		align-items: center;
+	}
+
+	ion-grid .checkmark {
+		font-size: 2rem;
+	}
+
+  ion-footer * {
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+  ion-footer {
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+
+</style>

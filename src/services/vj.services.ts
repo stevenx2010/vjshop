@@ -98,7 +98,7 @@ export class VJAPI {
 	}
 
 	/********************************************************************************************
-	 *                   API Section: get products related data
+	 *                   API Section: products related data
 	 *
 	 * 1. Interface to get product category
 	 *   	GET: http://api_url/api/product/category
@@ -289,6 +289,14 @@ export class VJAPI {
 
 	 }
 
+	 public deleteAddressById(addressId: number): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.delete(this.apiUrl + 'api/address/id/' + addressId, {headers: headers});
+
+	 }
+
 	/********************************************************************************************
 	 *                   API Section: Distributor related data
 	 *
@@ -358,6 +366,14 @@ export class VJAPI {
 
 	 	return this.http.get(this.apiUrl + 'api/distributor/info/mobile/' + mobile, {headers: headers})
 	 		.pipe(map((data) => data.json()));		 	
+	 }
+
+	 public getDistributorInventoryByProductId(distributorId, productId): Observable<number> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.get(this.apiUrl + 'api/distributor/inventory/productId/' + distributorId + '/' + productId, {headers: headers})
+	 		.pipe(map((data) => data.json()));			 	
 	 }
 
 	/********************************************************************************************

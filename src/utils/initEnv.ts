@@ -31,31 +31,6 @@ export class InitEnv {
 		})
 	}
 
-	public getCouponWallet(mobile: string): Observable<Set<CouponItem>> {
-		return new Observable((observer) => {
-			let couponWallet: Set<CouponItem> = new Set<CouponItem>();
-
-			this.vjApi.getCouponsByMobile(mobile).subscribe((data) => {
-	          if(data.length > 0) {
-	            for(let item of data) {
-	                let coupon_item: CouponItem = new CouponItem(item);
-	                couponWallet.add(coupon_item);
-	                   
-	            }
-
-	            this.storage.ready().then(() => {
-	              this.storage.remove(Constants.COUPON_WALLET_KEY);
-	              this.storage.set(Constants.COUPON_WALLET_KEY, couponWallet);
-	            });
-
-	            observer.next(couponWallet);
-	          }
-	         },
-	         (err) => console.log(err));   
-
-		})
-	}
-
 	public getUserAddresses(mobile: string): Observable<Address> {
 		return new Observable<Address>((observer) => {
 			this.vjApi.getDefaultAddress(mobile).subscribe((data) => {

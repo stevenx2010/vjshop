@@ -25,8 +25,8 @@
 									<ion-icon name="contacts" color="light" (click)="goMulti()"></ion-icon>
 								</div>
 							</ion-col>
-						</ion-row>
-						<ion-row>
+					<!--	</ion-row>
+						<ion-row>-->
 							<ion-col style="align-self: flex-start;"><div style="font-size: 0.8rem; color: white;" align="center" (click)="goMulti()">经销商</div></ion-col>
 						</ion-row>
 				</ion-col>
@@ -119,12 +119,11 @@
 
 					<div class="content-category" *ngIf="clickedItemIndex != 0">
 						<div *ngFor="let category of productBySubCategories;">
-							<ion-row class="category" style="flex-wrap: nowrap">
+							<ion-row class="category" text-wrap>
 								<ion-col></ion-col>
 								<ion-col col-1><seperator></seperator></ion-col>
-								<ion-col>									
-									{{ category.subCategory.name}}
-									
+								<ion-col>							
+									<span>{{ category.subCategory.name}}</span>
 								</ion-col>
 								<ion-col col-1><seperator></seperator></ion-col>
 								<ion-col></ion-col>
@@ -261,6 +260,10 @@
 
 	.sort ion-item {
 		color: #858585;
+	}
+
+	span {
+		white-space: nowrap;
 	}
 
 </style>

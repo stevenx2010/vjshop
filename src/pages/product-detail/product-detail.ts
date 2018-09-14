@@ -8,6 +8,7 @@ import { ProductDetailImage } from '../../models/product-detail-image.model';
 import { ShoppingItem } from '../../models/shopping-item.model';
 import { Constants } from '../../models/constants.model';
 import { Address } from '../../models/address.model';
+import { DistributorAddress } from '../../models/distributor-address-model';
 
 
 @IonicPage()
@@ -26,7 +27,13 @@ export class ProductDetailPage {
   shoppedItems: number;
   shippingAddress: Address;
 
-  eventsPublished: boolean = false;
+  eventsPublished: boolean = false; 
+  addressBtnCaption: string = '新建地址';
+
+  mobile: string;
+
+  distributorAddress: DistributorAddress;
+  inventory: number = 0;
 
   constructor(private navCtrl: NavController, private navParams: NavParams, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string,
               private storage: Storage, private app: App, private events: Events) {
@@ -39,6 +46,10 @@ export class ProductDetailPage {
   	this.productId = this.navParams.get('productId');
     this.numberOfProducts = 1;
     this.shoppedItems = 0;
+
+    this.distributorAddress = new DistributorAddress();
+
+
   }
 
   ionViewWillLoad() {
@@ -55,12 +66,20 @@ export class ProductDetailPage {
             }
           });
 
+      // Step 1-2: Get mobile
+      this.storage.get(Constants.USER_MOBILE_KEY).then((m) => {
+        if(m) this.mobile = m;
+      })
+
       //step 1-2: Get shipping address
-      this.storage.get(Constants.SHIPPING_ADDRESS_KEY).then(
-          (address) => {
-            if(address) this.shippingAddress = address;
+      this.storage.get(Constants.SHIPPING_ADDRESS_KEY).then((address) => {
+        if(address) {
+            this.shippingAddress = address;
+            this.addressBtnCaption = '管理地址';
+        }
 
             // step 1-3: Get distributor according to this address
+  //          this.getDistributorByLocation(this.shippingAddress.city);
           }
         )
     });
@@ -103,6 +122,44 @@ export class ProductDetailPage {
     this.vjApi.hideLoader();
   }
 
+  ionViewDidEnter() {
+    // update shopping address
+    if(this.mobile) {
+      this.vjApi.showLoader();
+      this.vjApi.getDefaultAddress(this.mobile).subscribe((a) => {
+        if(a && a.length > 0) {
+
+          this.shippingAddress = a[0];
+
+          // get distributor by location
+          this.getDistributorByLocation(this.shippingAddress.city);         
+        }
+      });
+      this.vjApi.hideLoader();
+    }
+/*
+    this.events.subscribe('login_address_added', () => {
+
+      this.getDistributorByLocation(this.shippingAddress.city);
+    });*/
+  }
+
+  getDistributorByLocation(city: string) {
+    this.vjApi.getDistributorAddressByLocation(this.shippingAddress.city).subscribe((a) => {
+      console.log(a);
+      if(a && a.length > 0) {
+        this.distributorAddress = a[0];
+
+        // get inventory of this product
+        this.vjApi.getDistributorInventoryByProductId(this.distributorAddress.distributor_id, this.productId).subscribe((inv) => {
+           this.inventory = inv;
+        });
+      } else {
+        this.distributorAddress = new DistributorAddress();
+        this.inventory = 0;
+      }
+    });
+  }
 
   goBack(): void {
   	this.navCtrl.pop();
@@ -183,7 +240,8 @@ export class ProductDetailPage {
     return total;
   }
 
-  createAddress(): void {
+  manageAddress(): void {
+    /*
     // check if user has logged in
     this.storage.ready().then(() => {
       this.storage.get(Constants.LOGIN_KEY).then((data) => {
@@ -192,7 +250,20 @@ export class ProductDetailPage {
         else
           this.app.getRootNav().push('LoginPage');
       })
-    });
-    
+    });*/
+
+    if(this.addressBtnCaption == "新建地址") {
+        // check if user has logged in
+      this.storage.ready().then(() => {
+        this.storage.get(Constants.LOGIN_KEY).then((data) => {
+          if(data)
+            this.app.getRootNav().push('AddAdressPage');
+          else
+            this.app.getRootNav().push('LoginPage');
+        });
+      });
+    } else {
+        this.app.getRootNav().push('ManageAddressPage');
+    }
   }
 }

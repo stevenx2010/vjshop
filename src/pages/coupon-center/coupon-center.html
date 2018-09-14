@@ -22,14 +22,14 @@
 						<div align="center">{{type?.type}} </div>
 					</ion-card-header>
 					<ion-list class="coupon">
-						<ion-row *ngFor="let coupon of couponsByType[i]; let j = index;">
-							<ion-col col-12  *ngIf="!coupon.expired">
+						<ion-row *ngFor="let coupon of type?.coupons; let j = index;">
+							<ion-col col-12  *ngIf="!coupon?.expired">
 								<img src="{{baseUrl}}{{coupon?.image_url}}">
 							
-								<button ion-fab mini class="take" color="light" (click)="takeCoupon(i,j)" disabled="{{coupon.btn_disabled}}"> 领取</button>
+								<button ion-fab mini class="take" color="light" (click)="takeCoupon(i,j)" disabled="{{coupon?.btn_disabled}}"> 领取</button>
 
-								<button ion-button outline color="alert" class="takenIOs" [style.z-index]="coupon.z_index" showWhen="ios">已领取</button>
-								<button ion-button outline color="alert" class="takenMD" [style.z-index]="coupon.z_index" showWhen="android">已领取</button>
+								<button ion-button outline color="alert" class="takenIOs" [style.z-index]="coupon?.z_index" showWhen="ios">已领取</button>
+								<button ion-button outline color="alert" class="takenMD" [style.z-index]="coupon?.z_index" showWhen="android">已领取</button>
 							</ion-col>
 					</ion-row>
 					</ion-list>

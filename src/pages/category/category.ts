@@ -193,4 +193,10 @@ export class CategoryPage {
    toSearchPage(): void {
     this.app.getRootNav().push('SearchPage');
   }
+
+  goMulti(): void {
+   this.app.getRootNav().push('LoginPage', {user: 'distributor'});
+   //this.app.getRootNav().push('DistributorToolsPage');
+  }
+
 }
