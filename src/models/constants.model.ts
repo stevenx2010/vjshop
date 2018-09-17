@@ -29,7 +29,8 @@ export class Login {
 
 export enum InvoiceType  {PERSONAL = 1, ENTERPRISE = 2}
 export enum InvoiceStatus { NOT_ISSUED = 1, ISSUED = 2}
-export enum OrderStatus { NOT_PAY_YET = 1, PAYED = 2, CLOSED = 3, CANCELD = 4, COMMENTED = 5, NOT_COMMENTED = 6}
-export enum DeliveryStatus { WAITING_FOR_DELIVERY = 1, IN_DELIVERY = 2, RECEIVED = 3, CONFIRMED = 4}
+export enum OrderStatus { NOT_PAY_YET = 1, PAYED = 2, RECEIVED = 3, CLOSED = 4, CANCELD = 5, COMMENTED = 6, NOT_COMMENTED = 7}
+export enum DeliveryStatus { WAITING_FOR_DELIVERY = 1, IN_DELIVERY = 2, DELIVERED_NOT_CONFIRM = 3, CONFIRMED = 4}
 export enum PaymentMethod { WECHAT= 1, ALIPAY = 2 }
 export enum CouponDiscountMethod { PERCENTAGE = 1, VALUE = 2}
+export enum CommentStatus { NOT_COMMENTED = 1, COMMENTED = 2}

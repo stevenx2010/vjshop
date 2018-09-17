@@ -25,9 +25,12 @@
 
 
 <ion-content>
+	<ion-refresher (ionRefresh)="doRefresh($event)">
+		<ion-refresher-content></ion-refresher-content>
+	</ion-refresher>
 
 	<ion-grid>
-		<div *ngIf="orders.length > 0" [ngSwitch]="displayType">
+		<div [ngSwitch]="displayType">
 <!--FOR CASE 1 All Orders--------------------------------------------------------------------------------------------->
 			<div *ngSwitchCase="1">
 				<div  *ngFor="let order of orders; let i = index;">			
@@ -163,6 +166,11 @@
 						</ion-col>		
 					</ion-row>					
 				</div>
+
+				<div *ngIf="orders.length <= 0 && isInit">
+					<div align="center" style="font-size: 2rem;margin-top:5rem;">您没有待处理订单</div>
+				</div>
+
 			</div>	
 <!--FOR CASE 2 To be delivered --------------------------------------------------------------------------------------------->
 			<div *ngSwitchCase="2">
@@ -456,9 +464,6 @@
 
 		</div>
 
-		<div *ngIf="orders.length <= 0 && isInit">
-			<div align="center" style="font-size: 2rem;margin-top:5rem;">您没有待处理订单</div>
-		</div>
 
 
 	</ion-grid>

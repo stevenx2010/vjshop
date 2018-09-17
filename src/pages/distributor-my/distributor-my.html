@@ -46,9 +46,17 @@
 		<div *ngSwitchCase="2">
 			<ion-list radio-group>
 				<ion-item *ngFor="let address of distributor?.addresses">
-					<ion-label>{{address?.city}}</ion-label>
-					<ion-label>{{address?.street}}</ion-label>
-					<ion-radio [checked]="address.default_address" disabled></ion-radio>
+					<ion-grid>
+						<ion-row>
+							<ion-col col-11>
+								<h4>{{address?.city}}</h4>
+								<p>{{address?.street}}</p>
+							</ion-col>
+							<ion-col col-1>
+								<ion-icon name="checkmark" *ngIf="address?.default_address"></ion-icon>
+							</ion-col>
+						</ion-row>
+					</ion-grid>
 				</ion-item>
 			</ion-list>
 		</div>
@@ -56,12 +64,32 @@
 		<div *ngSwitchCase="3">
 			<ion-list radio-group>
 				<ion-item *ngFor="let contact of distributor?.contacts">
-					<ion-label>{{contact?.name}}</ion-label>
-					<ion-label>{{contact?.mobile}}</ion-label>
-					<ion-label>{{contact?.phone_area_code}}-{{contact?.telephone}}</ion-label>
-					<ion-radio [checked]="contact.default_contact" disabled></ion-radio>
+					<ion-grid>
+						<ion-row>
+							<ion-col col-11>
+								<h4>{{contact?.name}}</h4>
+								<ion-row>
+									<ion-col col-6>
+										<div align="left"><p>{{contact?.mobile}}</p></div>
+									</ion-col>
+									<ion-col col-6>
+										<p>{{contact?.phone_area_code}}-{{contact?.telephone}}</p>
+									</ion-col>
+								</ion-row>
+							</ion-col>
+							<ion-col col-1>
+								<ion-icon name="checkmark" *ngIf="contact?.default_contact"></ion-icon>
+							</ion-col>
+						</ion-row>
+					</ion-grid>
 				</ion-item>
 			</ion-list>
 		</div>
 	</div>
 </ion-content>
+
+<style>
+	ion-row {
+		align-items: center;
+	}
+</style>

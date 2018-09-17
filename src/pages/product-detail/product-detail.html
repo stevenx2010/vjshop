@@ -38,24 +38,31 @@
 					<div>库存量：{{ inventory }} </div>				
 				</ion-col>
 				<ion-col col-8>
-					<div align="right">重量：{{info.weight}}{{info.weight_unit}}</div>
+					<div align="right">重量：{{info?.weight}}{{info?.weight_unit}}</div>
 				</ion-col>
 			</ion-row>
 			<ion-row>
 				<ion-col col-12>
-					<div>经销商：{{distributorAddress?.city}}{{distributorAddress?.street}}</div>				
+					<div>经销商：{{distributor?.name}}</div>				
+				</ion-col>
+			</ion-row>
+			<ion-row>
+				<ion-col col-1>
+				</ion-col>
+				<ion-col col-11>
+					<div align="left" style="padding-left: 2rem;">{{distributorAddress?.city}}{{distributorAddress?.street}}</div>				
 				</ion-col>
 			</ion-row>
 		</div>
-		<div style="margin-top: 1.2rem">
-			<seperator height="1.2rem;"></seperator>
-
+	<!--	<div style="margin-top: 1.2rem">-->
+	
+		<seperator height="1.2rem"></seperator>
 			<ion-row class="delivery">
 				<ion-col col-3>
 					<div>配送地址：</div>
 				</ion-col>
 				<ion-col col-6>
-					<div align="left">{{shippingAddress?.city}}{{shippingAddress?.street}}</div>
+					<div align="left" style="padding-left: 0;">{{shippingAddress?.city}}{{shippingAddress?.street}}</div>
 				</ion-col>
 				<ion-col col-3 >
 					<div align="right">
@@ -63,16 +70,12 @@
 					</div>
 				</ion-col>
 			</ion-row>
-
-			<seperator height="1.2rem"></seperator>
-			
-		</div>
+		<seperator height="1.2rem"></seperator>
+	<!--	</div>-->
 
 		<ion-row *ngFor="let image of images_2">
 			<ion-col col-12>
-
-						<img src="{{ apiUrl }}{{ image.image_url }}">
-		
+				<img src="{{ apiUrl }}{{ image.image_url }}">
 			</ion-col>
 		</ion-row>
 	</ion-grid>
@@ -171,21 +174,18 @@
 		color: #0437f1;
 		font-weight: bold
 	}
-/*
-	.seperator {
-		margin: 1.5rem, 0,0,0;
-		padding: 0;
-		background-color: #efefef;
-		color: #efefef;
-		font-size: 1px;
-	}*/
 
-	.delivery {
+	ion-grid .info {
+		margin-bottom: 1.2rem;
+	}
+
+	ion-grid .delivery {
 		margin-top: 1rem;
 		margin-bottom: 1rem;
 		padding-left: 1.2rem;
 		padding-right: 1.2rem;
 		font-size: 1.2rem;
+		align-items: center;
 	}
 
 	ion-footer {

@@ -6,6 +6,7 @@ import { Constants, Login } from '../../models/constants.model';
 import { VJAPI } from '../../services/vj.services';
 import { InitEnv } from '../../utils/initEnv';
 import { CouponItem } from '../../models/coupon-item.model';
+import { Address } from '../../models/address.model';
 
 
 @IonicPage()
@@ -26,9 +27,13 @@ export class LoginPage {
 
   couponWallet: Set<CouponItem>;
 
+  loggedIn: boolean = false;
+  shippingAddress: Address;
+
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI, private alertCtrl: AlertController,
   				private events: Events, private init: InitEnv) {
     this.couponWallet = new Set<CouponItem>();
+    this.shippingAddress = new Address();
   }
 
   ionViewDidLoad() {
@@ -112,14 +117,22 @@ export class LoginPage {
 
         // step 2: check if the user has inputted his/her address
   			if(response.address_check == Login.SHIPPING_ADDRESS_CHECK_FAILURE) {
-  				this.events.subscribe('login_address_added', () => {
-  					this.navCtrl.pop().then(() => {
-  						this.events.publish('login_success', {'logged_in': true, 'mobile': this.mobileIsValide});
-  						this.events.unsubscribe('login_address_added');
-  					})}
-  				);
 
+          // subscribe login_addres_added event
+  				this.events.subscribe('login_address_added', () => {
+            this.loggedIn = true;
+            this.storage.ready().then(() => {
+                this.storage.set(Constants.LOGIN_KEY, 1);
+            });
+
+            this.events.unsubscribe('login_address_added');
+
+  					this.navCtrl.pop();
+          });
+
+          // go to create address page
   				this.navCtrl.push('AddAdressPage', { mobile: this.mobile, 'action': 'create' });
+
   			} else {
 
           // step 3-2: the user has inputted his/her address, then set LOGIN_KEY = 1(true)
@@ -134,9 +147,10 @@ export class LoginPage {
             if(data.length > 0) {
               this.storage.ready().then(() => {
                 this.storage.set(Constants.SHIPPING_ADDRESS_KEY, data[0]);
-                this.navCtrl.pop().then(() => {
-                    this.events.publish('login_success', true, this.mobile, data[0]);
-                });
+                this.loggedIn = true;
+                this.shippingAddress  = data[0];
+
+                this.navCtrl.pop();
               })
             }
           })
@@ -201,6 +215,12 @@ export class LoginPage {
   	alert.addButton('确定');
 
   	alert.present();
+  }
+
+  ionViewWillLeave() {
+    if(this.loggedIn) {
+      this.events.publish('login_success', true, this.mobile, this.shippingAddress);
+    }
   }
 
 }

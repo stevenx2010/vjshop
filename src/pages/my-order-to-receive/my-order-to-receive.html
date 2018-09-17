@@ -1,0 +1,46 @@
+
+<ion-header>
+
+  <ion-navbar>
+  	<ion-grid>
+  		<ion-row>
+  			<ion-col col-2>
+  				<button ion-button icon-only outline small (click)="goback()">
+  					<ion-icon name="custom-goback"></ion-icon>返回
+  				</button>
+  			</ion-col>
+  			<ion-col col-10>
+    			<div style="font-size: 1.8rem;" align="center">我的订单</div>
+    		</ion-col>
+    	</ion-row>
+    </ion-grid>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+	<ion-list>
+		<button ion-item (click)="toProductList(i)"  *ngFor="let order of orders; let i = index;" >
+			<ion-avatar item-start>
+				<img src="{{baseUrl}}{{avatar_url}}">
+			</ion-avatar>
+			<h4>订单号：{{order?.order_serial}}</h4>
+			<p>下单日期：{{order?.order_date}}</p>
+			<p>订单总价：{{order?.total_price}}</p>
+		</button>
+	</ion-list>
+
+</ion-content>
+
+<style>
+	ion-header ion-row {
+		flex-wrap: nowrap;
+		align-items: center;
+	}
+
+	ion-header button {
+		border: none;
+	}
+
+</style>

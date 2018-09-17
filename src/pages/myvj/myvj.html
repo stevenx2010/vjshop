@@ -16,22 +16,71 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
-	<h1>Myvj Page</h1>
-	<seperator color="blue" height="5px"></seperator>
-	<div><counter size="5rem" count=5></counter></div>
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col col-12>
+        <ion-list>
+          <button ion-item (click)="toMyOrder()">我的订单</button>
+        </ion-list>
+      </ion-col>
+    </ion-row>
 
-	<button ion-button (click)="logout()">logout</button>
+    <ion-row>
+      <ion-col col-12>
+        <ion-list>
+          <button ion-item (click)="toMyCoupon()">我的优惠券</button>
+          <button ion-item (click)="toMyComment()">我的评价</button>
+        </ion-list>
+      </ion-col>
+    </ion-row>
 
-	<ion-icon name="custom-logo"></ion-icon>
-	<img src="assets/imgs/venjong.png">
-	<ion-icon name="custom-goback"></ion-icon>
-	<ion-icon name="custom-computer"></ion-icon>
+    <ion-row>
+      <ion-col col-12>
+        <ion-list>
+          <button ion-item (click)="toContactUs()">联系我们</button>
+          <button ion-item>在线客服</button>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col col-12>
+        <ion-list>
+          <button ion-item (click)="toManageAddress()">管理收货地址</button>
+          <button ion-item (click)="logout()">退出登录</button>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+
+    <ion-row style="border-bottom: none">
+      <ion-col col-12>
+        <ion-list>
+          <button ion-item (click)="toAboutVj()">关于稳卓</button>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
 </ion-content>
 
 
 <style>
+  ion-content * {
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
 	img {
 		margin-top: 0.4rem;
 	}
+
+  ion-content ion-list {
+    padding-left: 1.4rem;
+  }
+
+  ion-content ion-row {
+    border-bottom: 1.2rem solid #efefef;
+  }
+
 </style>

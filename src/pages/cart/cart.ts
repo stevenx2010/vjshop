@@ -15,6 +15,7 @@ import { Product } from '../../models/product.model';
 export class CartPage {
   @ViewChild(Toolbar) toolbar: Toolbar;
   loggedIn: boolean = false;
+  noAddress: boolean = true;
   mobile: string;
   address: Address;
   shoppingCart: ShoppingItem[];
@@ -37,18 +38,9 @@ export class CartPage {
   	this.products = new Array<Product>();
   	this.baseUrl = this.apiUrl;
 
-    /*
-  	this.events.subscribe('shopping_cart_item_added', (shoppingCart) => {
-  		//console.log(shoppingCart);
-  	//	this.getShoppingItems();
-  	});*/
-
-
     this.events.subscribe('login_success', (loggedIn, mobile, address) => {
-    //   this.events.unsubscribe('login_success');
        this.loggedIn = true;
-       this.getShippingAddressAndMobile(); 
- 
+       this.getShippingAddressAndMobile();  
     });
 
     this.events.subscribe('logout', (param) => {
@@ -56,6 +48,7 @@ export class CartPage {
       this.address = new Address();
       this.loggedIn = false;
       this.mobile = '';
+      this.noAddress = true;
 
     });    
   }
@@ -82,8 +75,12 @@ export class CartPage {
       this.storage.get(Constants.SHIPPING_ADDRESS_KEY).then ((data) => {
         if(data) {
             this.address = data;
+            this.noAddress = false;
         }
-        else this.address = new Address();
+        else {
+          this.address = new Address();
+          this.noAddress = true;
+        }
       });
 
       // get shopping items
@@ -115,7 +112,6 @@ export class CartPage {
   ionViewDidEnter() {
     this.events.subscribe('address_changed', () => {
       this.getShippingAddressAndMobile();
-      console.log('xxxxxxxxxxxxxxxxxxx');
     })
   }
 
@@ -137,8 +133,13 @@ export class CartPage {
       });
 
       this.storage.get(Constants.SHIPPING_ADDRESS_KEY).then((r) => {
-          if(r) this.address = r;
-          else r = new Address();
+          if(r) {
+            this.address = r;
+            this.noAddress = false;
+          } else {
+            r = new Address();
+            this.noAddress = true;
+          }
       })
     });   
   }

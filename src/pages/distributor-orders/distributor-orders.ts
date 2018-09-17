@@ -7,6 +7,7 @@ import { TabsPage } from '../tabs/tabs';
 import { ShoppingItem } from '../../models/shopping-item.model';
 import { Product } from '../../models/product.model';
 import { DeliveryStatus } from '../../models/constants.model';
+import { OrderStatus } from '../../models/constants.model';
 
 /**
  * Generated class for the DistributorOrdersPage page.
@@ -88,7 +89,7 @@ export class DistributorOrdersPage {
     alert.addButton({
       text: '确定',
       handler: data => {
-        this.vjApi.updateOrderDeliveryStatus(order.id, DeliveryStatus.RECEIVED, this.createDateTime()).subscribe((resp) => {
+        this.vjApi.updateOrderDeliveryStatus(order.id, DeliveryStatus.DELIVERED_NOT_CONFIRM, this.createDateTime()).subscribe((resp) => {
           console.log(resp);
           this.deliveryBtnDisabled[index] = true;
           this.isInit = false;
@@ -128,58 +129,73 @@ export class DistributorOrdersPage {
       this.vjApi.getOrdersOfDistributor(this.mobile).subscribe((data: Order[]) => {
         if(data.length > 0) {
           //  for case '1': all orders
-          this.orders = data;
+          data.forEach((o) => {
+            if(o.order_status == OrderStatus.PAYED) {
+              this.orders.push(o);
+              this.shippingAddressHide.push(true);
+              this.deliveryBtnDisabled.push(false);
+              this.confirmBtnDisabled.push(false);
+            }
+    //      })
+          /*
           for(let i = 0; i < this.orders.length; i++) {
             this.shippingAddressHide.push(true);
             this.deliveryBtnDisabled.push(false);
             this.confirmBtnDisabled.push(false);
-          }
-          this.orders.sort((a: Order, b: Order) => {
+          }*/
+      /*    this.orders.sort((a: Order, b: Order) => {
             if(a.order_date > b.order_date) return -1;
             else if(a.order_date < b.order_date) return 1;
             return 0;
-          });
+          });*/
 
           //  for case '2':
-          data.forEach((o) => {
-            if(o.delivery_status == DeliveryStatus.WAITING_FOR_DELIVERY) {
+     //     data.forEach((o) => {
+            if(o.delivery_status == DeliveryStatus.WAITING_FOR_DELIVERY && o.order_status == OrderStatus.PAYED) {
               this.ordersToBeDelivered.push(o);
               this.shippingAddressHide.push(true);
               this.deliveryBtnDisabled.push(false);
               this.confirmBtnDisabled.push(false);
             }
-          });
+     //     });
 
           //  for case '3':
-          data.forEach((o) => {
-            if(o.delivery_status == DeliveryStatus.RECEIVED) {
+     //     data.forEach((o) => {
+            if(o.delivery_status == DeliveryStatus.DELIVERED_NOT_CONFIRM) {
               this.ordersWaitForConfirm.push(o);
               this.shippingAddressHide.push(true);
               this.deliveryBtnDisabled.push(false);
               this.confirmBtnDisabled.push(false);
             }
-          });
+       //   });
 
           //  for case '4':
-          data.forEach((o) => {
+       //   data.forEach((o) => {
             if(o.delivery_status == DeliveryStatus.CONFIRMED) {
               this.ordersConfirmed.push(o);
               this.shippingAddressHide.push(true);
               this.deliveryBtnDisabled.push(false);
               this.confirmBtnDisabled.push(false);
             }
-          });    
-        }
+        //  });    
+        })}
           console.log(data);
+          console.log(this.ordersConfirmed);
+          console.log(this.ordersWaitForConfirm);
       });
     }
   }
 
   createDateTime(): string {
-    let date = new Date(Date.now());
-    let dateTime = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + ' ' + 
-                    date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+    let date = new Date();
+    let dateString = date.getFullYear() + '-'+ date.getMonth() + '-' + date.getDay() +' ' + 
+          date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+    
+    return dateString;
+  }
 
-    return dateTime;
+  doRefresh(refresher) {
+    this.getOrdersFromServer();
+    refresher.complete();
   }
 }

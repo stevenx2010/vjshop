@@ -126,8 +126,9 @@ export class ConfirmOrderPage {
    		})
    	
      // get location
-     this.storage.get(Constants.LOCATION_KEY).then((data) => {
+     this.storage.get(Constants.SHIPPING_ADDRESS_KEY).then((data) => {
        let city = data;
+       if(data) city = data.city;
 
        console.log(city);
        // Get Distributor at this location
@@ -251,9 +252,21 @@ export class ConfirmOrderPage {
   }
 
   genOrderSerialNumber() {
-   // console.log(Date.now() + '' + this.getRandomInt(1000, 9999));
-   // console.log(Number(this.shippingAddress.mobile) + 1);
-    return(Date.now() + '' + (Number(this.shippingAddress.mobile)  & this.getRandomInt(100, 999)));
+    let n:string = (Number(this.shippingAddress.mobile)  & this.getRandomInt(1000, 9999)) + '';
+    let len = n.length - 1;
+    let r = this.getRandomInt(1, len);
+    // first char
+    let char1 = n.charAt(r);
+
+    // second char
+    r = this.getRandomInt(1, len);
+    let char2 = n.charAt(r);
+
+    // third char
+    r = this.getRandomInt(1, len);
+    let char3 = n.charAt(r);
+
+    return Date.now() + '' + char1 + char2 + char3;
   }
 
   getRandomInt(min, max) {
@@ -266,9 +279,14 @@ export class ConfirmOrderPage {
     // Order basic info
     this.order.customer_id = this.customer_id;
     this.order.order_serial = this.genOrderSerialNumber();
+    /*
     let dateString = new Date().toISOString();
     let regexp = /^(.*)T(.*)Z$/gi;
-    dateString = dateString.replace(regexp, '$1 $2');
+    dateString = dateString.replace(regexp, '$1 $2');*/
+    let date = new Date();
+    let dateString = date.getFullYear() + '-'+ date.getMonth() + '-' + date.getDay() +' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+
+    console.log(dateString);
     this.order.order_date = dateString;
 
     this.order.total_price = this.totalPrice;

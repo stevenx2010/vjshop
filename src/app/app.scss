@@ -15,7 +15,6 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 
-@import "../theme/icons";
 
 ion-icon {
 	&[class*="custom-"] {
@@ -32,9 +31,6 @@ ion-icon {
 	}
 	&[class*="alipay"] {
 		mask-image: url(../assets/fonts/alipay.svg);
-	}
-	&[class*="logo"] {
-		-webkit-mask-image: url(../assets/fonts/logo.svg);
 	}
 	&[class*="goback"] {
 		mask-image: url(../assets/fonts/goback.svg);
@@ -53,6 +49,24 @@ ion-icon {
 	}
 	&[class*="exit"] {
 		mask-image: url(../assets/fonts/exit.svg);
+	}
+	&[class*="pay"] {
+		mask-image: url(../assets/fonts/toPay.svg);
+	}
+	&[class*="deliver"] {
+		mask-image: url(../assets/fonts/toDeliver.svg);
+	}
+	&[class*="receive"] {
+		mask-image: url(../assets/fonts/toReceive.svg);
+	}
+	&[class*="comment"] {
+		mask-image: url(../assets/fonts/toComment.svg);
+	}
+	&[class*="star"] {
+		mask-image: url(../assets/fonts/star.svg);
+	}
+	&[class*="star-empty"] {
+		mask-image: url(../assets/fonts/star-empty.svg);
 	}
 }
 

@@ -35,33 +35,14 @@ export class ProductListPage {
 
   }
 
-/*
-  ionViewDidLoad() {
-    this.storage.ready().then(() => {
-    	this.storage.get(Constants.SHOPPING_CART_KEY).then((data: ShoppingItem[]) => {
-    		if(data.length > 0) {
-    			this.shoppingCart = data;
-
-    			// get back products info from server
-    			this.vjApi.getProductsByIds(JSON.stringify(this.shoppingCart)).subscribe((p) => {
-	    			if(p) this.products = p.json();
-	    			console.log(this.products);
-	    			console.log(this.shoppingCart);
-    			})
-    		}
-    	})
-    })
-  }*/
-
   ionViewDidLoad() {
     if(this.shoppingCart && this.shoppingCart.length > 0) {
-                // get back products info from server
-          this.vjApi.getProductsByIds(JSON.stringify(this.shoppingCart)).subscribe((p) => {
-            if(p) this.products = p.json();
-            console.log(this.products);
-            console.log(this.shoppingCart);
-          })
+      // get back products info from server
+      this.vjApi.getProductsByIds(JSON.stringify(this.shoppingCart)).subscribe((p) => {
+        if(p) this.products = p.json();
+        console.log(this.products);
+        console.log(this.shoppingCart);
+      })
     }
   }
-
 }

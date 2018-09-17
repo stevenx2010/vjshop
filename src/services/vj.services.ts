@@ -368,6 +368,14 @@ export class VJAPI {
 	 		.pipe(map((data) => data.json()));		 	
 	 }
 
+	 public getDistributorInfoByLocation(city: string): Observable<Distributor> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.get(this.apiUrl + 'api/distributor/info/city/' + city, {headers: headers})
+	 		.pipe(map((data) => data.json()));		 	
+	 }
+
 	 public getDistributorInventoryByProductId(distributorId, productId): Observable<number> {
 		let headers = new Headers();
 	 	this.initAuthHeader(headers);
@@ -457,4 +465,34 @@ export class VJAPI {
 
 		return this.http.get(this.apiUrl + 'api/order/update/delivery/' + orderId + '/' + status + '/' + datetime, {headers: headers});	 	
 	 }
+
+	 public getMyOrders(mobile, orderStatus): Observable<Order[]> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.get(this.apiUrl + 'api/order/myorders/' + mobile + '/' + orderStatus, {headers: headers})
+			.pipe(map((data) => data.json()));	 		 	
+	 }
+
+	 public deleteMyOrder(orderId): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.delete(this.apiUrl + 'api/order/delete/id/' + orderId, {headers: headers});	 	
+	 }
+
+	/********************************************************************************************
+	 *                   API Section: Comment related data
+	 *
+	 * 1. Interface to SUBMIT Order
+	 *		POST:	http://api_url/api/order/submit
+	 * 2. Interface to 
+	 ********************************************************************************************/
+	 public updateComment(body): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.post(this.apiUrl + 'api/comment/update', body, {headers: headers});	 		 	
+	 }
 }
+

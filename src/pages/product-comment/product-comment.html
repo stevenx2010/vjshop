@@ -1,0 +1,36 @@
+
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>待评价清单</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+	<ion-list>
+		<ion-item-sliding  *ngFor=" let product of products; let i = index;">
+			<ion-item>
+				<ion-avatar item-start>
+					<img src="{{baseUrl}}{{product[0]?.thumbnail_url}}">
+				</ion-avatar>
+				<h3>{{product[0]?.product_sub_category_name}}</h3>
+				<p>{{product[0]?.model}}</p>
+				<ion-note item-end>
+					{{shoppingCart[i].price | currency:'CNY':symbol-narrow}}x{{shoppingCart[i].quantity}}
+				</ion-note>
+			</ion-item>
+
+			<ion-item-options>
+				<button ion-button color="secondary" (click)="toCommentForm(i)">
+					<ion-icon name="custom-comment"></ion-icon>
+					评价
+				</button>
+<!--				<button ion-button color="secondary">
+					<ion-icon name="custom-comment"></ion-icon>
+					追评
+				</button>-->
+			</ion-item-options>
+		</ion-item-sliding>
+	</ion-list>
+</ion-content>

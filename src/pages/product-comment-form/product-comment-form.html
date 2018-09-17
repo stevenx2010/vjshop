@@ -1,0 +1,69 @@
+<!--
+  Generated template for the ProductCommentFormPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>产品评价</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+	<ion-list>
+		<ion-item>
+			<ion-thumbnail item-start>
+				<img src="{{baseUrl}}{{product?.thumbnail_url}}">
+			</ion-thumbnail>
+			<h4>{{product?.product_sub_category_name}}</h4>
+			<p>{{product?.name}}</p>
+			<ion-note item-end>{{product?.price | currency:'CNY':symbol-narrow}}</ion-note>	
+		</ion-item>
+	</ion-list>
+
+	<rating (onChange)="ratingClicked($event)"></rating>
+	<ion-textarea id="comment" rows="10" class="form-control" placeholder="产品评价" [(ngModel)]="comment">
+	</ion-textarea>
+
+	<ion-card *ngIf="saved">
+		<ion-card-header>
+			评价内容
+		</ion-card-header>
+		<ion-card-content>
+			<p>分数：{{rating}}</p>
+			<p>内容：{{comment}}</p>
+		</ion-card-content>
+	</ion-card>
+</ion-content>
+
+<ion-footer>
+	<ion-toolbar>
+		<button ion-button full color="secondary" style="font-size: 1.4rem; margin: 0;" (click)="save()">
+			保存
+		</button>
+	</ion-toolbar>
+</ion-footer>
+
+<style>
+	ion-content {
+		background-color: #efefef;
+	}
+
+	ion-textarea {
+		background-color: white;
+	}
+
+ 	ion-toolbar {
+  		min-height: 2rem;
+  		margin: 0;
+  		padding: 0;
+  	}
+
+  	ion-card {
+  		margin: 0;
+  		padding: 0;
+  		width: 100%;
+  	}
+</style>

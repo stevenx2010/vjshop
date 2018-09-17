@@ -1,0 +1,6 @@
+	<ion-tabs tabsPlacement="top">
+		<ion-tab tabIcon="custom-pay" tabTitle="待付款" [root]="toPay" [rootParams]='mobile'></ion-tab>
+		<ion-tab tabIcon="custom-deliver" tabTitle="待发货" [root]="toDeliver" [rootParams]='mobile'></ion-tab>
+		<ion-tab tabIcon="custom-receive" tabTitle="已收货" [root]="toReceive" [rootParams]='mobile'></ion-tab>
+		<ion-tab tabIcon="custom-comment" tabTitle="待评价" [root]="toComment" [rootParams]='mobile'></ion-tab>
+	</ion-tabs>

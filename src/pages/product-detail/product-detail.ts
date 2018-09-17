@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { IonicPage, NavController, NavParams, App, Events } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, App, Events, AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { VJAPI } from '../../services/vj.services';
@@ -9,6 +9,7 @@ import { ShoppingItem } from '../../models/shopping-item.model';
 import { Constants } from '../../models/constants.model';
 import { Address } from '../../models/address.model';
 import { DistributorAddress } from '../../models/distributor-address-model';
+import { Distributor } from '../../models/distributor-model';
 
 
 @IonicPage()
@@ -32,11 +33,12 @@ export class ProductDetailPage {
 
   mobile: string;
 
+  distributor: Distributor;
   distributorAddress: DistributorAddress;
   inventory: number = 0;
 
   constructor(private navCtrl: NavController, private navParams: NavParams, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string,
-              private storage: Storage, private app: App, private events: Events) {
+              private storage: Storage, private app: App, private events: Events, private alertCtrl: AlertController) {
   	this.images_1 = new Array<ProductDetailImage>();
   	this.images_2 = new Array<ProductDetailImage>();
   	this.products = new Array<Product>(new Product());
@@ -47,9 +49,14 @@ export class ProductDetailPage {
     this.numberOfProducts = 1;
     this.shoppedItems = 0;
 
-    this.distributorAddress = new DistributorAddress();
+    this.distributor = new Distributor();
 
-
+    this.events.subscribe('login_success', (logged_in, mobile, address) => {
+      this.mobile = mobile;
+      this.shippingAddress = address;
+      this.addressBtnCaption = '管理地址';
+      this.getAddress();
+    });
   }
 
   ionViewWillLoad() {
@@ -93,7 +100,6 @@ export class ProductDetailPage {
       },
       (err) => {
         console.log(err);
-
       }
     );
 
@@ -119,10 +125,16 @@ export class ProductDetailPage {
   		}
   	);
 
+
+
     this.vjApi.hideLoader();
   }
 
   ionViewDidEnter() {
+    this.getAddress();    
+  }
+
+  getAddress() {
     // update shopping address
     if(this.mobile) {
       this.vjApi.showLoader();
@@ -130,32 +142,37 @@ export class ProductDetailPage {
         if(a && a.length > 0) {
 
           this.shippingAddress = a[0];
+          console.log(a);
+
+          // store it to local
+          this.storage.ready().then(() => {
+            this.storage.set(Constants.SHIPPING_ADDRESS_KEY, this.shippingAddress);
+          });
 
           // get distributor by location
           this.getDistributorByLocation(this.shippingAddress.city);         
         }
       });
       this.vjApi.hideLoader();
-    }
-/*
-    this.events.subscribe('login_address_added', () => {
-
-      this.getDistributorByLocation(this.shippingAddress.city);
-    });*/
+    } 
   }
 
   getDistributorByLocation(city: string) {
-    this.vjApi.getDistributorAddressByLocation(this.shippingAddress.city).subscribe((a) => {
-      console.log(a);
-      if(a && a.length > 0) {
-        this.distributorAddress = a[0];
+    this.distributorAddress = new DistributorAddress();
+    this.distributor = new Distributor();
+
+    this.vjApi.getDistributorInfoByLocation(city).subscribe((d) => {
+      console.log(d);
+      if(d) {
+        this.distributor = d;
+        this.distributorAddress = this.distributor.addresses[0];
 
         // get inventory of this product
         this.vjApi.getDistributorInventoryByProductId(this.distributorAddress.distributor_id, this.productId).subscribe((inv) => {
-           this.inventory = inv;
-        });
+            this.inventory = inv;
+        }); 
       } else {
-        this.distributorAddress = new DistributorAddress();
+        this.distributorAddress = null;
         this.inventory = 0;
       }
     });
@@ -174,9 +191,17 @@ export class ProductDetailPage {
   }
 
   addToShoppingCart() {
+    if((this.shippingAddress == null) || (this.shippingAddress && this.shippingAddress.city == '')) {
+      this.doPrompt('您没有送货地址，请先增加配送地址，然后在购买。');
+      return;
+    }
+
+    if((this.distributorAddress == null) || (this.distributorAddress && this.distributorAddress.city == '')) {
+      this.doPrompt('您所在的区域没有经销商，暂时无法购买，请致电0512-57880688；或者更换其他配送地址重新购买，谢谢您的理解。');
+      return;
+    }
 
       // if the shopping cart is empty, then we create a new item & put it in
-
       if(this.shoppingCart.length < 1) {
  
         let item = new ShoppingItem();
@@ -227,8 +252,6 @@ export class ProductDetailPage {
   }
 
   calculateShoppedItems(shoppingCart: ShoppingItem[]): number {
-//    if(shoppingCart.length < 1) 
-//      return 0;
 
     let total = 0;
     for(let key in this.shoppingCart) {
@@ -241,29 +264,29 @@ export class ProductDetailPage {
   }
 
   manageAddress(): void {
-    /*
-    // check if user has logged in
-    this.storage.ready().then(() => {
-      this.storage.get(Constants.LOGIN_KEY).then((data) => {
-        if(data)
-          this.app.getRootNav().push('AddAdressPage');
-        else
-          this.app.getRootNav().push('LoginPage');
-      })
-    });*/
 
     if(this.addressBtnCaption == "新建地址") {
         // check if user has logged in
       this.storage.ready().then(() => {
         this.storage.get(Constants.LOGIN_KEY).then((data) => {
-          if(data)
-            this.app.getRootNav().push('AddAdressPage');
+          if(data) {     
+            this.app.getRootNav().push('AddAdressPage', {mobile: this.mobile, action: 'create'});   
+          }
           else
             this.app.getRootNav().push('LoginPage');
         });
       });
     } else {
-        this.app.getRootNav().push('ManageAddressPage');
+        this.app.getRootNav().push('ManageAddressPage', {mobile: this.mobile, action: 'edit'});
     }
+  }
+
+  doPrompt(msg) {
+    let alert = this.alertCtrl.create();
+    alert.setTitle('提示');
+    alert.setMessage(msg);
+    alert.addButton('确定');
+
+    alert.present();
   }
 }

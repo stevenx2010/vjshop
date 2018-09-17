@@ -29,7 +29,7 @@ export class AddAdressPage {
   simpleColumns: any;
   address: Address;
   saveBtnDisable: boolean = true;
-  action: string;
+  action: string = 'create';
 
   placeholder='省/市/区';
   caption='新建收货地址';
@@ -51,11 +51,14 @@ export class AddAdressPage {
   ionViewWillLoad() {
     if(this.action == 'create')    // Create new Address
     {
-      if(this.navParams.get('mobile')) {
-        this.address.mobile = this.navParams.get('mobile');
+      if(this.navParams.get('mobile') != null) {
+        this.mobile = this.navParams.get('mobile');
+        this.address.mobile = this.mobile;
+
       }
       else {
         this.storage.ready().then(() => {
+          console.log('xxxxxxxxxxx');
           this.storage.get(Constants.USER_MOBILE_KEY).then((data) => {
             if(data) {
               this.address.mobile = data;

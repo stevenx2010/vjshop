@@ -1,0 +1,59 @@
+
+<ion-header>
+
+  <ion-navbar>
+  	<ion-grid>
+  		<ion-row>
+  			<ion-col col-2>
+  				<button ion-button icon-only outline small (click)="goback()">
+  					<ion-icon name="custom-goback"></ion-icon>返回
+  				</button>
+  			</ion-col>
+  			<ion-col col-10>
+    			<div style="font-size: 1.8rem;" align="center">我的订单</div>
+    		</ion-col>
+    	</ion-row>
+    </ion-grid>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+	<ion-list>
+		<ion-item-sliding *ngFor="let order of orders; let i = index;" >
+		<button ion-item (click)="toProductList(i)">
+			<ion-avatar item-start>
+				<img src="{{baseUrl}}{{avatar_url}}">
+			</ion-avatar>
+			<h4>订单号：{{order?.order_serial}}</h4>
+			<p>下单日期：{{order?.order_date}}</p>
+			<p>订单总价：{{order?.total_price}}</p>
+		</button>
+
+		<ion-item-options>
+			<button ion-button color="secondary">
+				<ion-icon name="custom-topay"></ion-icon>
+				去支付
+			</button>
+			<button ion-button color="alert" (click)="deleteOrder(i)">
+				<ion-icon name="trash"></ion-icon>
+				删除
+			</button>
+		</ion-item-options>
+		</ion-item-sliding	>
+	</ion-list>
+
+</ion-content>
+
+<style>
+	ion-header ion-row {
+		flex-wrap: nowrap;
+		align-items: center;
+	}
+
+	ion-header button {
+		border: none;
+	}
+
+</style>
