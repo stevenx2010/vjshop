@@ -1,5 +1,4 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Content } from 'ionic-angular';
 
 /**
  * Generated class for the CounterComponent component.

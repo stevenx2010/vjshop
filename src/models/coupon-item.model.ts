@@ -1,3 +1,5 @@
+import { CouponCustomerPivot } from './coupon-model';
+
 export class CouponItem {
 	public id: number = 0;
 	public name: string = '';
@@ -10,6 +12,8 @@ export class CouponItem {
 	public discount_value: number = 0;
 	public image_url: string = '';
 	public has_used: boolean = false;
+
+	public pivot: CouponCustomerPivot = new CouponCustomerPivot();
 
 	constructor(obj?) {
 		if(obj) {
@@ -24,6 +28,8 @@ export class CouponItem {
 			this.discount_value = obj.discount_value || 0;
 			this.image_url = obj.image_url || '';
 			this.has_used = obj.has_used || false;
+
+			this.pivot = obj.pivot || new CouponCustomerPivot();
 		}
 	}
 }

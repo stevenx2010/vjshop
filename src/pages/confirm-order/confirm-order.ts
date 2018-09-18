@@ -11,10 +11,11 @@ import { Product } from '../../models/product.model';
 import { DistributorAddress } from '../../models/distributor-address-model';
 import { DistributorContact } from '../../models/distributor-contact-model';
 import { Distributor } from '../../models/distributor-model';
-import { CouponItem } from '../../models/coupon-item.model';
 import { Coupon } from '../../models/coupon-model';
+import { CouponItem } from '../../models/coupon-item.model';
 import { CouponDiscountMethod } from '../../models/constants.model';
 import { Order } from '../../models/order-model';
+import { Tools } from '../../utils/Tools';
 
 @IonicPage()
 @Component({
@@ -31,7 +32,7 @@ export class ConfirmOrderPage {
   distributors: Distributor[];
   distributorContacts: DistributorContact[];
   shippingAddress: Address;
-  couponWallet: Array<Coupon>;
+  couponWalletArray: Coupon[];
   baseUrl: string;
   totalPrice: number = 0;
   totalWeight: number = 0;
@@ -66,7 +67,7 @@ export class ConfirmOrderPage {
     this.distributors = new Array<Distributor>(new Distributor());
     this.distributorContacts = new Array<DistributorContact>(new DistributorContact());
     this.shippingAddress = new Address();
-    this.couponWallet = new Array<Coupon>();
+    this.couponWalletArray = new Array<Coupon>();
     this.baseUrl = this.apiUrl;
     this.order = new Order();
     this.couponUsedIds = new Set<number>();
@@ -157,7 +158,7 @@ export class ConfirmOrderPage {
        this.storage.get(Constants.COUPON_WALLET_KEY).then((data: Set<Coupon>) => {
          if(data && data.size > 0) {
              data.forEach((item) => {
-               this.couponWallet.push(item);
+               if(!item.has_used) this.couponWalletArray.push(item);
              });
          }
        });
@@ -223,32 +224,45 @@ export class ConfirmOrderPage {
   }
 
   onCouponChange(i) {
-    if(this.couponWallet[i].has_used) {    // use coupon: i
+    console.log(this.couponWalletArray);
+    if(this.couponWalletArray[i].has_used) {    // use coupon: i
       
-      this.couponUsedIds.add(this.couponWallet[i].id);
+      this.couponUsedIds.add(this.couponWalletArray[i].id);
 
-      switch(this.couponWallet[i].discount_method) {
+      // re-calculate the total price
+      switch(this.couponWalletArray[i].discount_method) {
         case CouponDiscountMethod.VALUE:
-          this.totalPrice -= this.couponWallet[i].discount_value;
+          this.totalPrice -= this.couponWalletArray[i].discount_value;
           break;
         case CouponDiscountMethod.PERCENTAGE:
-          this.totalPrice *= (this.couponWallet[i].discount_percentage / 100.00);
+          this.totalPrice *= (this.couponWalletArray[i].discount_percentage / 100.00);
           break;
       }
     } else {      // don't use coupon: i
       this.couponUsedIds.forEach((id) => {
-        if(id == this.couponWallet[i].id) {
+        if(id == this.couponWalletArray[i].id) {
           this.couponUsedIds.delete(id);
         }
       })
-      switch(this.couponWallet[i].discount_method) {
+
+      // re-calculate the total price
+      switch(this.couponWalletArray[i].discount_method) {
         case CouponDiscountMethod.VALUE:
-          this.totalPrice += this.couponWallet[i].discount_value;
+          this.totalPrice += this.couponWalletArray[i].discount_value;
           break;
         case CouponDiscountMethod.PERCENTAGE:
-          this.totalPrice /= (this.couponWallet[i].discount_percentage / 100.0);
+          this.totalPrice /= (this.couponWalletArray[i].discount_percentage / 100.0);
       }
     }
+
+    // update the coupon wallet
+    this.storage.ready().then(() => {
+      let couponWallet = new Set<Coupon>();
+      this.couponWalletArray.forEach((item ) => {
+        couponWallet.add(item);
+      })
+      this.storage.set(Constants.COUPON_WALLET_KEY, couponWallet);
+    });
   }
 
   genOrderSerialNumber() {
@@ -283,11 +297,8 @@ export class ConfirmOrderPage {
     let dateString = new Date().toISOString();
     let regexp = /^(.*)T(.*)Z$/gi;
     dateString = dateString.replace(regexp, '$1 $2');*/
-    let date = new Date();
-    let dateString = date.getFullYear() + '-'+ date.getMonth() + '-' + date.getDay() +' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
 
-    console.log(dateString);
-    this.order.order_date = dateString;
+    this.order.order_date = Tools.getDateTime();
 
     this.order.total_price = this.totalPrice;
     this.order.total_weight = this.totalWeight;

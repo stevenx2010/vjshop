@@ -1,6 +1,5 @@
 import { Component, ViewChild, Inject } from '@angular/core';
 import { Content, Slides, NavController, App,Platform } from 'ionic-angular';
-import { Observable } from 'rxjs';
 
 import { Storage } from '@ionic/storage';
 import { Geolocation } from '@ionic-native/geolocation';

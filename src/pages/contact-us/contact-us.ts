@@ -22,7 +22,7 @@ export class ContactUsPage {
   	this.map.centerAndZoom(point, 17);
 
   	this.map.addControl(new BMap.MapTypeControl());
-  	let sizeMap = new BMap.Size(10, 80);
+  	//let sizeMap = new BMap.Size(10, 80);
   	this.map.addControl(new BMap.NavigationControl());
 
   	this.map.enableScrollWheelZoom(true);

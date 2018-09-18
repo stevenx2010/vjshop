@@ -7,12 +7,36 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>MyCoupon</ion-title>
+    <ion-title>我的优惠券</ion-title>
   </ion-navbar>
 
+  <ion-segment [(ngModel)]="couponType">
+  	<ion-segment-button value="1">全部</ion-segment-button>
+  	<ion-segment-button value="2">已使用</ion-segment-button>
+  	<ion-segment-button value="3">已过期</ion-segment-button>
+  </ion-segment>
 </ion-header>
 
 
 <ion-content padding>
+	<div [ngSwitch]="couponType">
+		<div *ngSwitchCase="1">
+			<div *ngFor="let coupon of coupons">
+			<img src="{{baseUrl}}{{coupon.image_url}}">
+			</div>
+		</div>
+
+		<div *ngSwitchCase="2">
+			<div *ngFor="let coupon of couponsUsed">
+				<img src="{{baseUrl}}{{coupon.image_url}}">
+			</div>
+		</div>
+
+		<div *ngSwitchCase="3">
+			<div *ngFor="let coupon of couponsExpired">
+				<img src="{{baseUrl}}{{coupon.image_url}}">
+			</div>
+		</div>
+	</div>
 
 </ion-content>

@@ -15,6 +15,8 @@ export class Coupon {
 	public image_url: string = '';
 	public has_used: boolean = false;
 
+	public pivot: CouponCustomerPivot = new CouponCustomerPivot();
+
 	// helper fields to disable the take button & display text
 	public btn_disabled: boolean = false;
 	public z_index: number = -1;
@@ -36,6 +38,14 @@ export class Coupon {
 			this.has_used = obj.has_used || false;
 			this.btn_disabled = obj.btn_disable || false;
 			this.z_index = obj.z_idnex || -1;
+
+			this.pivot = obj.pivot || new CouponCustomerPivot();
 		}
 	}
+}
+
+export class CouponCustomerPivot {
+	public coupon_id: number = 0;
+	public customer_id: number = 0;
+	public quantity: number = 0;
 }

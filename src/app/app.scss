@@ -25,13 +25,12 @@ ion-icon {
 		width: 1em;
 		height: 1em;
 	}
-
-	&[class*="wechat"] {
-		mask-image: url(../assets/fonts/wechat.svg);
-	}
-	&[class*="alipay"] {
+	&[class*="alibaba"] {
 		mask-image: url(../assets/fonts/alipay.svg);
 	}
+	&[class*="wechat"] {
+		mask-image: url(../assets/fonts/wechat.svg);
+	}	
 	&[class*="goback"] {
 		mask-image: url(../assets/fonts/goback.svg);
 	}

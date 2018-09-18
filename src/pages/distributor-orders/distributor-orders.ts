@@ -8,6 +8,7 @@ import { ShoppingItem } from '../../models/shopping-item.model';
 import { Product } from '../../models/product.model';
 import { DeliveryStatus } from '../../models/constants.model';
 import { OrderStatus } from '../../models/constants.model';
+import { Tools } from '../../utils/Tools';
 
 /**
  * Generated class for the DistributorOrdersPage page.
@@ -89,7 +90,7 @@ export class DistributorOrdersPage {
     alert.addButton({
       text: '确定',
       handler: data => {
-        this.vjApi.updateOrderDeliveryStatus(order.id, DeliveryStatus.DELIVERED_NOT_CONFIRM, this.createDateTime()).subscribe((resp) => {
+        this.vjApi.updateOrderDeliveryStatus(order.id, DeliveryStatus.DELIVERED_NOT_CONFIRM, Tools.getDateTime()).subscribe((resp) => {
           console.log(resp);
           this.deliveryBtnDisabled[index] = true;
           this.isInit = false;
@@ -110,7 +111,7 @@ export class DistributorOrdersPage {
     alert.addButton({
       text: '确定',
       handler: data => {
-        this.vjApi.updateOrderDeliveryStatus(order.id, DeliveryStatus.CONFIRMED, this.createDateTime()).subscribe((resp) => {
+        this.vjApi.updateOrderDeliveryStatus(order.id, DeliveryStatus.CONFIRMED, Tools.getDateTime()).subscribe((resp) => {
           console.log(resp);
           this.confirmBtnDisabled[index] = true;
           this.isInit = false;
@@ -130,7 +131,7 @@ export class DistributorOrdersPage {
         if(data.length > 0) {
           //  for case '1': all orders
           data.forEach((o) => {
-            if(o.order_status == OrderStatus.PAYED) {
+            if(o.order_status != OrderStatus.NOT_PAY_YET) {
               this.orders.push(o);
               this.shippingAddressHide.push(true);
               this.deliveryBtnDisabled.push(false);
@@ -184,14 +185,6 @@ export class DistributorOrdersPage {
           console.log(this.ordersWaitForConfirm);
       });
     }
-  }
-
-  createDateTime(): string {
-    let date = new Date();
-    let dateString = date.getFullYear() + '-'+ date.getMonth() + '-' + date.getDay() +' ' + 
-          date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
-    
-    return dateString;
   }
 
   doRefresh(refresher) {

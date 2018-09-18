@@ -1,12 +1,11 @@
 import { Injectable, Inject } from '@angular/core';
 import { LoadingController } from 'ionic-angular';
-import { Http, Headers, Response, RequestOptions } from '@angular/http';
+import { Http, Headers, Response } from '@angular/http';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { Storage } from '@ionic/storage';
 import { Observable } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
-import { Image } from '../models/image.model';
 import { ProductCategory } from '../models/product-category.model';
 import { Product } from '../models/product.model';
 import { ProductDetail } from '../models/product-detail.model';
@@ -25,13 +24,12 @@ import { Order } from '../models/order-model';
 
 @Injectable()
 export class VJAPI {
-	private TOKEN_KEY = 'api_token';
 	private api_token: string;
 	private access_token: string;
 	private loader: any;
 
 	constructor(private http: Http, private storage: Storage, private loadingCtrl: LoadingController,
-			    private inAppBrowser: InAppBrowser, @Inject('API_BASE_URL') private apiUrl: string) {
+			     @Inject('API_BASE_URL') private apiUrl: string) {
 		this.storage.ready().then(() =>{ 
 			this.storage.get(Constants.API_TOKEN_KEY).then((token) => { 
 				this.api_token = token; }).catch(console.log);
@@ -422,7 +420,7 @@ export class VJAPI {
 		return this.http.post(this.apiUrl + 'api/coupon/update/expire_status', body, {headers: headers});	 	
 	 }
 
-	 public getCouponsByMobile(mobile: string): Observable<CouponItem[]> {
+	 public getCouponsByMobile(mobile: string): Observable<Coupon[]> {
 		let headers = new Headers();
 	 	this.initAuthHeader(headers);
 
@@ -493,6 +491,21 @@ export class VJAPI {
 	 	this.initAuthHeader(headers);
 
 		return this.http.post(this.apiUrl + 'api/comment/update', body, {headers: headers});	 		 	
+	 }
+
+	 public getCommentByMobile(mobile: string): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.get(this.apiUrl + 'api/comment/show/' + mobile, {headers: headers});	 	
+	 }
+
+	 public getProductsNotCommented(orderId: number): Observable<Product[]> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.get(this.apiUrl + 'api/comment/not_commented/' + orderId, {headers: headers})
+			.pipe(map((data) => data.json()));	 		 	
 	 }
 }
 

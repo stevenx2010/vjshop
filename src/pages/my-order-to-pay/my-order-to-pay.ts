@@ -24,7 +24,7 @@ export class MyOrderToPayPage {
   mobile: string;
   baseUrl: string;
   ShoppingCart: ShoppingItem[];
-  avatar_url: string;
+  avatar_url: string[];
 
   deleteConfirmed: boolean = false;
 
@@ -32,9 +32,11 @@ export class MyOrderToPayPage {
   				@Inject('API_BASE_URL') private apiUrl: string, private app: App, private alertCtrl: AlertController) 
   {
   	this.mobile = this.navParams.data;
+
   	this.orders = new Array<Order>();
   	this.baseUrl = this.apiUrl;
   	this.ShoppingCart = new Array<ShoppingItem>();
+    this.avatar_url = new Array<string>();
   }
 
   ionViewDidLoad() {
@@ -49,13 +51,15 @@ export class MyOrderToPayPage {
       if(o.length > 0) {
         this.orders = o;
         console.log(o);
-        let productId = this.orders[0].products[0].productId;
-        this.vjApi.getProductById(productId).subscribe((pdt) => {
-          console.log(pdt);
-          if(pdt.length > 0) {
-            this.avatar_url = pdt[0].thumbnail_url;
-          } 
-        })
+        this.orders.forEach((od) => {
+          let productId = od.products[0].productId;
+          this.vjApi.getProductById(productId).subscribe((pdt) => {
+  
+            if(pdt.length > 0) {
+              this.avatar_url.push(pdt[0].thumbnail_url);
+            } 
+          });
+        });       
       }
     });
     

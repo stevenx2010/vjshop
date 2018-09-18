@@ -177,9 +177,9 @@
 					</ion-col>
 				</ion-row>
 
-				<ion-row *ngFor="let coupon of couponWallet; let i = index;" class="coupon-detail">
+				<ion-row *ngFor="let coupon of couponWalletArray; let i = index;" class="coupon-detail">
 					<ion-col col-2>
-						<img src="{{baseUrl}}{{coupon.image_url}}" class="coupon-image">
+						<img src="{{baseUrl}}{{coupon?.image_url}}" class="coupon-image">
 					</ion-col>
 
 					<ion-col col-6>
@@ -190,14 +190,14 @@
 
 					<ion-col col-2>
 						<div align="right" style="padding-right: 0.5rem;">
-							<span style="color: orange" *ngIf="coupon.discount_method==2">{{coupon.discount_value}}</span>
-							<span style="color: orange" *ngIf="coupon.discount_method==1">{{coupon.discount_percentage/100}}</span>
+							<span style="color: orange" *ngIf="coupon?.discount_method==2">{{coupon.discount_value}}</span>
+							<span style="color: orange" *ngIf="coupon?.discount_method==1">{{coupon.discount_percentage/100}}</span>
 						</div>
 					</ion-col>
 
 					<ion-col col-2>
 						<div align="right" style="padding-right: 0.5rem;">
-							<ion-checkbox [(ngModel)]="couponWallet[i].has_used" checked=false (ionChange)="onCouponChange(i)"></ion-checkbox>
+							<ion-checkbox [(ngModel)]="couponWalletArray[i].has_used" checked=false (ionChange)="onCouponChange(i)"></ion-checkbox>
 						</div>
 					</ion-col>
 				</ion-row>
@@ -232,7 +232,7 @@
 				</ion-row>
 				<ion-row class="payment-method">
 					<ion-col col-2>
-						<ion-icon name="custom-alipay" color="primary" class="myicon"></ion-icon>
+						<ion-icon name="custom-alibaba" color="primary" class="myicon"></ion-icon>
 					</ion-col>
 					<ion-col col-9>
 						支付宝支付

@@ -24,7 +24,6 @@ export class MyOrderTabsPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams) {
   	this.mobile = this.navParams.get('mobile');
-  	console.log(this.mobile);
   }
 
   ionViewDidLoad() {

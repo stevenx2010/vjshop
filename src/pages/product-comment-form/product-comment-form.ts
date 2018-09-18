@@ -5,6 +5,7 @@ import { Product } from '../../models/product.model';
 import { Comment } from '../../models/comment-model';
 import { Constants } from '../../models/constants.model';
 import { VJAPI } from '../../services/vj.services';
+import { Tools } from '../../utils/Tools';
 
 @IonicPage()
 @Component({
@@ -49,11 +50,7 @@ export class ProductCommentFormPage {
   	comment.product_id = this.product.id;
   	comment.comment = this.comment;
 
-  	let date = new Date();
-  	let dateStr = date.getFullYear() + '-'+ date.getMonth() + '-' + date.getDay() +' ' + 
-  				date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
-
-  	comment.comment_date = dateStr;
+  	comment.comment_date = Tools.getDateTime();
   	comment.rating = this.rating;
   	comment.comment_owner = this.mobile;
 

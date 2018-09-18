@@ -1,5 +1,5 @@
 import { Component, ViewChild, Inject, ElementRef } from '@angular/core';
-import { NavController, Content, App, Events } from 'ionic-angular';
+import { NavController, Content, App } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { VJAPI } from '../../services/vj.services';
@@ -34,7 +34,7 @@ export class CategoryPage {
   city: string = '';
 
   constructor(public navCtrl: NavController, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string,
-            private app: App, private events: Events, private storage: Storage) {
+            private app: App, private storage: Storage) {
   	this.productCategories = new Array<ProductCategory>();
     this.productBySubCategories = new Array<ProductBySubCategory>();
 
@@ -65,19 +65,20 @@ export class CategoryPage {
     })
   }
 
-  ionViewWillLoad() {
-     this.vjApi.getProductAll().subscribe(
+  getAllProducts() {
+      this.vjApi.getProductAll().subscribe(
         (data) => {
           if(data) this.products = data;
         },
         (err) => {
           console.log(err);
         }
-      );   
-    this.vjApi.hideLoader();
+      );      
   }
 
   ionViewDidEnter() {
+    this.getAllProducts();
+    this.vjApi.hideLoader();
   	let scroll = this.content.getScrollElement();
   	scroll.style.overflowY = 'hidden';
 
@@ -95,6 +96,10 @@ export class CategoryPage {
 
   }
 
+  reload(refresher) {
+    this.getAllProducts();
+    refresher.complete();
+  }
 
   itemSelected(index: number, id?: number): void {
   	this.clickedItemIndex = index;
@@ -159,7 +164,7 @@ export class CategoryPage {
   }
 
   priceSortUp() {
-    let data = this.products.sort((a, b) => {
+    this.products.sort((a, b) => {
       if(a.price - b.price > 0) return 1;
       if(a.price - b.price < 0) return -1;
       return 0;
@@ -167,7 +172,7 @@ export class CategoryPage {
   }
 
   priceSortDown() {
-    let data = this.products.sort((a, b) => {
+    this.products.sort((a, b) => {
       if(a.price - b.price > 0) return -1;
       if(a.price - b.price < 0) return 1;
       return 0;
@@ -175,7 +180,7 @@ export class CategoryPage {
   }
 
   soldAmountSortUp() {
-    let data = this.products.sort((a, b) => {
+    this.products.sort((a, b) => {
       if(a.sold_amount - b.sold_amount > 0) return 1;
       if(a.sold_amount - b.sold_amount < 0) return -1;
       return 0;
@@ -183,7 +188,7 @@ export class CategoryPage {
   }
 
   soldAmountSortDown() {
-    let data = this.products.sort((a, b) => {
+    this.products.sort((a, b) => {
       if(a.sold_amount - b.sold_amount > 0) return -1;
       if(a.sold_amount - b.sold_amount < 0) return 1;
       return 0;

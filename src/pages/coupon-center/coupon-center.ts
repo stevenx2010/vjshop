@@ -23,7 +23,7 @@ export class CouponCenterPage {
   couponTypes: CouponType[];
   couponsByType: Array<Coupon[]>;
 
-  couponWallet: Set<CouponItem>;
+  couponWallet: Set<Coupon>;
   loggedIn: boolean = false;
   mobile: string = '';
 
@@ -50,6 +50,8 @@ export class CouponCenterPage {
             this.vjApi.getCouponsByMobile(this.mobile).subscribe((coupons) => {
               if(coupons.length > 0) {
                 coupons.forEach((item) =>{
+                  if(item.pivot.quantity == 0) item.has_used = true;
+                  else item.has_used = false;
                   this.couponWallet.add(item);
                 });
 
@@ -129,7 +131,7 @@ export class CouponCenterPage {
     if(!this.loggedIn) this.navCtrl.push('LoginPage');
     else {
 
-      let item = new CouponItem();
+      let item = new Coupon();
       item.id = this.couponTypes[i].coupons[j].id;
       item.name = this.couponTypes[i].coupons[j].name;
       item.description = this.couponTypes[i].coupons[j].description;

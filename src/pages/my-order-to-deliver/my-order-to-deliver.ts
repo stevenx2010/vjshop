@@ -24,7 +24,7 @@ export class MyOrderToDeliverPage {
   mobile: string;
   baseUrl: string;
   ShoppingCart: ShoppingItem[];
-  avatar_url: string;
+  avatar_url: string[];
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI,
   				@Inject('API_BASE_URL') private apiUrl: string, private app: App) 
@@ -33,6 +33,7 @@ export class MyOrderToDeliverPage {
   	this.orders = new Array<Order>();
   	this.baseUrl = this.apiUrl;
   	this.ShoppingCart = new Array<ShoppingItem>();
+    this.avatar_url = new Array<string>();
   }
 
   ionViewDidLoad() {
@@ -40,13 +41,14 @@ export class MyOrderToDeliverPage {
     	if(o.length > 0) {
     		this.orders = o;
     		console.log(o);
-    		let productId = this.orders[0].products[0].productId;
-    		this.vjApi.getProductById(productId).subscribe((pdt) => {
-    			console.log(pdt);
-    			if(pdt.length > 0) {
-    				this.avatar_url = pdt[0].thumbnail_url;
-    			} 
-    		})
+    		this.orders.forEach((od) => {
+          let productId = od.products[0].productId;
+          this.vjApi.getProductById(productId).subscribe((pdt) => { 
+            if(pdt.length > 0) {
+              this.avatar_url.push(pdt[0].thumbnail_url);
+            } 
+          });
+        });       
     	}
     })
   }

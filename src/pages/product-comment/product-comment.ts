@@ -33,18 +33,23 @@ export class ProductCommentPage {
 
 
 
-  ionViewDidLoad() {
+  ionViewDidEnter() {
+    /*
     if(this.shoppingCart && this.shoppingCart.length > 0) {
         // get back products info from server
         this.vjApi.getProductsByIds(JSON.stringify(this.shoppingCart)).subscribe((p) => {
             if(p) this.products = p.json();
-            console.log(this.products);
-            console.log(this.shoppingCart);
         })
-    }
+    }*/
+    this.vjApi.showLoader();
+    this.vjApi.getProductsNotCommented(this.orderId).subscribe((p) => {
+      if(p) this.products = p;
+      console.log(p);
+    });
+    this.vjApi.hideLoader();
   }
 
   toCommentForm(index: number) {
-    this.navCtrl.push('ProductCommentFormPage', {product: this.products[index][0], orderId: this.orderId});
+    this.navCtrl.push('ProductCommentFormPage', {product: this.products[index], orderId: this.orderId});
   } 
 }

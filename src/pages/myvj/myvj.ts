@@ -17,7 +17,7 @@ export class MyvjPage {
   constructor(public navCtrl: NavController, private storage: Storage, private events: Events, private alertCtrl: AlertController,
               private app: App ) 
   {
-    this.events.subscribe('login_success', (logged_in, mobile) => {
+    this.events.subscribe('login_success', (logged_in, mobile, address) => {
       this.isLoggedIn = true;
       this.mobile = mobile;
     })
@@ -35,6 +35,7 @@ export class MyvjPage {
       this.storage.get(Constants.USER_MOBILE_KEY).then((m) => {
         if(m) {
           this.mobile = m;
+          console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
           console.log(this.mobile);
         }
       })
@@ -103,6 +104,6 @@ export class MyvjPage {
   }
 
   toMyComment() {
-    this.app.getRootNav().push('MyCommentPage');
+    this.app.getRootNav().push('MyCommentListPage', {mobile: this.mobile});
   }
 }

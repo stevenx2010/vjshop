@@ -1,6 +1,5 @@
 
 <ion-header>
-
   <ion-navbar>
   	<ion-grid>
   		<ion-row>
@@ -9,8 +8,8 @@
   					<ion-icon name="custom-goback"></ion-icon>返回
   				</button>
   			</ion-col>
-  			<ion-col col-10>
-    			<div style="font-size: 1.8rem;" align="center">我的订单</div>
+  			<ion-col col-8>
+    			<div style="font-size: 1.9rem;" align="center">我的订单</div>
     		</ion-col>
     	</ion-row>
     </ion-grid>
@@ -24,7 +23,7 @@
 		<ion-item-sliding *ngFor="let order of orders; let i = index;" >
 		<button ion-item (click)="toProductList(i)">
 			<ion-avatar item-start>
-				<img src="{{baseUrl}}{{avatar_url}}">
+				<img src="{{baseUrl}}{{avatar_url[i]}}">
 			</ion-avatar>
 			<h4>订单号：{{order?.order_serial}}</h4>
 			<p>下单日期：{{order?.order_date}}</p>

@@ -1,10 +1,9 @@
-import { Injectable, Inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import { Observable } from 'rxjs';
 
 import { Constants } from '../models/constants.model';
 import { VJAPI } from '../services/vj.services';
-import { CouponItem } from '../models/coupon-item.model';
 import { Address } from '../models/address.model';
 
 @Injectable()

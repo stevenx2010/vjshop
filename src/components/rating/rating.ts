@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, Input } from '@angular/core';
 
 /**
  * Generated class for the RatingComponent component.
@@ -13,11 +13,13 @@ import { Component, Output, EventEmitter } from '@angular/core';
 export class RatingComponent {
 
   @Output() onChange = new EventEmitter<number>();
-
-  rating: number = 0;
+  @Input() rating: number = 0;
+  @Input() disabled: boolean = false;
 
   onClick(value) {
-    this.rating = value;
-    this.onChange.emit(this.rating);
+  	if(!this.disabled) {
+	    this.rating = value;
+	    this.onChange.emit(this.rating);
+	}	
   }
 }

@@ -3,7 +3,6 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { VJAPI } from '../../services/vj.services';
-import { Constants } from '../../models/constants.model';
 import { ShoppingItem } from '../../models/shopping-item.model';
 import { Product } from '../../models/product.model';
 

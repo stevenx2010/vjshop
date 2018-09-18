@@ -5,7 +5,7 @@ import { Storage } from '@ionic/storage';
 import { Constants, Login } from '../../models/constants.model';
 import { VJAPI } from '../../services/vj.services';
 import { InitEnv } from '../../utils/initEnv';
-import { CouponItem } from '../../models/coupon-item.model';
+import { Coupon } from '../../models/coupon-model';
 import { Address } from '../../models/address.model';
 
 
@@ -25,14 +25,14 @@ export class LoginPage {
   mobileIsValide: boolean = false;
   smsCodeIsValide: boolean = false;
 
-  couponWallet: Set<CouponItem>;
+  couponWallet: Set<Coupon>;
 
   loggedIn: boolean = false;
   shippingAddress: Address;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI, private alertCtrl: AlertController,
   				private events: Events, private init: InitEnv) {
-    this.couponWallet = new Set<CouponItem>();
+    this.couponWallet = new Set<Coupon>();
     this.shippingAddress = new Address();
   }
 
@@ -94,24 +94,37 @@ export class LoginPage {
   		}
 
       // step B: check login success/failure
-  		if(response.status === Login.CONFIRM_SMS_CODE_SUCCESS) {
+  		if(response.status == Login.CONFIRM_SMS_CODE_SUCCESS) {
         // step 1: store user login status locally
         this.storage.ready().then(() => {
           // step 1-1: store user's mobile
           this.storage.set(Constants.USER_MOBILE_KEY, this.mobile);
+          console.log(this.mobile);
 
           // setp 1-2: set Login key as true
           this.storage.set(Constants.LOGIN_KEY, 1);
 
           // step 1-3: get coupon wallet by mobile
-        /*
-          this.init.getCouponWallet(this.mobile).subscribe((r) => {
+        
+          this.vjApi.getCouponsByMobile(this.mobile).subscribe((r) => {
             console.log(r);
             if(r) {
-               this.couponWallet = r;
-               this.events.publish('login_success');
+              r.forEach((item) => {
+                if(item.pivot.quantity > 0) {
+                  item.has_used = false;
+                } else {
+                  item.has_used = true;
+                }
+
+                this.couponWallet.add(item);
+                });
+
+               this.storage.ready().then(() => {
+                 this.storage.set(Constants.COUPON_WALLET_KEY, this.couponWallet);
+               })
+            //   this.events.publish('login_success', {logged_in: true, mobile: this.mobile});
             }
-          })*/
+          });
 
         }).catch(console.log);
 

@@ -12,12 +12,12 @@
 		<ion-item-sliding  *ngFor=" let product of products; let i = index;">
 			<ion-item>
 				<ion-avatar item-start>
-					<img src="{{baseUrl}}{{product[0]?.thumbnail_url}}">
+					<img src="{{baseUrl}}{{product?.thumbnail_url}}">
 				</ion-avatar>
-				<h3>{{product[0]?.product_sub_category_name}}</h3>
-				<p>{{product[0]?.model}}</p>
+				<h3>{{product?.product_sub_category_name}}</h3>
+				<p>{{product?.model}}</p>
 				<ion-note item-end>
-					{{shoppingCart[i].price | currency:'CNY':symbol-narrow}}x{{shoppingCart[i].quantity}}
+					{{product?.pivot?.price | currency:'CNY':symbol-narrow}}x{{product?.pivot?.quantity}}
 				</ion-note>
 			</ion-item>
 
