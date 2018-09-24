@@ -87,7 +87,7 @@
 					<ion-col col-8 class="item">
 						<ion-row class="item-intro">
 							<ion-col col-10>
-								{{product[0]?.model}}{{product[0]?.product_sub_category_name}}
+								<div (click)="toProductDetailPage(product[0]?.id)">{{product[0]?.model}}{{product[0]?.product_sub_category_name}}</div>
 							</ion-col>
 					<!--		<ion-col col-5>
 								
@@ -99,12 +99,12 @@
 							</ion-col>
 						</ion-row>
 						<ion-row class="item-price" style="flex-wrap: nowrap;">
-							<ion-col class="price" col-3>
+							<ion-col class="price" col-3 (click)="toProductDetailPage(product[0]?.id)">
 								{{shoppingCart[i].price | currency:'CNY':'symbol-narrow'}}
 							</ion-col>
 
 							<ion-col col-5>
-								<div align="center">小计：<span class="price">{{shoppingCart[i]?.price * shoppingCart[i]?.quantity | currency:'CNY':'symbol-narrow'}}</span></div>
+								<div align="center" (click)="toProductDetailPage(product[0]?.id)">小计：<span class="price">{{shoppingCart[i]?.price * shoppingCart[i]?.quantity | currency:'CNY':'symbol-narrow'}}</span></div>
 							</ion-col>
 							<ion-col col-4>
 								<div align="right">

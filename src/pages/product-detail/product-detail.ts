@@ -150,7 +150,10 @@ export class ProductDetailPage {
           });
 
           // get distributor by location
-          this.getDistributorByLocation(this.shippingAddress.city);         
+          let city = this.shippingAddress.city.split(' ');
+          //console.log(city);
+          if(city.length > 0)
+            this.getDistributorByLocation(city[0]);         
         }
       });
       this.vjApi.hideLoader();

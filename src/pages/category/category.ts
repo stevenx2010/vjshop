@@ -1,5 +1,5 @@
 import { Component, ViewChild, Inject, ElementRef } from '@angular/core';
-import { NavController, Content, App } from 'ionic-angular';
+import { NavController, Content, App, Events } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { VJAPI } from '../../services/vj.services';
@@ -32,9 +32,12 @@ export class CategoryPage {
 
   allProductsSelected: boolean = true;
   city: string = '';
+  loggedIn: boolean = false;
+  mobile: string;
 
   constructor(public navCtrl: NavController, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string,
-            private app: App, private storage: Storage) {
+            private app: App, private storage: Storage, private events: Events) 
+  {
   	this.productCategories = new Array<ProductCategory>();
     this.productBySubCategories = new Array<ProductBySubCategory>();
 
@@ -42,6 +45,11 @@ export class CategoryPage {
 
 	  this.clickedItemIndex = 0;
 	  this.baseUrl = this.apiUrl;
+
+    this.events.subscribe('login_success', (loggedIn, mobile, shippingAddress) => {
+      this.loggedIn = loggedIn;
+      this.mobile = mobile;
+    })
 
     // start to show loader
     this.vjApi.showLoader();
@@ -61,6 +69,9 @@ export class CategoryPage {
     this.storage.ready().then(() => {
       this.storage.get(Constants.LOCATION_KEY).then((data) => {
         this.city = data;
+      })
+      this.storage.get(Constants.LOGIN_KEY).then((l) => {
+        if(l) this.loggedIn = l;
       })
     })
   }
@@ -204,4 +215,12 @@ export class CategoryPage {
    //this.app.getRootNav().push('DistributorToolsPage');
   }
 
+
+  getLocation() {
+    if(this.loggedIn) {
+      this.app.getRootNav().push('ManageAddressPage');
+    } else {
+      this.app.getRootNav().push('LoginPage');
+    }
+  }
 }

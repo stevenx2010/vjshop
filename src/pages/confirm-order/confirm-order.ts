@@ -66,6 +66,8 @@ export class ConfirmOrderPage {
 
   appToCheck: any;
 
+  unregisterBackButtonAction: any;
+
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI,
   				@Inject('API_BASE_URL') private apiUrl: string, private alipay: Alipay, private alertCtrl: AlertController,
           private app: App, private appAvail: AppAvailability, private platform: Platform) 
@@ -100,6 +102,8 @@ export class ConfirmOrderPage {
   }
 
   ionViewWillLoad() {
+    this.initializeBackButtonCustomHandler();
+
    	this.storage.ready().then(() => {
    		// Get mobile which was stored locally
    		this.storage.get(Constants.USER_MOBILE_KEY).then((data) => {
@@ -183,6 +187,18 @@ export class ConfirmOrderPage {
      })
      })
   }	
+
+  ionViewWillLeave() {
+    this.unregisterBackButtonAction && this.unregisterBackButtonAction();
+  }
+
+  initializeBackButtonCustomHandler() {
+    if(this.platform.is('android')) {
+      this.unregisterBackButtonAction = this.platform.registerBackButtonAction((event) => {
+        this.navCtrl.pop();
+      }, 101);
+    }
+  }
 
   calculateTotal() {
     this.totalPrice = 0;

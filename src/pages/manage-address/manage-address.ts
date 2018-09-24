@@ -70,9 +70,11 @@ export class ManageAddressPage {
     let addressId = this.addresses[index].id;
 
     this.vjApi.showLoader();
-    this.vjApi.deleteAddressById(addressId).subscribe((resp) => console.log(resp));
+    this.vjApi.deleteAddressById(addressId).subscribe((resp) => {
+      console.log(resp)
+      this.getAddresses();
+    });
     this.vjApi.hideLoader();
-    this.getAddresses();
   }
 
   ionViewCanLeave() {

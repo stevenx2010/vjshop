@@ -295,3 +295,5 @@ export class CartPage {
   }
 
 }
+
+

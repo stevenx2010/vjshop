@@ -39,7 +39,8 @@ import { AppAvailability } from '@ionic-native/app-availability';
     BrowserModule,
     IonicModule.forRoot(MyApp, {
       backButtonText: '返回',
-      backButtonIcon: 'custom-goback'
+      backButtonIcon: 'custom-goback',
+      navExitApp: false
     }),
     HttpModule,
     HttpClientModule,
@@ -64,8 +65,8 @@ import { AppAvailability } from '@ionic-native/app-availability';
     Alipay,
     AppAvailability,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
- //   {provide: 'API_BASE_URL', useValue: 'http://192.168.1.66:8000/'},
-    {provide: 'API_BASE_URL', useValue: 'http://vjshop.yitongxun.cn:8080/api/'},
+    {provide: 'API_BASE_URL', useValue: 'http://192.168.1.66:8000/'},
+ //   {provide: 'API_BASE_URL', useValue: 'http://vjshop.yitongxun.cn:8080/api/'},
     CoordinateTransform,
   ]
 })
