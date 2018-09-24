@@ -93,6 +93,10 @@
         <variable name="IOS_KEY" value="TEv78fc0HREWpzQZvSc5G0mH85N1sUsK" />
         <variable name="IOS_LOCATION_DESC" value="请点击'好'以允许访问。" />
     </plugin>
+    <plugin name="cordova-plugin-gubnoi-alipay" spec="0.0.4">
+        <variable name="APP_ID" value="2018082961114895" />
+    </plugin>
+    <plugin name="cordova-plugin-appavailability" spec="^0.4.2" />
     <engine name="android" spec="^7.1.1" />
     <engine name="ios" spec="^4.5.5" />
 </widget>

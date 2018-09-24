@@ -21,9 +21,11 @@ export class MyOrderTabsPage {
   toComment: any = 'MyOrderToCommentPage';
 
   mobile: string;
+  status: string;
+  params: any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams) {
-  	this.mobile = this.navParams.get('mobile');
+    this.params = this.navParams.get('params');
   }
 
   ionViewDidLoad() {

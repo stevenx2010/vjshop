@@ -51,14 +51,14 @@
 				</ion-row>
 				<ion-row>
 					<ion-col col-12>
-						<div style="padding-top: 0.5rem;">收货地址： {{address?.city}}{{address?.street}}</div>
+						<div style="padding-top: 0.5rem;"  (click)="toManageAddressPage()">收货地址： {{address?.city}}{{address?.street}}</div>
 					</ion-col>				
 				</ion-row>
 			</ion-col>
 
 			<ion-col col-1>
 				<button ion-button icon-only full outline (click)="toManageAddressPage()">
-					<ion-icon name="arrow-forward"></ion-icon>
+					<ion-icon name="custom-goforward"></ion-icon>
 				</button>
 			</ion-col>
 		</ion-row>
@@ -145,7 +145,7 @@
 					</div>
 				</ion-col>
 				<ion-col col-3>
-					<button ion-button full block color="secondary" style="font-size: 1.4rem;"  [disabled]="!loggedIn || noAddress" icon-start (click)="toPaymentPage()">
+					<button ion-button full block color="secondary" style="font-size: 1.4rem;"  [disabled]="!loggedIn || noAddress || noItemSelected" icon-start (click)="toPaymentPage()">
 						去结算 
 					</button>
 				</ion-col>

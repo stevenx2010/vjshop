@@ -16,6 +16,7 @@ export class CartPage {
   @ViewChild(Toolbar) toolbar: Toolbar;
   loggedIn: boolean = false;
   noAddress: boolean = true;
+  noItemSelected: boolean = false;
   mobile: string;
   address: Address;
   shoppingCart: ShoppingItem[];
@@ -84,27 +85,7 @@ export class CartPage {
       });
 
       // get shopping items
-      this.storage.get(Constants.SHOPPING_CART_KEY).then((data: ShoppingItem[]) => {
-        if(data == null || data.length < 1)  {
-          this.shoppingCartEmpty = true;
-          return;
-        } else
-          this.shoppingCartEmpty = false;
-
-        this.shoppingCart = data;
-
-        this.calculateTotle();
-
-        this.vjApi.showLoader();
-        this.vjApi.getProductsByIds(JSON.stringify(this.shoppingCart)).subscribe(
-          (data) => {
-            this.products = data.json();      
-
-          },
-          (err) => console.log(err)
-        );
-        this.vjApi.hideLoader();
-      });
+ //     this.getShoppingItem();
     });
 
   }
@@ -113,6 +94,7 @@ export class CartPage {
     this.events.subscribe('address_changed', () => {
       this.getShippingAddressAndMobile();
     })
+    this.getShoppingItem();
   }
 
   hidePartOfMobile() {
@@ -142,6 +124,30 @@ export class CartPage {
           }
       })
     });   
+  }
+
+  getShoppingItem() {
+      this.storage.get(Constants.SHOPPING_CART_KEY).then((data: ShoppingItem[]) => {
+        if(data == null || data.length < 1)  {
+          this.shoppingCartEmpty = true;
+          return;
+        } else
+          this.shoppingCartEmpty = false;
+
+        this.shoppingCart = data;
+
+        this.calculateTotle();
+
+        this.vjApi.showLoader();
+        this.vjApi.getProductsByIds(JSON.stringify(this.shoppingCart)).subscribe(
+          (data) => {
+            this.products = data.json();      
+
+          },
+          (err) => console.log(err)
+        );
+        this.vjApi.hideLoader();
+      });    
   }
 
   toLoginPage(): void {
@@ -259,6 +265,12 @@ export class CartPage {
       }
       if(selectionStatus) this.checkedAll = true;
       else this.checkedAll = false;
+    }
+
+    if(this.totalPrice <= 0) {
+      this.noItemSelected = true;
+    } else {
+      this.noItemSelected = false;
     }
   }
 

@@ -90,8 +90,10 @@ export class MyvjPage {
   }
 
   toMyOrder() {
-    if(this.isLoggedIn)
-      this.app.getRootNav().push('MyOrderTabsPage', {mobile: this.mobile});
+    if(this.isLoggedIn) {
+      let params = {'mobile': this.mobile, 'status': 'fromMyvjPage'}
+      this.app.getRootNav().push('MyOrderTabsPage', {params: params});
+    }
     else
       this.app.getRootNav().push('LoginPage');
   }

@@ -42,7 +42,7 @@
 			<ion-col col-9>	
 				<ion-row>
 					<ion-col col-3 *ngFor="let product of products; let i = index">	
-						<img src="{{apiUrl}}{{product[0]?.thumbnail_url}}" *ngIf="i < 3">
+						<img src="{{apiUrl}}{{product[0]?.thumbnail_url}}" *ngIf="i < 3" (click)="toProductList()">
 					</ion-col>
 				</ion-row>
 			</ion-col>
@@ -50,7 +50,7 @@
 			<ion-col col-2>
 				<ion-row>
 					<ion-col>
-						<div align="right" style="color: #747474">
+						<div align="right" style="color: #747474" (click)="toProductList()">
 							共{{numberOfItems}}件
 						</div>
 					</ion-col>
@@ -244,7 +244,6 @@
 				</ion-row>
 			</ion-col>
 		</ion-row>
-
 
 	</ion-grid>
 </ion-content>

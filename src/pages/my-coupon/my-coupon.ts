@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ChangeDetectorRef } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
@@ -22,7 +22,7 @@ export class MyCouponPage {
   baseUrl: string;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI,
-  				private storage: Storage, @Inject('API_BASE_URL') private apiUrl: string) 
+  				private storage: Storage, @Inject('API_BASE_URL') private apiUrl: string, private cf: ChangeDetectorRef) 
   {
   	this.coupons = new Array<CouponItem>();
   	this.couponsExpired = new Array<CouponItem>();
@@ -56,6 +56,10 @@ export class MyCouponPage {
     		}
     	})
     })
+  }
+
+  segmentChanged(){
+    this.cf.detectChanges();
   }
 
 }

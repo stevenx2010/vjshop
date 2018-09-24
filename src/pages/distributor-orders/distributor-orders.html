@@ -2,14 +2,14 @@
 	<ion-navbar>
 		<ion-grid>
 			<ion-row style="align-items: center">
-				<ion-col col-4 style="font-size: 1.5rem;">
+				<ion-col col-4 style="font-size: 1.7rem;">
 					<button ion-button ion-only ion-start  outline style="border: none" (click)="exit()">
 					<ion-icon name="custom-exit"></ion-icon>
 						退出
 					</button>
 				</ion-col>
 				<ion-col col-8>
-					<div style="font-size: 1.7rem; font-weight: bold">经销商订单管理</div>		
+					<div style="font-size: 1.9rem; font-weight: bold">经销商订单管理</div>		
 				</ion-col>
 			</ion-row>
 		</ion-grid>
@@ -30,7 +30,7 @@
 	</ion-refresher>
 
 	<ion-grid>
-		<div [ngSwitch]="displayType">
+		<div [ngSwitch]="displayType" (ionChange)="segmentChanged()">
 <!--FOR CASE 1 All Orders--------------------------------------------------------------------------------------------->
 			<div *ngSwitchCase="1">
 				<div  *ngFor="let order of orders; let i = index;">			

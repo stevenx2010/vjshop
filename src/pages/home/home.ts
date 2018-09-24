@@ -1,8 +1,8 @@
 import { Component, ViewChild, Inject } from '@angular/core';
-import { Content, Slides, NavController, App,Platform } from 'ionic-angular';
+import { Content, Slides, NavController, App, Platform, AlertController} from 'ionic-angular';
 
 import { Storage } from '@ionic/storage';
-import { Geolocation } from '@ionic-native/geolocation';
+//import { Geolocation } from '@ionic-native/geolocation';
 
 import { VJAPI } from '../../services/vj.services';
 import { Image } from '../../models/image.model';
@@ -15,7 +15,7 @@ import { Http } from '@angular/http';
 
 import { CoordinateTransform } from '../../services/baidu.gps.service';
 
-//declare let cordova: any;
+declare let cordova: any;
 
 @Component({
   selector: 'page-home',
@@ -45,8 +45,9 @@ export class HomePage {
   address: Address;
 
   constructor(public navCtrl: NavController, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string, 
-              private http: Http, private app: App, private storage: Storage, private geolocation: Geolocation, 
-              private coordtrans: CoordinateTransform, private platform: Platform, private init: InitEnv ) 
+              private http: Http, private app: App, private storage: Storage, /*private geolocation: Geolocation, */
+              private coordtrans: CoordinateTransform, private platform: Platform, private init: InitEnv,
+              private alertCtrl: AlertController ) 
   {
   	// initialize arrays
   	this.remoteImages = new Array<Array<Image>>();
@@ -58,15 +59,15 @@ export class HomePage {
 
   ngOnInit(): void {
    this.platform.ready().then(() => {
-//     cordova.plugins.baidumap_location.getCurrentPosition((data) => {
+     cordova.plugins.baidumap_location.getCurrentPosition((data) => {
 
-  //     let result = data;
-      this.city = '北京市'//result.province;
+       let result = data;
+      this.city = '北京市';//result.province;//
        this.storage.ready().then(() => {
          this.storage.set(Constants.LOCATION_KEY, this.city);
        })
      });
-//   });
+   });
 
 
     this.initialize();
@@ -150,6 +151,7 @@ export class HomePage {
   		},
   		(err) => {
   			console.log('error: ', err);
+        this.doPrompt();
   			this.vjApi.hideLoader();
   		});
   }
@@ -166,6 +168,7 @@ export class HomePage {
   }
 
   // Location current address by GPS
+  /*
   getLocation() {
     this.geolocation.getCurrentPosition().then((data) => {
       console.log(data.coords.latitude);
@@ -175,7 +178,7 @@ export class HomePage {
       console.log(baidu);
       });
     
-  }
+  }*/
 
   toCouponCenterPage(){
     this.app.getRootNav().push('CouponCenterPage');
@@ -183,5 +186,12 @@ export class HomePage {
 
   toCouponForNewComerPage() {
     this.app.getRootNav().push('CouponForNewComerPage');
+  }
+
+  doPrompt() {
+    let alert = this.alertCtrl.create();
+    alert.setTitle('提示');
+    alert.setMessage('请检查是否有网络连接!')
+    alert.addButton('确定');
   }
 }

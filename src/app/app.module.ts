@@ -7,7 +7,6 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { HttpModule } from '@angular/http';
 import { HttpClientModule } from '@angular/common/http';
 import { IonicStorageModule } from '@ionic/storage';
-import { Geolocation } from '@ionic-native/geolocation';
 
 import { VJAPI } from '../services/vj.services';
 import { InitEnv } from '../utils/initEnv';
@@ -22,6 +21,9 @@ import { MyvjPage } from '../pages/myvj/myvj';
 
 import { ComponentsModule } from '../components/components.module';
 import { CoordinateTransform } from '../services/baidu.gps.service';
+
+import { Alipay } from '@ionic-native/alipay';
+import { AppAvailability } from '@ionic-native/app-availability';
 
 
 @NgModule({
@@ -59,9 +61,11 @@ import { CoordinateTransform } from '../services/baidu.gps.service';
     InAppBrowser,
     VJAPI,
     InitEnv,
+    Alipay,
+    AppAvailability,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    {provide: 'API_BASE_URL', useValue: 'http://192.168.1.66:8000/'},
-    Geolocation,
+ //   {provide: 'API_BASE_URL', useValue: 'http://192.168.1.66:8000/'},
+    {provide: 'API_BASE_URL', useValue: 'http://vjshop.yitongxun.cn:8080/api/'},
     CoordinateTransform,
   ]
 })

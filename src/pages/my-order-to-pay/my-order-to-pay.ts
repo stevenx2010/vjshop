@@ -28,10 +28,17 @@ export class MyOrderToPayPage {
 
   deleteConfirmed: boolean = false;
 
+  status: string;
+  params: any;
+
   constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI,
   				@Inject('API_BASE_URL') private apiUrl: string, private app: App, private alertCtrl: AlertController) 
   {
-  	this.mobile = this.navParams.data;
+  	this.params = this.navParams.data;
+    this.mobile = this.params.mobile;
+    this.status = this.params.status;
+    console.log(this.mobile);
+    console.log(this.params);
 
   	this.orders = new Array<Order>();
   	this.baseUrl = this.apiUrl;
@@ -39,14 +46,16 @@ export class MyOrderToPayPage {
     this.avatar_url = new Array<string>();
   }
 
-  ionViewDidLoad() {
+  ionViewDidEnter() {
+   this.vjApi.showLoader();
    this.getMyOrders();
+   this.vjApi.hideLoader();
   }
 
   getMyOrders()
   {
     this.orders =new Array<Order>();
-    this.vjApi.showLoader();
+    
     this.vjApi.getMyOrders(this.mobile, 'to_pay').subscribe((o) => {
       if(o.length > 0) {
         this.orders = o;
@@ -62,8 +71,6 @@ export class MyOrderToPayPage {
         });       
       }
     });
-    
-    this.vjApi.hideLoader();
   }
 
   goback() {
@@ -92,9 +99,11 @@ export class MyOrderToPayPage {
       handler: () => {
         let orderId = this.orders[index].id;
         this.vjApi.showLoader();
-        this.vjApi.deleteMyOrder(orderId).subscribe((resp) => console.log(resp));
+        this.vjApi.deleteMyOrder(orderId).subscribe((resp) =>{ 
+          console.log(resp)
+          this.getMyOrders();
+        });               
         this.vjApi.hideLoader();
-        this.getMyOrders();
       }
     });
     alert.addButton('取消');

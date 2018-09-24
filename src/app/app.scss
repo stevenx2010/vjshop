@@ -38,7 +38,7 @@ ion-icon {
 		mask-image: url(../assets/fonts/inventory.svg);
 	}
 	&[class*="thumb-up"] {
-		mask-image: url(../assets/fonts/thumbs-o-up.svg);
+		mask-image: url(../assets/fonts/thumbup.svg);
 	}
 	&[class*="goforward"] {
 		mask-image: url(../assets/fonts/goforward.svg);
@@ -66,6 +66,12 @@ ion-icon {
 	}
 	&[class*="star-empty"] {
 		mask-image: url(../assets/fonts/star-empty.svg);
+	}
+	&[class*="position"] {
+		mask-image: url(../assets/fonts/position.svg);
+	}
+	&[class*="distributor"] {
+		mask-image: url(../assets/fonts/distributor.svg);
 	}
 }
 

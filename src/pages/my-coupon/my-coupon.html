@@ -11,15 +11,15 @@
   </ion-navbar>
 
   <ion-segment [(ngModel)]="couponType">
-  	<ion-segment-button value="1">全部</ion-segment-button>
-  	<ion-segment-button value="2">已使用</ion-segment-button>
-  	<ion-segment-button value="3">已过期</ion-segment-button>
+  	<ion-segment-button value="1" full>全部</ion-segment-button>
+  	<ion-segment-button value="2" full>已使用</ion-segment-button>
+  	<ion-segment-button value="3" full>已过期</ion-segment-button>
   </ion-segment>
 </ion-header>
 
 
 <ion-content padding>
-	<div [ngSwitch]="couponType">
+	<div [ngSwitch]="couponType" (ionChange)="segmentChanged()">
 		<div *ngSwitchCase="1">
 			<div *ngFor="let coupon of coupons">
 			<img src="{{baseUrl}}{{coupon.image_url}}">
@@ -40,3 +40,9 @@
 	</div>
 
 </ion-content>
+
+<style>
+	ion-segment-button {
+		font-size: 1.5rem;
+	}
+</style>

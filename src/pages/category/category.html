@@ -2,10 +2,10 @@
 	<ion-navbar no-border-top color="primary">
 		<ion-grid>
 
-			<ion-row>
+			<ion-row style="align-items: center">
 				<ion-col col-1>
 					<div align="right">
-						<ion-icon name="pin" color="light"></ion-icon>
+						<ion-icon name="custom-position" color="light"></ion-icon>
 					</div>
 				</ion-col>
 				<ion-col col-2>
@@ -22,7 +22,7 @@
 						<ion-row style="align-items: center">
 							<ion-col col-12 style="align-self: flex-end;">
 								<div align="center">
-									<ion-icon name="contacts" color="light" (click)="goMulti()"></ion-icon>
+									<ion-icon name="custom-distributor" color="light" (click)="goMulti()"></ion-icon>
 								</div>
 							</ion-col>
 					<!--	</ion-row>
@@ -187,13 +187,23 @@
 		border: none;
 	}
 
-	ion-header ion-icon {
-		font-size: 2rem;
+	ion-header * {
+		margin: 0;
+		padding: 0;
+		margin: 0;
 	}
 
 	ion-header ion-row {
 		align-items: center;
 		height: 4.6rem;
+	}
+
+	ion-header ion-icon {
+		font-size: 2rem;
+	}
+
+	ion-header ion-searchbar {
+		font-size: 1.3rem;
 	}
 
 	ion-list {

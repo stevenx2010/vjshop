@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, App, Platform } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Observable } from 'rxjs';
 
@@ -17,6 +17,11 @@ import { CouponDiscountMethod } from '../../models/constants.model';
 import { Order } from '../../models/order-model';
 import { Tools } from '../../utils/Tools';
 
+import { Alipay } from '@ionic-native/alipay';
+import { AppAvailability } from '@ionic-native/app-availability';
+
+declare let cordova:any;
+
 @IonicPage()
 @Component({
   selector: 'page-confirm-order',
@@ -25,6 +30,7 @@ import { Tools } from '../../utils/Tools';
 export class ConfirmOrderPage {
 
   mobile: string;
+  mobileNoHide: string;
   shoppingCart: ShoppingItem[];
   products: Product[];
   numberOfItems: number = 0
@@ -58,8 +64,11 @@ export class ConfirmOrderPage {
   customer_id: number;
   couponUsedIds: Set<number>;
 
+  appToCheck: any;
+
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI,
-  				@Inject('API_BASE_URL') private apiUrl: string) 
+  				@Inject('API_BASE_URL') private apiUrl: string, private alipay: Alipay, private alertCtrl: AlertController,
+          private app: App, private appAvail: AppAvailability, private platform: Platform) 
   {
   	this.shoppingCart = new Array<ShoppingItem>(new ShoppingItem());
   	this.products = new Array<Product>(new Product());
@@ -71,6 +80,12 @@ export class ConfirmOrderPage {
     this.baseUrl = this.apiUrl;
     this.order = new Order();
     this.couponUsedIds = new Set<number>();
+
+    if(this.platform.is('ios')) {
+      this.appToCheck = 'alipay://';
+    } else if(this.platform.is('android')) {
+      this.appToCheck = 'com.eg.android.AlipayGphone';
+    }
 
   }
 
@@ -90,6 +105,7 @@ export class ConfirmOrderPage {
    		this.storage.get(Constants.USER_MOBILE_KEY).then((data) => {
    			if(data) {
            this.mobile = data;
+           this.mobileNoHide = data;
            this.vjApi.getUserId(this.mobile).subscribe((resp) => {
              if(resp) {
                this.customer_id = (resp.json()).user_id;
@@ -347,6 +363,48 @@ export class ConfirmOrderPage {
     this.order.order_status = OrderStatus.NOT_PAY_YET;
 
     console.log(this.order);
-    this.vjApi.submitOrder(JSON.stringify(this.order)).subscribe((r) => console.log(r));
+    this.vjApi.submitOrder(JSON.stringify(this.order)).subscribe((r) => {
+      if(r) {
+        let orderInfo = r.json();
+        console.log(orderInfo);
+
+        if(this.isAlipay) {
+          // Check if Alipay app is installed before  to pay
+          this.appAvail.check(this.appToCheck).then((yes: boolean) => {
+            cordova.plugins.ali.pay(orderInfo, (result) => {
+              console.log(result);
+              switch(result.resultStatus) {
+                case '6001':
+                  this.doOrderPrompt('支付不成功！请到：我的->我的订单->待付款中，向左滑动要支付的订单继续进行支付或删除订单。');
+                  break;
+                case '9000':
+                  this.doOrderPrompt('您已成功下单并支付，请继续');
+                  break;
+              }
+              let params = {'mobile': this.mobileNoHide, 'status': result.resultStatus}
+              this.navCtrl.push('MyOrderTabsPage', {params: params});
+            }, (error) => {
+              console.log(error);
+            });
+          }, (no: boolean) => {
+            this.doOrderPrompt('您没有安装支付宝APP，请去“应用市场”安装之后再用支付宝下单支付！');
+          })
+        }
+      }
+    });
+  }
+
+  doOrderPrompt(msg) {
+    let alert = this.alertCtrl.create();
+    alert.setTitle('提示');
+    alert.setMessage(msg);
+    alert.addButton({
+      text: '确定',
+      handler: () => {
+        
+      }
+    });
+
+    alert.present();
   }
 }

@@ -26,10 +26,13 @@ export class MyOrderToDeliverPage {
   ShoppingCart: ShoppingItem[];
   avatar_url: string[];
 
+  params: any;
+
   constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI,
   				@Inject('API_BASE_URL') private apiUrl: string, private app: App) 
   {
-  	this.mobile = this.navParams.data;
+  	this.params = this.navParams.data;
+    this.mobile = this.params.mobile;
   	this.orders = new Array<Order>();
   	this.baseUrl = this.apiUrl;
   	this.ShoppingCart = new Array<ShoppingItem>();

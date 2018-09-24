@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
 
 import { VJAPI } from '../../services/vj.services';
@@ -23,7 +23,9 @@ export class DistributorMyPage {
   mobile: string;
   myInfo: any
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI, private app: App) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI, private app: App,
+              private cf: ChangeDetectorRef) 
+  {
   	this.distributor = new Distributor();
   	this.mobile = this.navParams.data;
   	this.myInfo = '1';
@@ -40,5 +42,9 @@ export class DistributorMyPage {
 
   exit() {
     this.app.getRootNav().push(TabsPage);
+  }
+
+  segmentChanged() {
+    this.cf.detectChanges();
   }
 }
