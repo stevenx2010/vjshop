@@ -55,7 +55,7 @@ export class LoginPage {
   	let timer = setInterval(() => {
 	  				this.caption = count + '秒';
 	  				count += 1;
-	  				if(count > 5) {
+	  				if(count > 60) {    // change to 60 in production version
 	  					clearInterval(timer);
 	  					this.caption = '获取验证码';
 	  					this.smsBtnDisabled = false;

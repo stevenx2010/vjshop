@@ -14,6 +14,7 @@ import { Address } from '../../models/address.model';
 import { Http } from '@angular/http';
 
 import { CoordinateTransform } from '../../services/baidu.gps.service';
+import { AppVersion } from '@ionic-native/app-version';
 
 declare let cordova: any;
 
@@ -43,11 +44,12 @@ export class HomePage {
   mobile: string = '';
   couponWallet: Set<CouponItem>;
   address: Address;
+  appLatestVersion: string;
 
   constructor(public navCtrl: NavController, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string, 
               private http: Http, private app: App, private storage: Storage, /*private geolocation: Geolocation, */
               private coordtrans: CoordinateTransform, private platform: Platform, private init: InitEnv,
-              private alertCtrl: AlertController, private events: Events ) 
+              private alertCtrl: AlertController, private events: Events, private appVersion: AppVersion ) 
   {
   	// initialize arrays
   	this.remoteImages = new Array<Array<Image>>();
@@ -62,17 +64,36 @@ export class HomePage {
   }
 
 
-  ngOnInit(): void {
+  ionViewWillLoad() {
    this.platform.ready().then(() => {
-//     cordova.plugins.baidumap_location.getCurrentPosition((data) => {
+     cordova.plugins.baidumap_location.getCurrentPosition((data) => {
 
-//       let result = data;
-      this.city = '北京市';//result.province;//
+       let result = data;
+      this.city = result.province;//'北京市';
        this.storage.ready().then(() => {
          this.storage.set(Constants.LOCATION_KEY, this.city);
        })
      });
-//   });
+   });
+
+    // check if there's new version available
+    this.vjApi.getAppVersion().subscribe((v) => {
+      let versions = v.json();
+      if(versions.length > 0) {
+        this.appLatestVersion = versions[0].latest_version;
+        console.log(this.appLatestVersion);
+        this.appVersion.getVersionNumber().then((version) => {
+          console.log(version);
+          if(version.trim() != this.appLatestVersion.trim()) {
+            this.doPrompt('本APP有新版本，请下载并进行安装。');
+          }         
+        });
+
+  //      if(Number(currentVersion) < Number(this.appLatestVersion)) {
+  //        this.doPrompt('本APP有新版本，请下载并进行安装。');
+  //      }
+      }
+    })
   }
 
 
@@ -92,7 +113,6 @@ export class HomePage {
     // Step 1: check if user has logged in
     this.storage.ready().then((data) => {
       this.storage.get(Constants.LOGIN_KEY).then((data) => {
-         console.log('aaaaaaaaaaaaaaaa', data);
         if(data) {
           console.log('login_key', data);
           this.loggedIn = true;
@@ -105,7 +125,6 @@ export class HomePage {
 
               // check if there's user in the remote server
               this.vjApi.checkUserExist(this.mobile).subscribe((r0) => {
-                console.log('rrrrrrrrrrrrrrrrrr', r0);
                 if(!(r0.status)) {
                   this.loggedIn = false;
                   this.storage.remove(Constants.LOGIN_KEY);
@@ -154,7 +173,7 @@ export class HomePage {
   		},
   		(err) => {
   			console.log('error: ', err);
-        this.doPrompt();
+        this.doPrompt('请检查是否有网络连接!');
   			this.vjApi.hideLoader();
   		});
   }
@@ -191,11 +210,13 @@ export class HomePage {
     this.app.getRootNav().push('CouponForNewComerPage');
   }
 
-  doPrompt() {
+  doPrompt(msg) {
     let alert = this.alertCtrl.create();
     alert.setTitle('提示');
-    alert.setMessage('请检查是否有网络连接!')
+    alert.setMessage(msg)
     alert.addButton('确定');
+
+    alert.present();
   }
 
   getLocation() {

@@ -86,7 +86,7 @@
 		<ion-grid>
 			<ion-row>
 				<ion-col col-2>
-					<div align="center" class="shakeit">
+					<div align="center" [@cart]="cartState">
 				<!--	<button ion-button icon-only outline style="font-size: 1.3rem;border: none;position: relative;">-->
 						<ion-icon name="cart" id="cart"></ion-icon>
 						<ion-badge color="danger" *ngIf="numberOfProducts === 0">0</ion-badge>
@@ -227,13 +227,5 @@
 		font-size: 0.7rem;
 		height: 2.1rem;
 	}
-
-.shakeit {
-      -webkit-animation-name: thumb;
-	-webkit-animation-duration: 200ms;
-	-webkit-transform-origin:50% 50%;
-	-webkit-animation-iteration-count: 2;
-	-webkit-animation-timing-function: linear;
-}
 </style>
 

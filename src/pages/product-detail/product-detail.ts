@@ -11,11 +11,24 @@ import { Address } from '../../models/address.model';
 import { DistributorAddress } from '../../models/distributor-address-model';
 import { Distributor } from '../../models/distributor-model';
 
+import { trigger, state, style, animate, transition } from '@angular/animations';
+
 
 @IonicPage()
 @Component({
   selector: 'page-product-detail',
   templateUrl: 'product-detail.html',
+  animations: [
+    trigger('cart', [
+        state('idle', style({opacity:'0.8', transform: 'scale(1)'})),
+        state('adding', style({opacity: '1', transform: 'scale(1.5)'})),
+        transition('idle <=> adding', animate('400ms linear')),
+        transition('void => *', [
+            style({transform: 'translateX(200%)'}),
+            animate('300ms ease-in-out')
+          ])
+      ])
+  ]
 })
 export class ProductDetailPage {
 
@@ -36,6 +49,8 @@ export class ProductDetailPage {
   distributor: Distributor;
   distributorAddress: DistributorAddress;
   inventory: number = 0;
+
+  cartState = 'idle';
 
   constructor(private navCtrl: NavController, private navParams: NavParams, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string,
               private storage: Storage, private app: App, private events: Events, private alertCtrl: AlertController) {
@@ -204,6 +219,8 @@ export class ProductDetailPage {
       return;
     }
 
+    this.cartState = 'adding';
+
       // if the shopping cart is empty, then we create a new item & put it in
       if(this.shoppingCart.length < 1) {
  
@@ -252,6 +269,10 @@ export class ProductDetailPage {
         // publish an event on item added
         this.events.publish('shopping_cart_item_added', this.shoppingCart);
        });    
+
+    setTimeout(() => {
+      this.cartState = 'idle';
+    }, 300);
   }
 
   calculateShoppedItems(shoppingCart: ShoppingItem[]): number {

@@ -507,5 +507,18 @@ export class VJAPI {
 		return this.http.get(this.apiUrl + 'api/comment/not_commented/' + orderId, {headers: headers})
 			.pipe(map((data) => data.json()));	 		 	
 	 }
+
+	/********************************************************************************************
+	 *                   API Section: Utilties interface
+	 *
+	 * 
+	 ********************************************************************************************/
+
+	 public getAppVersion(): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.get(this.apiUrl + 'api/app/version/', {headers: headers});		 	
+	 }
 }
 
