@@ -85,6 +85,7 @@ export class LoginPage {
   	this.vjApi.auth(JSON.stringify(body)).subscribe((data) => {
 
   		let response = data.json();
+      console.log(response);
   		// step A: check if it's a new user, if so, store the access_token locally
       // for new users, an access_token will be returned.
   		if(response.access_token != '') {
@@ -156,15 +157,17 @@ export class LoginPage {
           this.vjApi.showLoader();
           // retrieve shipping address from server
           this.vjApi.getDefaultAddress(this.mobile).subscribe((data) => {
-
+            console.log(data);
             if(data.length > 0) {
               this.storage.ready().then(() => {
                 this.storage.set(Constants.SHIPPING_ADDRESS_KEY, data[0]);
                 this.loggedIn = true;
                 this.shippingAddress  = data[0];
-
+                this.doPrompt('登录成功，请继续！');
                 this.navCtrl.pop();
-              })
+              }) 
+              } else {
+                this.doPrompt('获取配送地址失败！');
             }
           })
           this.vjApi.hideLoader(); 				
@@ -177,8 +180,12 @@ export class LoginPage {
       let msg;
       if(err.status == 403)
         msg = '验证码错误，请检查后重新登录';
-      if(err.status == 404)
+      else if(err.status == 404)
         msg = '验证码超时!';
+      else if(err.status == 500)
+        msg = '服务器响应错误!';
+      else
+        msg = '没有网络连接或未知错误';
 
       this.doPrompt(msg);
     });
@@ -190,7 +197,7 @@ export class LoginPage {
     },
     (err) => {
       console.log(err.status);
-      this.doPrompt('您输入有误或者您不是合法的经销商');
+      this.doPrompt('您输入有误或者您不是指定的经销商');
     });
     //this.navCtrl.push('DistributorToolsPage', {mobile: '18910109898'});
   }

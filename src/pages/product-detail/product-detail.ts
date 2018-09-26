@@ -142,17 +142,18 @@ export class ProductDetailPage {
 
 
 
-    this.vjApi.hideLoader();
+
   }
 
   ionViewDidEnter() {
     this.getAddress();    
+    this.vjApi.hideLoader();
   }
 
   getAddress() {
     // update shopping address
     if(this.mobile) {
-      this.vjApi.showLoader();
+ //     this.vjApi.showLoader();
       this.vjApi.getDefaultAddress(this.mobile).subscribe((a) => {
         if(a && a.length > 0) {
 
@@ -171,7 +172,7 @@ export class ProductDetailPage {
             this.getDistributorByLocation(city[0]);         
         }
       });
-      this.vjApi.hideLoader();
+//      this.vjApi.hideLoader();
     } 
   }
 

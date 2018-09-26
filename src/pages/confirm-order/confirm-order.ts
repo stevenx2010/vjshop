@@ -64,9 +64,12 @@ export class ConfirmOrderPage {
   customer_id: number;
   couponUsedIds: Set<number>;
 
-  appToCheck: any;
+  appAlipay: any;
+  appWechat: any;
 
   unregisterBackButtonAction: any;
+
+  submitBtnDisabled = false;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI,
   				@Inject('API_BASE_URL') private apiUrl: string, private alipay: Alipay, private alertCtrl: AlertController,
@@ -84,9 +87,11 @@ export class ConfirmOrderPage {
     this.couponUsedIds = new Set<number>();
 
     if(this.platform.is('ios')) {
-      this.appToCheck = 'alipay://';
+      this.appAlipay = 'alipay://';
+      this.appWechat = 'wechat://';
     } else if(this.platform.is('android')) {
-      this.appToCheck = 'com.eg.android.AlipayGphone';
+      this.appAlipay = 'com.eg.android.AlipayGphone';
+      this.appWechat = 'com.tencent.mm';
     }
 
   }
@@ -148,31 +153,39 @@ export class ConfirmOrderPage {
    	
      // get location
      this.storage.get(Constants.SHIPPING_ADDRESS_KEY).then((data) => {
-       let city = data;
-       if(data) city = data.city;
-
+       let city: any;
+       if(data) {
+         let address = data.city;
+         let addressArray = address.split(' ');
+         if(addressArray.length > 0) city = addressArray[0];
+       }
        console.log(city);
-       // Get Distributor at this location
-       this.vjApi.getDistributorAddressByLocation(city).subscribe((data) => {
-         if(data.length > 0) {
-           console.log(data);
-           this.distributorAddress = data;
+       if(city) {
+         // Get Distributor at this location
+         this.vjApi.getDistributorAddressByLocation(city).subscribe((data) => {
+           if(data.length > 0) {
+             console.log(data);
+             this.distributorAddress = data;
 
-           let distributorId = this.distributorAddress[0].distributor_id;
+             let distributorId = this.distributorAddress[0].distributor_id;
 
-           this.vjApi.getDistributorById(distributorId).subscribe((data) => {
-              if(data) {
-                this.distributors = data;
-              }
-           });
+             this.vjApi.getDistributorById(distributorId).subscribe((data) => {
+                if(data) {
+                  this.distributors = data;
+                }
+             });
 
-           this.vjApi.getDistributorContactById(distributorId).subscribe((data) => {
-             if(data) {
-               this.distributorContacts = data;
-             }
-           })
-         }
-       })
+             this.vjApi.getDistributorContactById(distributorId).subscribe((data) => {
+               if(data) {
+                 this.distributorContacts = data;
+               }
+             })
+           }
+         })
+       } else {
+         this.submitBtnDisabled = true;
+         this.doOrderPrompt('没有经销商地址!');
+       }
 
        // Get coupon wallet
        this.storage.get(Constants.COUPON_WALLET_KEY).then((data: Set<Coupon>) => {
@@ -386,7 +399,7 @@ export class ConfirmOrderPage {
 
         if(this.isAlipay) {
           // Check if Alipay app is installed before  to pay
-          this.appAvail.check(this.appToCheck).then((yes: boolean) => {
+          this.appAvail.check(this.appAlipay).then((yes: boolean) => {
             cordova.plugins.ali.pay(orderInfo, (result) => {
               console.log(result);
               switch(result.resultStatus) {
@@ -405,6 +418,15 @@ export class ConfirmOrderPage {
           }, (no: boolean) => {
             this.doOrderPrompt('您没有安装支付宝APP，请去“应用市场”安装之后再用支付宝下单支付！');
           })
+        }
+
+        if(this.isWechat) {
+          // check if Wechat app is installed before to pay
+          this.appAvail.check(this.appWechat).then((yes: boolean) => {
+            
+          }, (no: boolean) => {
+            this.doOrderPrompt('您没有安装微信APP，请去“应用市场”安装之后再用微信下单支付！');
+          });
         }
       }
     });

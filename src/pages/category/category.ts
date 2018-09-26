@@ -88,8 +88,7 @@ export class CategoryPage {
   }
 
   ionViewDidEnter() {
-    this.getAllProducts();
-    this.vjApi.hideLoader();
+
   	let scroll = this.content.getScrollElement();
   	scroll.style.overflowY = 'hidden';
 
@@ -104,7 +103,8 @@ export class CategoryPage {
     h = h - this.content.contentBottom + 7;
   	this.scrollHeightForAll = h + 'px';
 
-
+    this.getAllProducts();
+    this.vjApi.hideLoader();
   }
 
   reload(refresher) {

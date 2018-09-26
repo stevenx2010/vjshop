@@ -66,17 +66,20 @@ export class HomePage {
 
   ionViewWillLoad() {
    this.platform.ready().then(() => {
-     cordova.plugins.baidumap_location.getCurrentPosition((data) => {
+//     cordova.plugins.baidumap_location.getCurrentPosition((data) => {
 
-       let result = data;
-      this.city = result.province;//'北京市';
+ //     let result = data;
+ //     this.city = result.province;//;'北京市'
+      if(this.city && this.city !=  '') {
        this.storage.ready().then(() => {
          this.storage.set(Constants.LOCATION_KEY, this.city);
        })
+      }
      });
-   });
+//s   });
 
     // check if there's new version available
+ /*   
     this.vjApi.getAppVersion().subscribe((v) => {
       let versions = v.json();
       if(versions.length > 0) {
@@ -88,12 +91,8 @@ export class HomePage {
             this.doPrompt('本APP有新版本，请下载并进行安装。');
           }         
         });
-
-  //      if(Number(currentVersion) < Number(this.appLatestVersion)) {
-  //        this.doPrompt('本APP有新版本，请下载并进行安装。');
-  //      }
       }
-    })
+    })*/
   }
 
 
