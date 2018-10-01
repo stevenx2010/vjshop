@@ -294,6 +294,34 @@ export class CartPage {
     }
   }
 
+  clearCart() {
+    this.doPrompt();
+  }
+
+  doClearCart() {
+    this.storage.ready().then(() => {
+      this.shoppingCart = [];
+      this.shoppingCartEmpty = true;
+      this.totalPrice = 0;
+      this.totalWeight = 0;
+      this.storage.remove(Constants.SHOPPING_CART_KEY);
+    });    
+  }
+
+  doPrompt() {
+    let alert = this.alertCtrl.create();
+    alert.setTitle('警告');
+    alert.setMessage('请确认是否真的要清空购物车？');
+    alert.addButton({
+      text: '清空',
+      handler: () => {
+        this.doClearCart();
+      }
+    });
+    alert.addButton('取消');
+
+    alert.present();
+  }
 }
 
 

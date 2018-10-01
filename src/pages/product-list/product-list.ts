@@ -44,4 +44,9 @@ export class ProductListPage {
       })
     }
   }
+
+   toProductDetail(index: number) {
+     let productId = this.products[index][0].id;
+     this.navCtrl.push('ProductDetailPage', {productId});
+   } 
 }

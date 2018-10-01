@@ -34,6 +34,12 @@ export class CouponCenterPage {
   	this.couponsByType= new Array<Coupon[]>();
   	this.baseUrl = this.apiUrl;
     this.couponWallet = new Set<Coupon>();
+
+    this.events.subscribe('login_success', (logged_in, mobile, shippingAddress) => {
+      this.loggedIn = logged_in;
+      this.mobile = mobile;
+      this.getCouponsOfTheUser();
+    });
   }
 
   ionViewWillLoad() {
@@ -47,22 +53,7 @@ export class CouponCenterPage {
         this.init.getMobile().subscribe((data) => {
           if(data) {
             this.mobile = data;
-            this.vjApi.getCouponsByMobile(this.mobile).subscribe((coupons) => {
-              if(coupons.length > 0) {
-                coupons.forEach((item) =>{
-                  if(item.pivot.quantity == 0) item.has_used = true;
-                  else item.has_used = false;
-                  this.couponWallet.add(item);
-                });
-
-                this.storage.ready().then(() => {
-                  this.storage.remove(Constants.COUPON_WALLET_KEY);
-                  this.storage.set(Constants.COUPON_WALLET_KEY, this.couponWallet);
-                });
-              }
-
-              this.getListOfCoupons();
-            })
+            this.getCouponsOfTheUser();
           }
         });
       } else {
@@ -71,11 +62,32 @@ export class CouponCenterPage {
     });        
   }
 
+  getCouponsOfTheUser() {
+    this.vjApi.getCouponsByMobile(this.mobile).subscribe((coupons) => {
+      if(coupons.length > 0) {
+        coupons.forEach((item) =>{
+          if(item.pivot.quantity == 0) item.has_used = true;
+          else item.has_used = false;
+          this.couponWallet.add(item);
+        });
+
+        this.storage.ready().then(() => {
+          this.storage.remove(Constants.COUPON_WALLET_KEY);
+          this.storage.set(Constants.COUPON_WALLET_KEY, this.couponWallet);
+        });
+      }
+
+      this.getListOfCoupons();
+    });    
+  }
+
  
   getListOfCoupons() {
     this.vjApi.showLoader();
 
     this.vjApi.getCouponAllTypes().subscribe((types) => {
+
+      console.log(types);
       if(types && types.length > 0) {
 
         this.couponTypes = types;

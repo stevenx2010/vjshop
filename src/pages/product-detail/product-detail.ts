@@ -11,6 +11,8 @@ import { Address } from '../../models/address.model';
 import { DistributorAddress } from '../../models/distributor-address-model';
 import { Distributor } from '../../models/distributor-model';
 
+import { CartPage } from '../cart/cart';
+
 import { trigger, state, style, animate, transition } from '@angular/animations';
 
 
@@ -304,6 +306,10 @@ export class ProductDetailPage {
     } else {
         this.app.getRootNav().push('ManageAddressPage', {mobile: this.mobile, action: 'edit'});
     }
+  }
+
+  toShoppingCartPage() {
+    this.app.getRootNav().push(CartPage);
   }
 
   doPrompt(msg) {

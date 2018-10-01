@@ -33,35 +33,44 @@
 		<!--------------Seperator---------------------->
 		<seperator height="1.2rem"  *ngIf="shoppingCartEmpty"></seperator>
 
-		<ion-row class="address">
-			<ion-col col-1>
-				<div align="center">
-					<ion-icon name="paper-plane"></ion-icon>
-				</div>
-			</ion-col>
+		<ion-list>
+			<ion-item-sliding>
+				<ion-item>
+					<ion-row class="address">
+						<ion-col col-1>
+							<div align="center">
+								<ion-icon name="paper-plane"></ion-icon>
+							</div>
+						</ion-col>
 
-			<ion-col col-10>
-				<ion-row>
-					<ion-col col-8>
-						<div>收货人: {{address?.username}}</div>
-					</ion-col>
-					<ion-col col-4>
-						<div align="right">{{mobile}}</div>
-					</ion-col>
-				</ion-row>
-				<ion-row>
-					<ion-col col-12>
-						<div style="padding-top: 0.5rem;"  (click)="toManageAddressPage()">收货地址： {{address?.city}}{{address?.street}}</div>
-					</ion-col>				
-				</ion-row>
-			</ion-col>
+						<ion-col col-10>
+							<ion-row>
+								<ion-col col-8>
+									<div>收货人: {{address?.username}}</div>
+								</ion-col>
+								<ion-col col-4>
+									<div align="right" (click)="toManageAddressPage()">{{mobile}}</div>
+								</ion-col>
+							</ion-row>
+							<ion-row>
+								<ion-col col-12>
+									<div style="padding-top: 0.5rem;"  (click)="toManageAddressPage()">收货地址： {{address?.city}}{{address?.street}}</div>
+								</ion-col>				
+							</ion-row>
+						</ion-col>
 
-			<ion-col col-1>
-				<button ion-button icon-only full outline (click)="toManageAddressPage()">
-					<ion-icon name="custom-goforward"></ion-icon>
-				</button>
-			</ion-col>
-		</ion-row>
+						<ion-col col-1>
+							<button ion-button icon-only full outline (click)="toManageAddressPage()">
+								<ion-icon name="custom-goforward"></ion-icon>
+							</button>
+						</ion-col>
+					</ion-row>
+				</ion-item>
+				<ion-item-options side="right">
+					<button ion-button color="danger" (click)="clearCart()">清空购物车</button>
+				</ion-item-options>
+			</ion-item-sliding>
+		</ion-list>
 
 		<!--------------Seperator---------------------->
 		<seperator height="0.8rem"></seperator>

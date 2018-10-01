@@ -32,5 +32,5 @@ export enum InvoiceStatus { NOT_ISSUED = 1, ISSUED = 2}
 export enum OrderStatus { NOT_PAY_YET = 1, PAYED = 2, RECEIVED = 3, CLOSED = 4, CANCELD = 5, COMMENTED = 6, NOT_COMMENTED = 7}
 export enum DeliveryStatus { WAITING_FOR_DELIVERY = 1, IN_DELIVERY = 2, DELIVERED_NOT_CONFIRM = 3, CONFIRMED = 4}
 export enum PaymentMethod { WECHAT= 1, ALIPAY = 2 }
-export enum CouponDiscountMethod { PERCENTAGE = 1, VALUE = 2}
+export enum CouponDiscountMethod { PERCENTAGE = 1, VALUE = 2, FREE_SHIPPING = 3}
 export enum CommentStatus { NOT_COMMENTED = 1, COMMENTED = 2}

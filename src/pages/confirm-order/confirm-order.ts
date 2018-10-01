@@ -428,7 +428,16 @@ export class ConfirmOrderPage {
             this.doOrderPrompt('您没有安装微信APP，请去“应用市场”安装之后再用微信下单支付！');
           });
         }
+
+        // clear the shopping cart
       }
+    }, (error) => {
+      // remove the order
+      this.vjApi.deleteOrderBySerial(this.order.order_serial).subscribe((resp) => {
+        console.log(resp);
+      })
+
+      this.doOrderPrompt('后台错误: ' + error + ' 下单不成功!');
     });
   }
 

@@ -88,9 +88,9 @@
 				<ion-col col-2>
 					<div align="center" [@cart]="cartState">
 				<!--	<button ion-button icon-only outline style="font-size: 1.3rem;border: none;position: relative;">-->
-						<ion-icon name="cart" id="cart"></ion-icon>
-						<ion-badge color="danger" *ngIf="numberOfProducts === 0">0</ion-badge>
-						<ion-badge color="danger" *ngIf="numberOfProducts > 0">{{ shoppedItems }}</ion-badge>
+						<ion-icon name="cart" id="cart" (click)="toShoppingCartPage()"></ion-icon>
+						<ion-badge color="danger" (click)="toShoppingCartPage()" *ngIf="numberOfProducts === 0">0</ion-badge>
+						<ion-badge color="danger" (click)="toShoppingCartPage()" *ngIf="numberOfProducts > 0">{{ shoppedItems }}</ion-badge>
 					</div>
 				<!--	</button>-->
 				</ion-col>

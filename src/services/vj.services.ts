@@ -479,6 +479,13 @@ export class VJAPI {
 		return this.http.delete(this.apiUrl + 'api/order/delete/id/' + orderId, {headers: headers});	 	
 	 }
 
+	 public deleteOrderBySerial(orderSerial): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.delete(this.apiUrl + 'api/order/delete/orderSerial/' + orderSerial, {headers: headers});	 	
+	 }
+
 	/********************************************************************************************
 	 *                   API Section: Comment related data
 	 *

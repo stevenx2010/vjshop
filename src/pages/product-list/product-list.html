@@ -9,7 +9,7 @@
 
 <ion-content>
 	<ion-list>
-		<ion-item *ngFor=" let product of products; let i = index;">
+		<ion-item *ngFor=" let product of products; let i = index;" (click)="toProductDetail(i)">
 			<ion-avatar item-start>
 				<img src="{{baseUrl}}{{product[0]?.thumbnail_url}}">
 			</ion-avatar>
