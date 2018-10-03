@@ -13,7 +13,7 @@
 
 <ion-content padding>
 	<ion-list>
-		<ion-item>
+		<ion-item (click)="toProductDetailPage()">
 			<ion-thumbnail item-start>
 				<img src="{{baseUrl}}{{product?.thumbnail_url}}">
 			</ion-thumbnail>
@@ -23,7 +23,7 @@
 		</ion-item>
 	</ion-list>
 
-	<rating (onChange)="ratingClicked($event)"></rating>
+	<rating (onChange)="ratingClicked($event)" size="3.2rem"></rating>
 	<ion-textarea id="comment" rows="10" class="form-control" placeholder="产品评价" [(ngModel)]="comment">
 	</ion-textarea>
 

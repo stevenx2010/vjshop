@@ -15,6 +15,7 @@ export class RatingComponent {
   @Output() onChange = new EventEmitter<number>();
   @Input() rating: number = 0;
   @Input() disabled: boolean = false;
+  @Input() size: string = '1.5rem';
 
   onClick(value) {
   	if(!this.disabled) {

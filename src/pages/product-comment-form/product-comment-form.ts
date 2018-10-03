@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Product } from '../../models/product.model';
 import { Comment } from '../../models/comment-model';
@@ -21,9 +21,10 @@ export class ProductCommentFormPage {
   rating: number = 0;
   mobile: string;
   saved: boolean = false;
+  comment_id: number;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, @Inject('API_BASE_URL') private apiUrl: string,
-  				private storage: Storage, private vjApi: VJAPI) 
+  				private storage: Storage, private vjApi: VJAPI, private alertCtrl: AlertController) 
   {
   	this.product = new Product();
 
@@ -46,6 +47,7 @@ export class ProductCommentFormPage {
 
   save() {
   	let comment = new Comment();
+    comment.id = this.comment_id;
   	comment.order_id = this.orderId;
   	comment.product_id = this.product.id;
   	comment.comment = this.comment;
@@ -54,12 +56,35 @@ export class ProductCommentFormPage {
   	comment.rating = this.rating;
   	comment.comment_owner = this.mobile;
 
-  	this.vjApi.updateComment(comment).subscribe((resp) => console.log(resp));
+  	this.vjApi.updateComment(comment).subscribe((resp) => {
+      let temp: Comment = resp.json();
+      console.log(temp);
+      console.log(temp.id)
+      if(temp) {
+        this.comment_id = temp.id;
+      }
+      console.log(this.comment_id);
+      this.saved = true;
+      this.doPrompt();
+    });
 
-  	this.saved = true;
+
   }
 
   ratingClicked(event) {
   	this.rating = event;  	
+  }
+
+  toProductDetailPage() {
+    let productId = this.product.id;
+    this.navCtrl.push('ProductDetailPage', {productId});
+  }
+  doPrompt() {
+    let alert = this.alertCtrl.create();
+    alert.setTitle('提示');
+    alert.setMessage('评价已提交，请继续');
+    alert.addButton('确定');
+
+    alert.present();
   }
 }

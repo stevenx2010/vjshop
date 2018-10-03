@@ -16,9 +16,9 @@
 <ion-content padding>
 	<div *ngFor="let order of results; let i = index;" class="comment">
 
-			订单号：{{order?.order_serial}}
+			<h3>订单号：{{order?.order_serial}}</h3>
 
-			<div *ngFor="let product of order.products; let j = index;">
+			<div *ngFor="let product of order.products; let j = index;" class="product">
 				<ion-list>
 					<ion-item>
 						<ion-thumbnail item-start>
@@ -33,11 +33,19 @@
 				<div *ngFor="let comment of product.comments; let k = index;">
 					<p>评价时间：{{comment?.comment_date}}<rating rating="{{comment?.rating}}" disabled="true"></rating></p>
 					<p>{{comment?.comment}}</p>
-					<div align="right"><button ion-button small outline (click)="commentAgain(i, j, k)">再次评价</button></div>
+					
 				</div>
+				<div align="right"><button ion-button small outline (click)="commentAgain(i, j)">再次评价</button></div>
+				<seperator style="margin-top: 3rem" color="green"></seperator>
 			</div>
-			<seperator style="margin-top: 3rem" color="green"></seperator>
+			
 	</div>
 
 </ion-content>
+
+<style>
+	.product {
+		border-bottom: 2px solid #efefef;
+	}
+</style>
 

@@ -382,6 +382,13 @@ export class VJAPI {
 	 		.pipe(map((data) => data.json()));			 	
 	 }
 
+	 public checkDistributorLogin(distributorMobile): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.get(this.apiUrl + 'api/distributor/login/check/' + distributorMobile, {headers: headers});			 	
+	 }
+
 	/********************************************************************************************
 	 *                   API Section: Coupon related data
 	 *

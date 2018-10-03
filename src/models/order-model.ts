@@ -1,4 +1,4 @@
-import { InvoiceType, InvoiceStatus, OrderStatus, DeliveryStatus, PaymentMethod } from './constants.model';
+import { InvoiceType, InvoiceStatus, OrderStatus, DeliveryStatus, PaymentMethod, RefundStatus } from './constants.model';
 import { ShoppingItem } from './shopping-item.model';
 import { Address } from './address.model';
 
@@ -12,17 +12,18 @@ export class Order {
 	public order_date: string = '';
 	public delivery_date: string = '';
 	public delivery_confirm_date: string = '';
-	public delivery_status: number = DeliveryStatus.WAITING_FOR_DELIVERY;
+	public delivery_status: number = DeliveryStatus.NA;
 	public payment_method: number = PaymentMethod.ALIPAY;
 	public shipping_method: number = 0;
 	public shipping_charges: number = 0;
 	public shipping_address: Address = new Address();
 	public order_status: number = OrderStatus.NOT_PAY_YET;
 	public is_invoice_required: boolean = false;
-	public invoice_status: number = InvoiceStatus.NOT_ISSUED;
+	public invoice_status: number = InvoiceStatus.NA;
 	public invoice_type: number = InvoiceType.PERSONAL;
 	public invoice_head: string = '';
 	public invoice_tax_number: string = '';
+	public refund_status: number = RefundStatus.NA;
 	public coupon_used_ids: number[] = new Array<number>();
 
 	public products: ShoppingItem[] = new Array<ShoppingItem>(new ShoppingItem());

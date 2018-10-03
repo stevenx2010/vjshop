@@ -2,7 +2,7 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>待评价清单</ion-title>
+    <ion-title>待评价产品清单</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -10,7 +10,7 @@
 <ion-content>
 	<ion-list>
 		<ion-item-sliding  *ngFor=" let product of products; let i = index;">
-			<ion-item>
+			<ion-item (click)="toCommentForm(i)">
 				<ion-avatar item-start>
 					<img src="{{baseUrl}}{{product?.thumbnail_url}}">
 				</ion-avatar>

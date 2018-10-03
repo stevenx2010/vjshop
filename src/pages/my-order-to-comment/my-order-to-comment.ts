@@ -32,7 +32,7 @@ export class MyOrderToCommentPage {
     this.avatar_url = new Array<string>();
   }
 
-  ionViewDidLoad() {
+  ionViewDidEnter() {
     this.vjApi.getMyOrders(this.mobile, 'to_comment').subscribe((o) => {
     	if(o.length > 0) {
     		this.orders = o;

@@ -10,6 +10,10 @@ export class Constants {
 
     static 	LOCATION_KEY			= 'location_province';
     static  COUPON_WALLET_KEY		= 'coupon_wallet';
+
+    static  VERSION_KEY				= 'app_version';
+    static  DISTRIBUTOR_LOGIN_KEY	= 'distributor_login';
+    static  DISTRIBUTOR_MOBILE		= 'distributor_mobile';
 }
 
 export class Login { 
@@ -24,13 +28,14 @@ export class Login {
 	static  SHIPPING_ADDRESS_CHECK_SUCCESS	= 1;
 	static  SHIPPING_ADDRESS_CHECK_FAILURE	= 0;
 	static  CREATE_SHIPPING_ADDRESS_SUCCESS	= 1;
-	static  CREATE_SHIPPING_ADDRESS_FAILURE = 0;
+	static  CREATE_SHIPPING_ADDRESS_FAILURE = 0;ss
 }
 
 export enum InvoiceType  {PERSONAL = 1, ENTERPRISE = 2}
-export enum InvoiceStatus { NOT_ISSUED = 1, ISSUED = 2}
+export enum InvoiceStatus { NA = 0, NOT_ISSUED = 1, ISSUED = 2}
 export enum OrderStatus { NOT_PAY_YET = 1, PAYED = 2, RECEIVED = 3, CLOSED = 4, CANCELD = 5, COMMENTED = 6, NOT_COMMENTED = 7}
-export enum DeliveryStatus { WAITING_FOR_DELIVERY = 1, IN_DELIVERY = 2, DELIVERED_NOT_CONFIRM = 3, CONFIRMED = 4}
+export enum DeliveryStatus { NA = 0, WAITING_FOR_DELIVERY = 1, IN_DELIVERY = 2, DELIVERED_NOT_CONFIRM = 3, CONFIRMED = 4}
 export enum PaymentMethod { WECHAT= 1, ALIPAY = 2 }
 export enum CouponDiscountMethod { PERCENTAGE = 1, VALUE = 2, FREE_SHIPPING = 3}
-export enum CommentStatus { NOT_COMMENTED = 1, COMMENTED = 2}
+export enum CommentStatus { NA = 0, NOT_COMMENTED = 1, COMMENTED = 2}
+export enum RefundStatus { NA = -1, WAITING_FOR_REFUND = 1, REFUNDED = 2}

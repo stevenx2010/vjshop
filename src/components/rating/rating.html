@@ -1,15 +1,15 @@
 <ion-row>
 	<ion-col col-12>
-		<ion-icon name="custom-star" *ngIf="rating >= 1" color="alert" (click)="onClick(0)"></ion-icon>
-		<ion-icon name="custom-star-empty" *ngIf="rating < 1" (click)="onClick(1)"></ion-icon>
-		<ion-icon name="custom-star" *ngIf="rating>= 2"  color="alert" (click)="onClick(1)"></ion-icon>
-		<ion-icon name="custom-star-empty" *ngIf="rating < 2" (click)="onClick(2)"></ion-icon>
-		<ion-icon name="custom-star" *ngIf="rating>= 3"  color="alert" (click)="onClick(2)"></ion-icon>
-		<ion-icon name="custom-star-empty" *ngIf="rating < 3" (click)="onClick(3)"></ion-icon>
-		<ion-icon name="custom-star" *ngIf="rating>= 4"  color="alert" (click)="onClick(3)"></ion-icon>
-		<ion-icon name="custom-star-empty" *ngIf="rating < 4" (click)="onClick(4)"></ion-icon>
-		<ion-icon name="custom-star" *ngIf="rating>= 5"  color="alert" (click)="onClick(4)"></ion-icon>
-		<ion-icon name="custom-star-empty" *ngIf="rating < 5" (click)="onClick(5)"></ion-icon>
+		<ion-icon name="custom-star" *ngIf="rating >= 1" color="alert" (click)="onClick(0)" [style.font-size]="size"></ion-icon>
+		<ion-icon name="custom-star-empty" *ngIf="rating < 1" (click)="onClick(1)" [style.font-size]="size"></ion-icon>
+		<ion-icon name="custom-star" *ngIf="rating>= 2"  color="alert" (click)="onClick(1)" [style.font-size]="size"></ion-icon>
+		<ion-icon name="custom-star-empty" *ngIf="rating < 2" (click)="onClick(2)" [style.font-size]="size"></ion-icon>
+		<ion-icon name="custom-star" *ngIf="rating>= 3"  color="alert" (click)="onClick(2)" [style.font-size]="size"></ion-icon>
+		<ion-icon name="custom-star-empty" *ngIf="rating < 3" (click)="onClick(3)" [style.font-size]="size"></ion-icon>
+		<ion-icon name="custom-star" *ngIf="rating>= 4"  color="alert" (click)="onClick(3)" [style.font-size]="size"></ion-icon>
+		<ion-icon name="custom-star-empty" *ngIf="rating < 4" (click)="onClick(4)" [style.font-size]="size"></ion-icon>
+		<ion-icon name="custom-star" *ngIf="rating>= 5"  color="alert" (click)="onClick(4)" [style.font-size]="size"></ion-icon>
+		<ion-icon name="custom-star-empty" *ngIf="rating < 5" (click)="onClick(5)" [style.font-size]="size"></ion-icon>
 	</ion-col>
 </ion-row>
 <style>

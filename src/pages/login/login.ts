@@ -159,18 +159,24 @@ export class LoginPage {
           this.vjApi.getDefaultAddress(this.mobile).subscribe((data) => {
             console.log(data);
             if(data.length > 0) {
-              this.storage.ready().then(() => {
+         //     this.storage.ready().then(() => {
                 this.storage.set(Constants.SHIPPING_ADDRESS_KEY, data[0]);
                 this.loggedIn = true;
                 this.shippingAddress  = data[0];
                 this.doPrompt('登录成功，请继续！');
+                this.vjApi.hideLoader();
                 this.navCtrl.pop();
-              }) 
+
+          //    }) 
               } else {
                 this.doPrompt('获取配送地址失败！');
+                this.vjApi.hideLoader();
             }
+          }, (err) => {
+            console.log(err),
+            this.vjApi.hideLoader();
           })
-          this.vjApi.hideLoader(); 				
+           				
   			}
   		} else
   		  	this.doPrompt('登录信息错误，请检查后重新登录');
@@ -192,12 +198,25 @@ export class LoginPage {
   }
 
   confirmLoginDistributor() {
+    this.vjApi.showLoader();
+
     this.vjApi.getDistributorLogin(this.mobile).subscribe((data) => {
-      if(data.status == 200) this.navCtrl.push('DistributorToolsPage', {mobile: this.mobile});
+
+      if(data.status == 200) {
+        this.storage.ready().then(() => {
+          console.log(this.mobile);
+          this.storage.set(Constants.DISTRIBUTOR_LOGIN_KEY, 1).catch((err) => console.log(err));
+          this.storage.set(Constants.DISTRIBUTOR_MOBILE, this.mobile).catch((err) => console.log(err));
+        });
+
+        this.vjApi.hideLoader();
+        this.navCtrl.push('DistributorToolsPage', {mobile: this.mobile});      
+      }
     },
     (err) => {
       console.log(err.status);
       this.doPrompt('您输入有误或者您不是指定的经销商');
+      this.vjApi.hideLoader();
     });
     //this.navCtrl.push('DistributorToolsPage', {mobile: '18910109898'});
   }

@@ -7,6 +7,7 @@ export class Distributor {
 	public description: string = '';
 	public addresses: DistributorAddress[] = new Array<DistributorAddress>(new DistributorAddress());
 	public contacts: DistributorContact[] = new Array<DistributorContact>(new DistributorContact());
+	public lastLogin: string = '';
 
 	constructor(obj?) {
 		if(obj) {
@@ -15,6 +16,7 @@ export class Distributor {
 			this.description = obj.description || '';
 			this.addresses = obj.addresses;
 			this.contacts = obj.contacts;
+			this.lastLogin = obj.lastLogin || '';
 		}
 	}
 

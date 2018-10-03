@@ -85,11 +85,26 @@ export class HomePage {
       if(versions.length > 0) {
         this.appLatestVersion = versions[0].latest_version;
         console.log(this.appLatestVersion);
-        this.appVersion.getVersionNumber().then((version) => {
-          console.log(version);
-          if(version.trim() != this.appLatestVersion.trim()) {
+        this.appVersion.getVersionNumber().then((currentVersion) => {
+          console.log(currentVersion);
+          if(currentVersion.trim() != this.appLatestVersion.trim()) {
             this.doPrompt('本APP有新版本，请下载并进行安装。');
           }         
+
+          // get version number stored locally
+          this.storage.ready().then(() => {
+            this.storage.get(Constants.VERSION_KEY).then((v) => {
+              if(v == null || v.trim() != currentVersion.trim()) {
+                this.storage.remove(Constants.LOCATION_KEY);
+                this.storage.remove(Constants.LOGIN_KEY);
+                this.storage.remove(Constants.SHOPPING_CART_KEY);
+                this.storage.remove(Constants.SHIPPING_ADDRESS_KEY);
+                this.storage.remove(Constants.COUPON_WALLET_KEY);
+              } else {
+                this.storage.set(Constants.VERSION_KEY, currentVersion.trim());
+              }
+            })
+          })
         });
       }
     })
@@ -184,7 +199,47 @@ export class HomePage {
 
   //To Login
   goMulti(): void {
-   this.app.getRootNav().push('LoginPage', {user: 'distributor'});
+    // check if the distributor has logged in
+    this.storage.ready().then(() => {
+      this.storage.get(Constants.DISTRIBUTOR_LOGIN_KEY).then((l) => {
+        console.log(l);
+        if(l) { 
+          let mobile: string;
+          this.storage.get(Constants.DISTRIBUTOR_MOBILE).then((m) => {
+            if(m) {
+              mobile = m;
+              // check if the distributor still in valid login duration
+              this.vjApi.showLoader();
+
+              this.vjApi.checkDistributorLogin(mobile).subscribe((resp) => {
+                console.log(resp.json());
+                console.log(mobile);
+                let login = resp.json();
+                console.log(login.valid);
+                if(login.valid) {
+                  this.vjApi.hideLoader();
+                  this.app.getRootNav().push('DistributorToolsPage', {mobile: mobile});
+                }
+                else {
+                  this.vjApi.hideLoader();
+                  this.storage.remove(Constants.DISTRIBUTOR_LOGIN_KEY);
+                  this.storage.remove(Constants.DISTRIBUTOR_MOBILE);
+                  this.app.getRootNav().push('LoginPage', {user: 'distributor'});
+                }
+              }, (err) => {
+                console.log(err);
+                this.vjApi.hideLoader();
+                this.app.getRootNav().push('LoginPage', {user: 'distributor'});
+              })                   
+            }
+          });             
+        } else {
+          this.app.getRootNav().push('LoginPage', {user: 'distributor'});
+        }
+      })
+    })
+   
+   // this.app.getRootNav().push('LoginPage', {user: 'distributor'});
    //this.app.getRootNav().push('DistributorToolsPage');
   }
 

@@ -34,7 +34,7 @@ export class MyCommentListPage {
     this.vjApi.hideLoader();
   }
 
-  commentAgain(i, j, k) {
+  commentAgain(i, j) {
     let order = this.results[i];
     let product = order.products[j];
 
