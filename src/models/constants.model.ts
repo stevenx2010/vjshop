@@ -38,4 +38,4 @@ export enum DeliveryStatus { NA = 0, WAITING_FOR_DELIVERY = 1, IN_DELIVERY = 2, 
 export enum PaymentMethod { WECHAT= 1, ALIPAY = 2 }
 export enum CouponDiscountMethod { PERCENTAGE = 1, VALUE = 2, FREE_SHIPPING = 3}
 export enum CommentStatus { NA = 0, NOT_COMMENTED = 1, COMMENTED = 2}
-export enum RefundStatus { NA = -1, WAITING_FOR_REFUND = 1, REFUNDED = 2}
+export enum RefundStatus { NA = -1, APPLICATION_FOR_REFUND = 1, WAITING_FOR_REFUND = 2, REFUNDED = 3}
