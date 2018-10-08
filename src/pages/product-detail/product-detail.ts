@@ -76,6 +76,10 @@ export class ProductDetailPage {
     });
   }
 
+  ionViewWillUnload() {
+    this.events.unsubscribe('login_success', () => console.log());
+  }
+
   ionViewWillLoad() {
     // step 1: Get shopping cart & shipping address
     // this.storage.remove(Constants.SHOPPING_CART_KEY);  // this line is for test

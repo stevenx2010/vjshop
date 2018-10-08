@@ -21,6 +21,7 @@ import { Coupon } from '../models/coupon-model';
 import { CouponNewComer } from '../models/coupon-newcomer-model';
 import { CouponItem } from '../models/coupon-item.model';
 import { Order } from '../models/order-model';
+import { Message } from '../models/message.model';
 
 @Injectable()
 export class VJAPI {
@@ -533,6 +534,33 @@ export class VJAPI {
 	 	this.initAuthHeader(headers);
 
 		return this.http.get(this.apiUrl + 'api/app/version/', {headers: headers});		 	
+	 }
+
+	/********************************************************************************************
+	 *                   API Section: Messaging interface
+	 *
+	 * 
+	 ********************************************************************************************/
+	 public sendMessage(body): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.post(this.apiUrl + 'api/CustomerService/message/update', body, {headers: headers});		 	
+	 }
+
+	 public getMessage(mobile: string): Observable<Message[]> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.get(this.apiUrl + 'api/CustomerService/message/retrieve/'+ mobile, {headers: headers})
+			.pipe(map((data) => data.json()));		 	 	
+	 }
+
+	 public getQnA(): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.get(this.apiUrl + 'api/CustomerService/qna/get/', {headers: headers})	 	
 	 }
 }
 

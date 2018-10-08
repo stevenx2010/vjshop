@@ -35,7 +35,6 @@ export class MyvjPage {
       this.storage.get(Constants.USER_MOBILE_KEY).then((m) => {
         if(m) {
           this.mobile = m;
-          console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
           console.log(this.mobile);
         }
       })
@@ -107,5 +106,13 @@ export class MyvjPage {
 
   toMyComment() {
     this.app.getRootNav().push('MyCommentListPage', {mobile: this.mobile});
+  }
+
+  toCustomerService() {
+    this.app.getRootNav().push('CustomerServicePage', {mobile: this.mobile});
+  }
+
+  toQuestionAndAnswer() {
+    this.app.getRootNav().push('QuestionAndAnswerPage');
   }
 }

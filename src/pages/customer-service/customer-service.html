@@ -1,0 +1,80 @@
+
+<ion-header>
+  <ion-navbar>
+    <ion-title>客服咨询</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+	<ion-list>
+		<ion-item *ngFor="let msg of messages" no-lines>
+			<div *ngIf="msg.message == 1 else chat">
+				<span>{{msg.message}}</span>
+			</div>
+
+			<ng-template #chat>
+				<div class="chat-message" text-right *ngIf="msg.who == 1">
+					<div class="right-bubble">
+						<span class="msg-name">我</span>
+						<span class="msg-date">{{msg?.updated_at | date:'short'}}</span>
+						<p text-wrap>{{msg?.message}}</p>
+					</div>
+					<div class="me"><ion-icon name="man"></ion-icon></div>
+				</div>
+				<div class="chat-message" text-left *ngIf="msg.who == 2">
+					<div class="vj"><img src="../../assets/imgs/icon.png" width="15"></div>
+					<div class="left-bubble">
+						<span class="msg-name">{{msg?.responder}}</span>
+						<span class="msg-date">{{msg?.updated_at | date:'short'}}</span>
+						<p text-wrap>{{msg?.message}}</p>
+					</div>
+				</div>
+			</ng-template>
+		</ion-item>
+	</ion-list>
+</ion-content>
+
+<ion-footer>
+	<ion-toolbar>
+		<ion-grid>
+			<ion-row>
+				<ion-col col-11>
+					<ion-input type="text" class="form-control" [(ngModel)]="message"></ion-input>
+				</ion-col>
+				<ion-col col-1>
+				
+						<ion-icon name="paper-plane"(click)="sendMessage()" color="primary"></ion-icon>
+
+				</ion-col>
+			</ion-row>
+		</ion-grid>
+	</ion-toolbar>
+</ion-footer>
+
+<style>
+	ion-input {
+		background-color: white;
+	}
+
+	ion-row {
+		align-items: center;
+	}
+
+	ion-icon {
+		font-size: 2rem;
+	}
+
+	.me {
+		position: absolute;
+		right: 5%;
+		top: 8%;
+		color: orange;
+	}
+
+	.vj {
+		position: absolute;;
+		top:8%;
+		left: 5%;
+	}
+
+</style>
