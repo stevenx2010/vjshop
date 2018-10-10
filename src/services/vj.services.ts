@@ -22,6 +22,7 @@ import { CouponNewComer } from '../models/coupon-newcomer-model';
 import { CouponItem } from '../models/coupon-item.model';
 import { Order } from '../models/order-model';
 import { Message } from '../models/message.model';
+import { Setting } from '../models/setting.model';
 
 @Injectable()
 export class VJAPI {
@@ -390,6 +391,13 @@ export class VJAPI {
 	 	return this.http.get(this.apiUrl + 'api/distributor/login/check/' + distributorMobile, {headers: headers});			 	
 	 }
 
+	 public summaryOfDistributorOrders(body): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.post(this.apiUrl + 'api/distributor/summary/orders', body, {headers: headers});		 	
+	 }
+
 	/********************************************************************************************
 	 *                   API Section: Coupon related data
 	 *
@@ -561,6 +569,19 @@ export class VJAPI {
 	 	this.initAuthHeader(headers);
 
 		return this.http.get(this.apiUrl + 'api/CustomerService/qna/get/', {headers: headers})	 	
+	 }
+
+	/********************************************************************************************
+	 *                   API Section: Setting interface (shipping fee)
+	 *
+	 * 
+	 ********************************************************************************************/
+	 public getShippingFormula(weight): Observable<Setting[]> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.get(this.apiUrl + 'api/setting/shipping/formula/' + weight, {headers: headers})
+			.pipe(map((data) => data.json()));	 		 	
 	 }
 }
 

@@ -66,20 +66,20 @@ export class HomePage {
 
   ionViewWillLoad() {
    this.platform.ready().then(() => {
-//     cordova.plugins.baidumap_location.getCurrentPosition((data) => {
+     cordova.plugins.baidumap_location.getCurrentPosition((data) => {
 
-//      let result = data;
-//      this.city = result.province;//;'北京市'
+      let result = data;
+      this.city = result.province;//;'北京市'
       if(this.city && this.city !=  '') {
        this.storage.ready().then(() => {
          this.storage.set(Constants.LOCATION_KEY, this.city);
        })
       }
-//    });
-   });
+    });
+  });
 
     // check if there's new version available
-  /*  
+    
     this.vjApi.getAppVersion().subscribe((v) => {
       let versions = v.json();
       if(versions.length > 0) {
@@ -92,7 +92,7 @@ export class HomePage {
           }         
 
           // get version number stored locally
-          this.storage.ready().then(() => {
+        /*  this.storage.ready().then(() => {
             this.storage.get(Constants.VERSION_KEY).then((v) => {
               if(v == null || v.trim() != currentVersion.trim()) {
                 this.storage.remove(Constants.LOCATION_KEY);
@@ -103,11 +103,13 @@ export class HomePage {
               } else {
                 this.storage.set(Constants.VERSION_KEY, currentVersion.trim());
               }
+            }, (err) => {
+              this.storage.set(Constants.VERSION_KEY, currentVersion.trim());
             })
-          })
+          })*/
         });
       }
-    })*/
+    });
   }
 
 
@@ -130,12 +132,14 @@ export class HomePage {
         if(data) {
           console.log('login_key', data);
           this.loggedIn = true;
+          this.storage.set(Constants.LOGIN_KEY, 1);
           //get mobile          
 
           this.init.getMobile().subscribe((result) => {
             if(result) {
               this.mobile = result;
               console.log('mobile', result);
+              this.storage.set(Constants.USER_MOBILE_KEY, this.mobile);
 
               // check if there's user in the remote server
               this.vjApi.checkUserExist(this.mobile).subscribe((r0) => {
@@ -150,6 +154,7 @@ export class HomePage {
                   this.init.getUserAddresses(this.mobile).subscribe((r1) => {
                     console.log('address', r1);
                     if(r1) this.address = r1;
+                    this.storage.set(Constants.SHIPPING_ADDRESS_KEY, this.address);
                   });
                 } 
               })   

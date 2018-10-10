@@ -1,0 +1,81 @@
+<ion-header>
+
+  <ion-navbar>
+		<ion-grid>
+			<ion-row style="align-items: center">
+				<ion-col col-4>
+					<button ion-button ion-only ion-start  outline style="border: none" (click)="exit()">
+					<ion-icon name="custom-exit"></ion-icon>
+						退出
+					</button>
+				</ion-col>
+				<ion-col col-8>
+					<div style="font-size: 1.9rem; font-weight: bold">经销商订单统计</div>		
+				</ion-col>
+			</ion-row>
+		</ion-grid>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+	<ion-label>统计时间段</ion-label>
+	<ion-item>
+		<ion-datetime displayFormat="从： YYYY年MM月DD日" pickerFormat="YYYY-MM-DD" doneText="确定" cancelText="取消" [(ngModel)]="date1"  placeholder="点击此处选取开始统计日期"></ion-datetime>
+	</ion-item>
+	<ion-item>
+		<ion-datetime displayFormat="到： YYYY年MM月DD日" pickerFormat="YYYY-MM-DD" doneText="确定" cancelText="取消" [(ngModel)]="date2"  placeholder="点击此处选取结束统计日期"></ion-datetime>
+	</ion-item>
+	<ion-grid>
+		<ion-row>
+			<ion-col col-8>待送货订单数量：</ion-col>
+			<ion-col col-4 class="number">{{numOfWaiting}}</ion-col>
+		</ion-row>
+		<ion-row>
+			<ion-col col-8>已送货订单数量：</ion-col>
+			<ion-col col-4 class="number">{{numOfDelivered}}</ion-col>
+		</ion-row>
+		<ion-row>
+			<ion-col col-8>已确定订单数量：</ion-col>
+			<ion-col col-4 class="number">{{numOfConfirmed}}</ion-col>
+		</ion-row>
+		<ion-row>
+			<ion-col col-8>订单数合计：</ion-col>
+			<ion-col col-4 class="number">{{total}}</ion-col>
+		</ion-row>
+		<ion-row>
+			<ion-col col-12><button id="btn-0" ion-button block full color="secondary" (click)="doSummary()" [disabled]="!date1 || !date2">统计订单数量</button></ion-col>
+		</ion-row>
+	</ion-grid>
+
+
+</ion-content>
+
+<style>
+
+	ion-content ion-col, ion-content ion-label {
+		font-size: 1.5rem;
+	}
+
+	ion-datetime {
+		font-size: 2rem;
+		font-weight: bold;
+	}
+
+	#btn-0 {
+		margin-top: 3rem;
+	}
+
+	ion-content ion-grid {
+		margin-top: 3rem;
+	}
+
+	ion-content ion-col {
+		margin-bottom: 1.5rem;
+	}
+
+	.number {
+		font-weight: bolder;
+	}
+</style>

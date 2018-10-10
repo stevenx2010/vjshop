@@ -9,7 +9,7 @@
 <ion-content>
 	<ion-list>
 		<ion-item-sliding *ngFor="let address of addresses; let i = index;">
-			<button ion-item  (click)="editAddress(i)">	
+			<button ion-item  (click)="selectAddress(i)">	
 				<ion-grid>
 					<ion-row>
 					 	<ion-col col-3>
@@ -32,8 +32,11 @@
 			</button>
 			
 			<ion-item-options side="right">
-				<button ion-button (click)="deleteAddress(i)">
-					<ion-icon name="close" color="alert"></ion-icon>删除
+				<button ion-button (click)="editAddress(i)" color="secondary">
+					<ion-icon name="create" ></ion-icon>编辑
+				</button>
+				<button ion-button (click)="deleteAddress(i)" color="alert">
+					<ion-icon name="trash"></ion-icon>删除
 				</button>
 			</ion-item-options>
 		</ion-item-sliding>	

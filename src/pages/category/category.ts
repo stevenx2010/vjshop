@@ -211,7 +211,47 @@ export class CategoryPage {
   }
 
   goMulti(): void {
-   this.app.getRootNav().push('LoginPage', {user: 'distributor'});
+    // check if the distributor has logged in
+    this.storage.ready().then(() => {
+      this.storage.get(Constants.DISTRIBUTOR_LOGIN_KEY).then((l) => {
+        console.log(l);
+        if(l) { 
+          let mobile: string;
+          this.storage.get(Constants.DISTRIBUTOR_MOBILE).then((m) => {
+            if(m) {
+              mobile = m;
+              // check if the distributor still in valid login duration
+              this.vjApi.showLoader();
+
+              this.vjApi.checkDistributorLogin(mobile).subscribe((resp) => {
+                console.log(resp.json());
+                console.log(mobile);
+                let login = resp.json();
+                console.log(login.valid);
+                if(login.valid) {
+                  this.vjApi.hideLoader();
+                  this.app.getRootNav().push('DistributorToolsPage', {mobile: mobile});
+                }
+                else {
+                  this.vjApi.hideLoader();
+                  this.storage.remove(Constants.DISTRIBUTOR_LOGIN_KEY);
+                  this.storage.remove(Constants.DISTRIBUTOR_MOBILE);
+                  this.app.getRootNav().push('LoginPage', {user: 'distributor'});
+                }
+              }, (err) => {
+                console.log(err);
+                this.vjApi.hideLoader();
+                this.app.getRootNav().push('LoginPage', {user: 'distributor'});
+              })                   
+            }
+          });             
+        } else {
+          this.app.getRootNav().push('LoginPage', {user: 'distributor'});
+        }
+      })
+    })
+   
+   // this.app.getRootNav().push('LoginPage', {user: 'distributor'});
    //this.app.getRootNav().push('DistributorToolsPage');
   }
 

@@ -68,48 +68,88 @@ export class ProductDetailPage {
 
     this.distributor = new Distributor();
 
+    // Event: login_success
     this.events.subscribe('login_success', (logged_in, mobile, address) => {
       this.mobile = mobile;
       this.shippingAddress = address;
-      this.addressBtnCaption = '管理地址';
-      this.getAddress();
+      this.addressBtnCaption = '选取地址';
+      if(!this.shippingAddress) this.getDefaultAddress();
+      else {
+        let city = this.shippingAddress.city.split(' ');
+          if(city.length > 0)
+            this.getDistributorByLocation(city[0]);    
+      }
     });
+
+    // Event: address_changed
+    this.events.subscribe('address_changed', () => {
+      this.storage.ready().then(() => {
+        this.storage.get(Constants.SHIPPING_ADDRESS_KEY).then((a) => {
+          if(a) { 
+            this.shippingAddress = a;
+            let city = this.shippingAddress.city.split(' ');
+            if(city.length > 0)
+              this.getDistributorByLocation(city[0]);    
+           }
+        })
+      })
+    });
+
+    // Event: shopping_items_changed
+    this.events.subscribe('shopping_items_changed', () => {
+      this.storage.get(Constants.SHOPPING_CART_KEY).then((cart) => {
+        if(cart) {
+          this.shoppingCart = cart;
+          this.shoppedItems = this.calculateShoppedItems(cart);
+ //         this.numberOfProducts = this.shoppedItems;
+        } else {
+          this.shoppingCart = [];
+          this.shoppedItems = 0;
+          this.numberOfProducts = 1;
+        }
+      }, (err) => {
+        this.shoppingCart =[];
+        this.shoppedItems = 0;
+        this.numberOfProducts = 1;
+      });      
+    })
   }
 
   ionViewWillUnload() {
     this.events.unsubscribe('login_success', () => console.log());
+    this.events.unsubscribe('address_changed');
+    this.events.unsubscribe('shopping_items_changed');
   }
 
   ionViewWillLoad() {
-    // step 1: Get shopping cart & shipping address
-    // this.storage.remove(Constants.SHOPPING_CART_KEY);  // this line is for test
-
+    // step 1: get mobile & shipping address
     this.storage.ready().then(() => {
-      // step 1-1: Get shopping cart
-      this.storage.get(Constants.SHOPPING_CART_KEY).then(
-          (cart) => {
-            if(cart) {
-              this.shoppingCart = cart;
-              this.shoppedItems = this.calculateShoppedItems(cart);
-            }
-          });
-
+      
       // Step 1-2: Get mobile
       this.storage.get(Constants.USER_MOBILE_KEY).then((m) => {
         if(m) this.mobile = m;
-      })
+      });
 
       //step 1-2: Get shipping address
       this.storage.get(Constants.SHIPPING_ADDRESS_KEY).then((address) => {
         if(address) {
             this.shippingAddress = address;
-            this.addressBtnCaption = '管理地址';
+            this.addressBtnCaption = '选取地址';
         }
 
             // step 1-3: Get distributor according to this address
   //          this.getDistributorByLocation(this.shippingAddress.city);
-          }
-        )
+      });
+
+      // step 1-3: Get shopping cart
+      this.storage.get(Constants.SHOPPING_CART_KEY).then((cart) => {
+        if(cart) {
+          this.shoppingCart = cart;
+          this.shoppedItems = this.calculateShoppedItems(cart);
+        }
+      }, (err) => {
+        this.shoppedItems = 0;
+      });
     });
 
     // step 3: get product information from server
@@ -139,27 +179,26 @@ export class ProductDetailPage {
   			this.products = data;
         console.log(this.products);
   			//console.log(this.detailInfo);
-
   		},
   		(err) => {
   			console.log(err);
   		}
   	);
-
-
-
-
   }
 
   ionViewDidEnter() {
-    this.getAddress();    
+    if(!this.shippingAddress) this.getDefaultAddress();    
+    else {
+      this.getDistributorByLocation(this.shippingAddress.city);    
+    }
+    
     this.vjApi.hideLoader();
   }
 
-  getAddress() {
+  getDefaultAddress() {
     // update shopping address
     if(this.mobile) {
- //     this.vjApi.showLoader();
+
       this.vjApi.getDefaultAddress(this.mobile).subscribe((a) => {
         if(a && a.length > 0) {
 
@@ -172,35 +211,36 @@ export class ProductDetailPage {
           });
 
           // get distributor by location
-          let city = this.shippingAddress.city.split(' ');
-          //console.log(city);
-          if(city.length > 0)
-            this.getDistributorByLocation(city[0]);         
+            this.getDistributorByLocation(this.shippingAddress.city);         
         }
       });
-//      this.vjApi.hideLoader();
     } 
   }
 
   getDistributorByLocation(city: string) {
-    this.distributorAddress = new DistributorAddress();
-    this.distributor = new Distributor();
+    if(city.length > 0) {
+      let temp = city.split(' ');
+      let province = temp[0];
+    
+      this.distributorAddress = new DistributorAddress();
+      this.distributor = new Distributor();
 
-    this.vjApi.getDistributorInfoByLocation(city).subscribe((d) => {
-      console.log(d);
-      if(d) {
-        this.distributor = d;
-        this.distributorAddress = this.distributor.addresses[0];
+      this.vjApi.getDistributorInfoByLocation(province).subscribe((d) => {
+        console.log(d);
+        if(d) {
+          this.distributor = d;
+          this.distributorAddress = this.distributor.addresses[0];
 
-        // get inventory of this product
-        this.vjApi.getDistributorInventoryByProductId(this.distributorAddress.distributor_id, this.productId).subscribe((inv) => {
-            this.inventory = inv;
-        }); 
-      } else {
-        this.distributorAddress = null;
-        this.inventory = 0;
-      }
-    });
+          // get inventory of this product
+          this.vjApi.getDistributorInventoryByProductId(this.distributorAddress.distributor_id, this.productId).subscribe((inv) => {
+              this.inventory = inv;
+          }); 
+        } else {
+          this.distributorAddress = null;
+          this.inventory = 0;
+        }
+      });
+    }
   }
 
   goBack(): void {
@@ -229,7 +269,7 @@ export class ProductDetailPage {
     this.cartState = 'adding';
 
       // if the shopping cart is empty, then we create a new item & put it in
-      if(this.shoppingCart.length < 1) {
+      if(this.shoppingCart == null || this.shoppingCart.length < 1) {
  
         let item = new ShoppingItem();
         item.productId = this.productId;
@@ -248,6 +288,11 @@ export class ProductDetailPage {
 
           if(this.shoppingCart[i].productId == this.productId) {
             // we found the product in the shopping cart, add the quantity
+            if(!this.shoppingCart[i].selected) {
+               this.shoppingCart[i].selected = true;
+               this.shoppedItems += this.shoppingCart[i].quantity;
+            }
+            
             this.shoppingCart[i].quantity += this.numberOfProducts;
             break;
           }
@@ -286,7 +331,8 @@ export class ProductDetailPage {
 
     let total = 0;
     for(let key in this.shoppingCart) {
-      total += this.shoppingCart[key].quantity;
+      if(this.shoppingCart[key].selected)
+        total += this.shoppingCart[key].quantity;
     }
 
     console.log('total', total);

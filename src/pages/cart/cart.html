@@ -16,7 +16,7 @@
 	<ion-grid *ngIf="shoppingCartEmpty">
 		<ion-row class="empty">
 			<ion-col col-12>
-				<button ion-button full>您还没有选购任何产品，请去分类中购买。 </button>
+				<button ion-button full (click)="toCategoryPage()">您还没有选购任何产品，请去分类中购买。 </button>
 			</ion-col>
 		</ion-row>
 	</ion-grid>
@@ -49,7 +49,7 @@
 									<div>收货人: {{address?.username}}</div>
 								</ion-col>
 								<ion-col col-4>
-									<div align="right" (click)="toManageAddressPage()">{{mobile}}</div>
+									<div align="right" (click)="toManageAddressPage()">{{shippingMobile}}</div>
 								</ion-col>
 							</ion-row>
 							<ion-row>

@@ -1,5 +1,5 @@
 import { Component, Inject, ViewChild } from '@angular/core';
-import { NavController, App, Events, AlertController, Toolbar } from 'ionic-angular';
+import { NavController, App, Events, AlertController, Toolbar, Navbar } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { Constants } from '../../models/constants.model';
@@ -7,6 +7,7 @@ import { Address } from '../../models/address.model';
 import { VJAPI } from '../../services/vj.services';
 import { ShoppingItem } from '../../models/shopping-item.model';
 import { Product } from '../../models/product.model';
+import { CategoryPage } from '../category/category';
 
 @Component({
   selector: 'page-cart',
@@ -14,10 +15,13 @@ import { Product } from '../../models/product.model';
 })
 export class CartPage {
   @ViewChild(Toolbar) toolbar: Toolbar;
+  @ViewChild(Navbar) navbar: Navbar;
+
   loggedIn: boolean = false;
   noAddress: boolean = true;
   noItemSelected: boolean = false;
   mobile: string;
+  shippingMobile: string;
   address: Address;
   shoppingCart: ShoppingItem[];
   products: Product[];
@@ -31,6 +35,8 @@ export class CartPage {
 
   checkedAll: boolean = true;
 
+  shoppingItemsChanged: boolean = false;
+
   constructor(public navCtrl: NavController, private storage: Storage, private app: App, private events: Events, private vjApi: VJAPI,
   				@Inject('API_BASE_URL') private apiUrl: string, private alertCtrl: AlertController) 
   { 	
@@ -42,16 +48,28 @@ export class CartPage {
     this.events.subscribe('login_success', (loggedIn, mobile, address) => {
        this.loggedIn = true;
        this.getShippingAddressAndMobile();  
+       this.getShoppingItem();
     });
 
     this.events.subscribe('logout', (param) => {
-   //   this.events.unsubscribe('logout');
       this.address = new Address();
       this.loggedIn = false;
       this.mobile = '';
       this.noAddress = true;
-
+      this.shippingMobile = '';
     });    
+
+    this.events.subscribe('address_changed', () => {
+      this.getShippingAddressAndMobile();
+      this.getShoppingItem();
+    });
+  }
+
+  ionViewWillLoad() {
+    this.navbar.backButtonClick = (e: UIEvent) => {
+    this.events.publish('shopping_items_changed');  
+    this.navCtrl.pop();    
+    }
   }
 
   ionViewWillEnter() {
@@ -67,7 +85,7 @@ export class CartPage {
       this.storage.get(Constants.USER_MOBILE_KEY).then((m) => {
         if(m) {
           this.mobile = m;
-          this.hidePartOfMobile();
+    //      this.hidePartOfMobile();
         }
         else m = '';
       });
@@ -75,8 +93,11 @@ export class CartPage {
       // get shipping address
       this.storage.get(Constants.SHIPPING_ADDRESS_KEY).then ((data) => {
         if(data) {
+            this.address = new Address();
             this.address = data;
             this.noAddress = false;
+            let temp = this.address.mobile;
+            this.shippingMobile = this.hidePartOfMobile(temp);
         }
         else {
           this.address = new Address();
@@ -91,17 +112,20 @@ export class CartPage {
   }
 
   ionViewDidEnter() {
-    this.events.subscribe('address_changed', () => {
-      this.getShippingAddressAndMobile();
-    })
     this.getShoppingItem();
   }
 
-  hidePartOfMobile() {
-    if(this.mobile) {
-       let regex = /^(\d{3})\d{4}(\d{4})$/gi;
-      this.mobile = this.mobile.replace(regex, '$1****$2');
-    }    
+  ionViewWillUnload() {
+    this.events.unsubscribe('login_success');
+    this.events.unsubscribe('logout');
+    this.events.unsubscribe('address_changed');
+    if(this.shoppingItemsChanged) this.events.publish('shopping_items_changed');
+  }
+
+  hidePartOfMobile(mobile) {
+     let regex = /^(\d{3})\d{4}(\d{4})$/gi;
+     return mobile.replace(regex, '$1****$2');
+ 
   }
 
   getShippingAddressAndMobile() {
@@ -109,15 +133,17 @@ export class CartPage {
       this.storage.get(Constants.USER_MOBILE_KEY).then((m) => {
         if(m) {
           this.mobile = m;
-          this.hidePartOfMobile();
         }
         else this.mobile = '';
       });
 
       this.storage.get(Constants.SHIPPING_ADDRESS_KEY).then((r) => {
           if(r) {
+            this.address = new Address();
             this.address = r;
             this.noAddress = false;
+            this.shippingMobile = this.address.mobile;
+            this.shippingMobile = this.hidePartOfMobile(this.shippingMobile);
           } else {
             r = new Address();
             this.noAddress = true;
@@ -128,6 +154,7 @@ export class CartPage {
 
   getShoppingItem() {
       this.storage.get(Constants.SHOPPING_CART_KEY).then((data: ShoppingItem[]) => {
+        console.log(data);
         if(data == null || data.length < 1)  {
           this.shoppingCartEmpty = true;
           return;
@@ -163,6 +190,10 @@ export class CartPage {
   	this.app.getRootNav().push('ProductDetailPage', {productId});
   }
 
+  toCategoryPage() {
+    this.navCtrl.push(CategoryPage);
+  }
+
   selectionChange(index: number) {
    // console.log(this.shoppingCart[index].price);
    // console.log(this.shoppingCart[index].selected);
@@ -172,7 +203,7 @@ export class CartPage {
     this.storage.ready().then(() => {
       this.storage.set(Constants.SHOPPING_CART_KEY, this.shoppingCart);
     })
-    
+    this.shoppingItemsChanged = true;
   }
 
   deleteItem(index: number) {
@@ -226,6 +257,7 @@ export class CartPage {
           }
 
           this.calculateTotle();
+          this.shoppingItemsChanged = true;
         }
       });
 
@@ -244,6 +276,8 @@ export class CartPage {
       this.storage.set(Constants.SHOPPING_CART_KEY, this.shoppingCart);
       this.calculateTotle();
     }).catch(console.log);
+
+    this.shoppingItemsChanged = true;
   }
 
   calculateTotle() {
@@ -306,6 +340,8 @@ export class CartPage {
       this.totalWeight = 0;
       this.storage.remove(Constants.SHOPPING_CART_KEY);
     });    
+
+    this.shoppingItemsChanged = true;
   }
 
   doPrompt() {

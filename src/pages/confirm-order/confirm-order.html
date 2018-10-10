@@ -73,7 +73,32 @@
 
 		<seperator height="0.8rem"></seperator>
 
+		<ion-row class="shipping-fee">
+			<ion-col col-3>
+				<div align="center">产品总价：</div>
+			</ion-col>
+			<ion-col col-9>
+				<div>{{subTotalPrice | currency:'CNY':'symbol-narrow'}}</div>
+			</ion-col>
+		</ion-row>
+		<ion-row>
+			<ion-col col-3>
+				<div align="center">配送费用：</div>
+			</ion-col>
+			<ion-col col-9>
+				<div algin="right">{{shippingFee | currency:'CNY':'symbol-narrow'}}</div>
+			</ion-col>
+		</ion-row>
+		<ion-row class="shipping-fee-explain">
+			<ion-col col-3>
+				<div align="center">运费说明：</div>
+			</ion-col>
+			<ion-col col-9>
+				<div>{{settings[0]?.description}}</div>
+			</ion-col>
+		</ion-row>
 
+		<seperator height="0.8rem"></seperator>
 		<!-- Distributor info -->
 		<ion-row class="distributor">
 			<ion-col col-3>
@@ -230,7 +255,7 @@
 						<ion-checkbox [(ngModel)]="isWechat" (ionChange)="wechatChanged($event)"></ion-checkbox>
 					</ion-col>
 				</ion-row>
-				<ion-row class="payment-method">
+				<ion-row class="payment-method bottom">
 					<ion-col col-2>
 						<ion-icon name="custom-alibaba" color="primary" class="myicon"></ion-icon>
 					</ion-col>
@@ -393,6 +418,18 @@
 	  	margin-top: 0.5rem;
 	  	border-bottom: 1px solid #efefef;
 	  	align-items: center;
+  }
+
+  .shipping-fee  {
+  	margin-top: 1rem; 	
+  }
+
+  .shipping-fee-explain {
+  	margin-bottom: 1rem;
+  }
+
+  .bottom {
+  	margin-bottom: 4rem;
   }
 
 </style>

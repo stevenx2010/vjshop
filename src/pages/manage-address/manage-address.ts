@@ -77,8 +77,14 @@ export class ManageAddressPage {
     this.vjApi.hideLoader();
   }
 
+  selectAddress(index) {
+    this.storage.ready().then(() => {
+      this.storage.set(Constants.SHIPPING_ADDRESS_KEY, this.addresses[index]);
+      this.navCtrl.pop();
+    });
+  }
+
   ionViewCanLeave() {
     this.events.publish('address_changed');
   }
-
 }

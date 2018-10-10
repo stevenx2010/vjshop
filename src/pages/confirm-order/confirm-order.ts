@@ -20,7 +20,10 @@ import { Tools } from '../../utils/Tools';
 import { Alipay } from '@ionic-native/alipay';
 import { AppAvailability } from '@ionic-native/app-availability';
 
+import { Setting } from '../../models/setting.model';
+
 declare let cordova:any;
+declare let Wechat: any;
 
 @IonicPage()
 @Component({
@@ -42,6 +45,8 @@ export class ConfirmOrderPage {
   baseUrl: string;
   totalPrice: number = 0;
   totalWeight: number = 0;
+  shippingFee: number = 0;
+  subTotalPrice: number = 0;
   weightUnit: string = '';
   shoppingCartEmpty: boolean;
 
@@ -71,6 +76,8 @@ export class ConfirmOrderPage {
 
   submitBtnDisabled = false;
 
+  settings: Setting[];
+
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI,
   				@Inject('API_BASE_URL') private apiUrl: string, private alipay: Alipay, private alertCtrl: AlertController,
           private app: App, private appAvail: AppAvailability, private platform: Platform) 
@@ -85,6 +92,7 @@ export class ConfirmOrderPage {
     this.baseUrl = this.apiUrl;
     this.order = new Order();
     this.couponUsedIds = new Set<number>();
+    this.settings = new Array<Setting>(new Setting());
 
     if(this.platform.is('ios')) {
       this.appAlipay = 'alipay://';
@@ -226,6 +234,10 @@ export class ConfirmOrderPage {
         }
       }
     }
+    this.subTotalPrice = this.totalPrice;
+
+    // calculate shipping fee
+    this.getFormulaAndCalculate();
   }
 
   toProductList() {
@@ -346,7 +358,13 @@ export class ConfirmOrderPage {
     this.order.order_date = Tools.getDateTime();
 
     this.order.total_price = this.totalPrice;
+
     this.order.total_weight = this.totalWeight;
+
+    if(this.shippingFee > 0) this.order.shipping_charges = this.shippingFee;
+    else this.order.shipping_charges = 0.00;
+
+    console.log(this.shippingFee);
 
 
     // Order shipping address
@@ -403,12 +421,11 @@ export class ConfirmOrderPage {
             cordova.plugins.ali.pay(orderInfo, (result) => {
               console.log(result);
               switch(result.resultStatus) {
-                case '6001':
-                  this.doOrderPrompt('支付不成功！请到：我的->我的订单->待付款中，向左滑动要支付的订单继续进行支付或删除订单。');
-                  break;
                 case '9000':
-                  this.doOrderPrompt('您已成功下单并支付，请继续');
+                  this.doOrderPrompt('您已成功下单并支付，等候支付系统确认。请继续');
                   break;
+                default:
+                  this.doOrderPrompt('支付不成功！请到：我的->我的订单->待付款中，向左滑动要支付的订单继续进行支付或删除订单。' + result.resultStatus);
               }
               let params = {'mobile': this.mobileNoHide, 'status': result.resultStatus}
               this.navCtrl.push('MyOrderTabsPage', {params: params});
@@ -423,6 +440,11 @@ export class ConfirmOrderPage {
         if(this.isWechat) {
           // check if Wechat app is installed before to pay
           this.appAvail.check(this.appWechat).then((yes: boolean) => {
+           Wechat.sendPaymentRequest(orderInfo, () => {
+             console.log('success');
+           }, (error) => {
+             console.log(error);
+           })
             
           }, (no: boolean) => {
             this.doOrderPrompt('您没有安装微信APP，请去“应用市场”安装之后再用微信下单支付！');
@@ -453,5 +475,90 @@ export class ConfirmOrderPage {
     });
 
     alert.present();
+  }
+
+  getFormulaAndCalculate() {
+    this.vjApi.getShippingFormula(this.totalWeight).subscribe((f) => {
+      console.log(f);
+      if(f.length > 0) {
+        this.settings = f;
+        let postfix = this.settings[0].setting_value_postfix
+        console.log(postfix);
+        this.shippingFee = this.calculateShippingFee(postfix);
+        this.totalPrice += this.shippingFee;
+      }
+    }, (err) => {
+    })
+  }
+
+  calculateShippingFee(postfix) {
+    let s1 = [];
+    let s2 = [];
+    let w = this.totalWeight;
+    let m = this.settings[0].parameter1;
+    let p = this.settings[0].parameter2;
+    let c = '';
+    console.log(w);
+    console.log(m);
+    console.log(p);
+
+    // replace m, p in formula to real value, & push into the array in reverse order
+    for(let i = postfix.length - 1; i >= 0 ; i--) {
+      c = postfix[i]; 
+
+      switch(c) {
+        case 'w':
+          s1.push(w);
+          break;
+        case 'm': 
+          s1.push(m);
+          break;
+        case 'p':
+          s1.push(p);
+          break;
+        default:
+          s1.push(c)
+      }
+    }
+
+    // calculate the result
+    let e:any, a: any, b: any;
+    while((e = s1.pop()) != null) {
+      switch(e) {
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+          b = s2.pop();
+          a = s2.pop();
+          s2.push(this.calculate(a, b, e));
+          break;
+        default:
+          s2.push(e);
+      }
+    } 
+
+    return s2.pop();
+  }
+
+  calculate(a, b, op) {
+    let result = 0;
+
+    switch(op) {
+      case '+':
+        result = a + b;
+        break;
+      case '-':
+        result = a - b;
+        break;
+      case '*':
+        result = a * b;
+        break;
+      case '/':
+        result = a / b;
+        break;
+    }
+
+    return result;
   }
 }

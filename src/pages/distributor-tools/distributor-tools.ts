@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 import { DistributorOrdersPage } from '../distributor-orders/distributor-orders';
 import { DistributorInventoryPage } from '../distributor-inventory/distributor-inventory';
+import { DistributorStatisticsPage } from '../distributor-statistics/distributor-statistics';
 import { DistributorMyPage } from '../distributor-my/distributor-my';
 
 /**
@@ -18,8 +19,9 @@ import { DistributorMyPage } from '../distributor-my/distributor-my';
   templateUrl: 'distributor-tools.html',
 })
 export class DistributorToolsPage {
-	orders='DistributorOrdersPage';
-	inventories='DistributorInventoryPage';
+	orders = 'DistributorOrdersPage';
+	inventories = 'DistributorInventoryPage';
+  statistics = 'DistributorStatisticsPage'
 	my = 'DistributorMyPage';
 
   mobile: string;
