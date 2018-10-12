@@ -165,6 +165,7 @@ export class LoginPage {
                 this.shippingAddress  = data[0];
                 this.doPrompt('登录成功，请继续！');
                 this.vjApi.hideLoader();
+                console.log('page will be popped');
                 this.navCtrl.pop();
 
           //    }) 

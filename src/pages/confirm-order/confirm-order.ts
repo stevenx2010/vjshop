@@ -22,6 +22,8 @@ import { AppAvailability } from '@ionic-native/app-availability';
 
 import { Setting } from '../../models/setting.model';
 
+import { WechatChenyu } from 'wechat-chenyu';
+
 declare let cordova:any;
 declare let Wechat: any;
 
@@ -80,7 +82,7 @@ export class ConfirmOrderPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI,
   				@Inject('API_BASE_URL') private apiUrl: string, private alipay: Alipay, private alertCtrl: AlertController,
-          private app: App, private appAvail: AppAvailability, private platform: Platform) 
+          private app: App, private appAvail: AppAvailability, private platform: Platform, private wechat: WechatChenyu) 
   {
   	this.shoppingCart = new Array<ShoppingItem>(new ShoppingItem());
   	this.products = new Array<Product>(new Product());
@@ -440,11 +442,9 @@ export class ConfirmOrderPage {
         if(this.isWechat) {
           // check if Wechat app is installed before to pay
           this.appAvail.check(this.appWechat).then((yes: boolean) => {
-           Wechat.sendPaymentRequest(orderInfo, () => {
-             console.log('success');
-           }, (error) => {
-             console.log(error);
-           })
+           this.wechat.sendPaymentRequest(orderInfo).then((data) => {
+             console.log(data);
+           }).catch((error) => console.log(error));
             
           }, (no: boolean) => {
             this.doOrderPrompt('您没有安装微信APP，请去“应用市场”安装之后再用微信下单支付！');
@@ -485,6 +485,7 @@ export class ConfirmOrderPage {
         let postfix = this.settings[0].setting_value_postfix
         console.log(postfix);
         this.shippingFee = this.calculateShippingFee(postfix);
+        if(this.shippingFee < 0) this.shippingFee = 0;
         this.totalPrice += this.shippingFee;
       }
     }, (err) => {

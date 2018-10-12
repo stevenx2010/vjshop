@@ -27,6 +27,7 @@ import { Alipay } from '@ionic-native/alipay';
 import { AppAvailability } from '@ionic-native/app-availability';
 import { AppVersion } from '@ionic-native/app-version';
 
+import { WechatChenyu } from 'wechat-chenyu';
 
 @NgModule({
   declarations: [
@@ -72,6 +73,7 @@ import { AppVersion } from '@ionic-native/app-version';
     {provide: 'API_BASE_URL', useValue: 'http://192.168.1.66:8000/'},
 //    {provide: 'API_BASE_URL', useValue: 'http://vjshop.yitongxun.cn:8080/api/'},
     CoordinateTransform,
+    WechatChenyu
   ]
 })
 export class AppModule {}
