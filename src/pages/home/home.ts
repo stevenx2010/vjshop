@@ -75,7 +75,7 @@ export class HomePage {
          this.storage.set(Constants.LOCATION_KEY, this.city);
        })
       }
-    });
+   });
   });
 
     // check if there's new version available

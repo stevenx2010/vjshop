@@ -17,7 +17,6 @@ export class MyOrderToCommentPage {
   mobile: string;
   baseUrl: string;
   ShoppingCart: ShoppingItem[];
-  avatar_url: string[];
 
   params: any;
 
@@ -29,24 +28,19 @@ export class MyOrderToCommentPage {
   	this.orders = new Array<Order>();
   	this.baseUrl = this.apiUrl;
   	this.ShoppingCart = new Array<ShoppingItem>();
-    this.avatar_url = new Array<string>();
   }
 
   ionViewDidEnter() {
+    this.vjApi.showLoader();
     this.vjApi.getMyOrders(this.mobile, 'to_comment').subscribe((o) => {
     	if(o.length > 0) {
     		this.orders = o;
-    		console.log(o);
-    		this.orders.forEach((od) => {
-          let productId = od.products[0].productId;
-          this.vjApi.getProductById(productId).subscribe((pdt) => { 
-            if(pdt.length > 0) {
-              this.avatar_url.push(pdt[0].thumbnail_url);
-            } 
-          });
-        });       
+    		console.log(o);    		  
     	}
-    })
+      this.vjApi.hideLoader();
+    }, (err) => {
+      this.vjApi.hideLoader();
+    });
   }
 
   goback() {

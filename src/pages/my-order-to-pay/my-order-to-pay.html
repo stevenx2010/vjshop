@@ -23,7 +23,7 @@
 		<ion-item-sliding *ngFor="let order of orders; let i = index;" >
 		<button ion-item (click)="toProductList(i)">
 			<ion-avatar item-start>
-				<img src="{{baseUrl}}{{avatar_url[i]}}">
+				<img src="{{baseUrl}}{{order.products[0]?.thumbnail_url}}">
 			</ion-avatar>
 			<h4>订单号：{{order?.order_serial}}</h4>
 			<p>下单日期：{{order?.order_date}}</p>
@@ -31,9 +31,9 @@
 		</button>
 
 		<ion-item-options>
-			<button ion-button color="secondary">
+			<button ion-button color="secondary" (click)="payOrder(i)">
 				<ion-icon name="custom-topay"></ion-icon>
-				去支付
+				支付
 			</button>
 			<button ion-button color="alert" (click)="deleteOrder(i)">
 				<ion-icon name="trash"></ion-icon>

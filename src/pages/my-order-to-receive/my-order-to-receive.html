@@ -22,7 +22,7 @@
 	<ion-list>
 		<button ion-item (click)="toProductList(i)"  *ngFor="let order of orders; let i = index;" >
 			<ion-avatar item-start>
-				<img src="{{baseUrl}}{{avatar_url[i]}}">
+				<img src="{{baseUrl}}{{order.products[0]?.thumbnail_url}}">
 			</ion-avatar>
 			<h4>订单号：{{order?.order_serial}}</h4>
 			<p>下单日期：{{order?.order_date}}</p>

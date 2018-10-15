@@ -24,7 +24,6 @@ export class MyOrderToPayPage {
   mobile: string;
   baseUrl: string;
   ShoppingCart: ShoppingItem[];
-  avatar_url: string[];
 
   deleteConfirmed: boolean = false;
 
@@ -43,33 +42,29 @@ export class MyOrderToPayPage {
   	this.orders = new Array<Order>();
   	this.baseUrl = this.apiUrl;
   	this.ShoppingCart = new Array<ShoppingItem>();
-    this.avatar_url = new Array<string>();
   }
 
-  ionViewDidEnter() {
-   this.vjApi.showLoader();
+  ionViewWillEnter() {
+   
    this.getMyOrders();
-   this.vjApi.hideLoader();
+   
   }
 
   getMyOrders()
   {
     this.orders =new Array<Order>();
-    
+    this.vjApi.showLoader();
+
     this.vjApi.getMyOrders(this.mobile, 'to_pay').subscribe((o) => {
       if(o.length > 0) {
-        this.orders = o;
+          o.forEach((order) => {
+            this.orders.push(order);
+          });        
         console.log(o);
-        this.orders.forEach((od) => {
-          let productId = od.products[0].productId;
-          this.vjApi.getProductById(productId).subscribe((pdt) => {
-  
-            if(pdt.length > 0) {
-              this.avatar_url.push(pdt[0].thumbnail_url);
-            } 
-          });
-        });       
       }
+      this.vjApi.hideLoader();
+    }, (err) => {
+      this.vjApi.hideLoader();
     });
   }
 
@@ -101,13 +96,28 @@ export class MyOrderToPayPage {
         this.vjApi.showLoader();
         this.vjApi.deleteMyOrder(orderId).subscribe((resp) =>{ 
           console.log(resp)
-          this.getMyOrders();
+          let temp_orders = [];
+          for(let i = 0; i < this.orders.length; i++) {
+            if(i != index) {
+              temp_orders.push(this.orders[i]);
+            }
+          }
+          this.orders = temp_orders;
+          this.vjApi.hideLoader();
+        }, (err) => {
+          this.vjApi.hideLoader();
         });               
-        this.vjApi.hideLoader();
+        
       }
     });
     alert.addButton('取消');
 
     alert.present();
   }
+
+  payOrder(index) {
+    let order = this.orders[index];
+    this.app.getRootNav().push('PayOrderAgainPage', {order: order});
+  }
+
 }

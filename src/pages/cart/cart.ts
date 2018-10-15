@@ -47,7 +47,16 @@ export class CartPage {
 
     this.events.subscribe('login_success', (loggedIn, mobile, address) => {
        this.loggedIn = true;
-       this.getShippingAddressAndMobile();  
+       if(mobile != null) this.mobile = mobile;
+       if(address.city != null || address.city != '') {
+         this.address = address;
+         this.shippingMobile = this.hidePartOfMobile(this.address.mobile);
+         this.noAddress = false;
+       }
+       else {
+         this.getShippingAddressAndMobile();  
+       }
+
        this.getShoppingItem();
     });
 
@@ -70,45 +79,15 @@ export class CartPage {
     this.events.publish('shopping_items_changed');  
     this.navCtrl.pop();    
     }
-  }
-
-  ionViewWillEnter() {
 
     this.storage.ready().then(() => {
       // check if loggin
       this.storage.get(Constants.LOGIN_KEY).then((l) => {
         if(l) this.loggedIn = true;
         else this.loggedIn = false;
-      });
-
-      // get mobile number
-      this.storage.get(Constants.USER_MOBILE_KEY).then((m) => {
-        if(m) {
-          this.mobile = m;
-    //      this.hidePartOfMobile();
-        }
-        else m = '';
-      });
-
-      // get shipping address
-      this.storage.get(Constants.SHIPPING_ADDRESS_KEY).then ((data) => {
-        if(data) {
-            this.address = new Address();
-            this.address = data;
-            this.noAddress = false;
-            let temp = this.address.mobile;
-            this.shippingMobile = this.hidePartOfMobile(temp);
-        }
-        else {
-          this.address = new Address();
-          this.noAddress = true;
-        }
-      });
-
-      // get shopping items
- //     this.getShoppingItem();
+      });    
     });
-
+    this.getShippingAddressAndMobile();
   }
 
   ionViewDidEnter() {
@@ -154,7 +133,6 @@ export class CartPage {
 
   getShoppingItem() {
       this.storage.get(Constants.SHOPPING_CART_KEY).then((data: ShoppingItem[]) => {
-        console.log(data);
         if(data == null || data.length < 1)  {
           this.shoppingCartEmpty = true;
           return;
@@ -309,6 +287,7 @@ export class CartPage {
   }
 
   toPaymentPage() {
+    console.log(this.shoppingCart);
     this.app.getRootNav().push('ConfirmOrderPage');
   }
 

@@ -22,8 +22,6 @@ import { AppAvailability } from '@ionic-native/app-availability';
 
 import { Setting } from '../../models/setting.model';
 
-import { WechatChenyu } from 'wechat-chenyu';
-
 declare let cordova:any;
 declare let Wechat: any;
 
@@ -80,9 +78,11 @@ export class ConfirmOrderPage {
 
   settings: Setting[];
 
+  btnDisabled: boolean = false;
+
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI,
   				@Inject('API_BASE_URL') private apiUrl: string, private alipay: Alipay, private alertCtrl: AlertController,
-          private app: App, private appAvail: AppAvailability, private platform: Platform, private wechat: WechatChenyu) 
+          private app: App, private appAvail: AppAvailability, private platform: Platform) 
   {
   	this.shoppingCart = new Array<ShoppingItem>(new ShoppingItem());
   	this.products = new Array<Product>(new Product());
@@ -133,7 +133,7 @@ export class ConfirmOrderPage {
          }
    			else this.mobile = '';
    		})
-
+/*
       // Get shipping address
       this.storage.get(Constants.SHIPPING_ADDRESS_KEY).then((data) => {
         if(data) {
@@ -141,7 +141,7 @@ export class ConfirmOrderPage {
           let regex = /^(\d{3})\d{4}(\d{4})$/gi;
           this.mobile = this.shippingAddress.mobile.replace(regex, '$1****$2');
         }
-      });
+      });*/
 
    		// Get shopping cart
    		this.storage.get(Constants.SHOPPING_CART_KEY).then((data: ShoppingItem[]) => {
@@ -161,10 +161,15 @@ export class ConfirmOrderPage {
    			} else this.shoppingCartEmpty = true;
    		})
    	
-     // get location
+     // get shiping address & distributor location
      this.storage.get(Constants.SHIPPING_ADDRESS_KEY).then((data) => {
        let city: any;
        if(data) {
+         // shipping address
+          this.shippingAddress = data;
+          let regex = /^(\d{3})\d{4}(\d{4})$/gi;
+          this.mobile = this.shippingAddress.mobile.replace(regex, '$1****$2');
+
          let address = data.city;
          let addressArray = address.split(' ');
          if(addressArray.length > 0) city = addressArray[0];
@@ -238,7 +243,7 @@ export class ConfirmOrderPage {
     }
     this.subTotalPrice = this.totalPrice;
 
-    // calculate shipping fee
+    // calculate shipping fee after calculating the total weight
     this.getFormulaAndCalculate();
   }
 
@@ -425,6 +430,7 @@ export class ConfirmOrderPage {
               switch(result.resultStatus) {
                 case '9000':
                   this.doOrderPrompt('您已成功下单并支付，等候支付系统确认。请继续');
+                  this.btnDisabled = true;
                   break;
                 default:
                   this.doOrderPrompt('支付不成功！请到：我的->我的订单->待付款中，向左滑动要支付的订单继续进行支付或删除订单。' + result.resultStatus);
@@ -441,10 +447,19 @@ export class ConfirmOrderPage {
 
         if(this.isWechat) {
           // check if Wechat app is installed before to pay
-          this.appAvail.check(this.appWechat).then((yes: boolean) => {
-           this.wechat.sendPaymentRequest(orderInfo).then((data) => {
+         // this.appAvail.check(this.appWechat).then((yes: boolean) => {
+           /*this.wechat.sendPaymentRequest(orderInfo).then((data) => {
              console.log(data);
-           }).catch((error) => console.log(error));
+           }).catch((error) => console.log(error));*/
+           Wechat.isInstalled((yes) => {
+
+             Wechat.sendPaymentRequest(orderInfo, () => {
+                 console.log('success');
+                 this.btnDisabled = true;
+               }, (err)=> {
+                 console.log(err);
+               this.doOrderPrompt(err);
+             });
             
           }, (no: boolean) => {
             this.doOrderPrompt('您没有安装微信APP，请去“应用市场”安装之后再用微信下单支付！');
@@ -482,9 +497,22 @@ export class ConfirmOrderPage {
       console.log(f);
       if(f.length > 0) {
         this.settings = f;
-        let postfix = this.settings[0].setting_value_postfix
+
+        // check the available formula according to the total weight, WAIRNING: because this is calcualted
+        // according to the total weight, it must called after calcaulating the total weight;
+        let i = 0;
+        for(i = 0; i < this.settings.length; i++) {
+          if(this.settings[i].condition1 <= this.totalWeight && this.settings[i].condition2 > this.totalWeight) break;
+        }
+        if(i >= this.settings.length) { // the weight range has passed last allow weight range, take the last formula to caluculate
+          i = this.settings.length - 1;
+        }
+
+        let postfix = this.settings[i].setting_value_postfix
         console.log(postfix);
+
         this.shippingFee = this.calculateShippingFee(postfix);
+
         if(this.shippingFee < 0) this.shippingFee = 0;
         this.totalPrice += this.shippingFee;
       }

@@ -1,0 +1,175 @@
+
+<ion-header>
+  <ion-navbar>
+    <ion-title>订单支付</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+	<ion-grid>		
+		<ion-row>
+			<h5>未支付订单临时信息</h5>
+		</ion-row>
+
+		<seperator></seperator>
+
+		<div class="order-info">
+			<ion-row>
+				<ion-col col-4>
+					订单编号：
+				</ion-col>
+				<ion-col col-8>
+					{{order?.order_serial}}
+				</ion-col>
+			</ion-row>
+			<ion-row>
+				<ion-col col-4>
+					订单日期：
+				</ion-col>
+				<ion-col col-8>
+					{{order?.order_date}}
+				</ion-col>
+			</ion-row>
+		</div>
+
+		<seperator></seperator>
+
+		<div class="product-list">
+			<ion-row *ngFor="let item of order.products; let i = index;">
+					<ion-col col-12>
+						<ion-row>
+							<ion-col col-1>
+								{{i+1}}
+							</ion-col>
+							<ion-col col-11>
+								{{products[i]?.name}}
+							</ion-col>
+						</ion-row>
+						<ion-row>
+							<ion-col col-12>
+								<div align="right">{{item?.price | currency:'CNY':symbol-narrow}}x{{item?.quantity}}&nbsp;=&nbsp;{{item?.price * item?.quantity | currency:'CNY':symbol-narrow}}</div>
+							</ion-col>
+						</ion-row>
+					</ion-col>
+			</ion-row>
+			<ion-row class="total">
+				<ion-col col-6>
+					产品合计：
+				</ion-col>
+				<ion-col col-6>
+					<div align="right">{{total | currency:'CNY':symbol-narrow}}</div>
+				</ion-col>
+			</ion-row>
+			<ion-row>
+				<ion-col col-6>
+					配送运费：
+				</ion-col>
+				<ion-col col-6>
+					<div align="right">{{order?.shipping_charges | currency:'CNY':symbol-narrow}}</div>
+				</ion-col>
+			</ion-row>
+			<ion-row>
+				<ion-col col-6>
+					订单合计：
+				</ion-col>
+				<ion-col col-6>
+					<div align="right" style="color: blue;">{{orderPrice | currency:'CNY':symbol-narrow}}</div>
+				</ion-col>
+			</ion-row>
+		</div>
+
+		<seperator></seperator>
+
+		<div class="invoice">
+			<ion-row>
+				<ion-col col-4>
+					发票抬头：
+				</ion-col>
+				<ion-col col-8>
+					{{order.invoice_head}}
+				</ion-col>
+			</ion-row>
+			<ion-row>
+				<ion-col col-4>
+					企业税号：
+				</ion-col>
+				<ion-col col-8>
+					{{order.invoice_tax_number}}
+				</ion-col>
+			</ion-row>
+		</div>
+
+		<seperator></seperator>
+
+		<div class="shipping-address">
+			<ion-row>
+				<ion-col col-6>
+					收货人：{{address?.username}}
+				</ion-col>
+				<ion-col col-6>
+					<div align="right">手机：{{address?.mobile}}</div>
+				</ion-col>
+			</ion-row>
+			<ion-row >
+				<ion-col col-12>
+					电<span style="color: white;">地</span>话: {{address?.tel}}
+				</ion-col>
+			</ion-row>
+			<ion-row>
+				<ion-col col-12>
+					地<span style="color: white;">地</span>址：{{address?.city}}{{address?.street}}
+				</ion-col>
+			</ion-row>
+		</div>	
+	</ion-grid>
+
+	<ion-list radio-group [(ngModel)]="paymentMethod" class="payment">
+		<ion-item>
+			<ion-label><ion-icon name="custom-wechat" checked color="secondary"></ion-icon>&nbsp;微信支付</ion-label>
+			<ion-radio value="wechat" checked></ion-radio>
+		</ion-item>
+		<ion-item>
+			<ion-label><ion-icon name="custom-alibaba" color="primary"></ion-icon>&nbsp;支付宝支付</ion-label>
+			<ion-radio value="alipay"></ion-radio>
+		</ion-item>
+	</ion-list>
+</ion-content>
+
+<ion-footer>
+	<ion-toolbar>
+		<button ion-button full block color="secondary" (click)="toPay()" [disabled]="btnDisabled">立即支付</button>
+	</ion-toolbar>
+</ion-footer>
+
+<style>
+	* {
+		margin: 0;
+		padding: 0;
+	}
+
+	ion-content {
+		margin-top: 1rem;
+	}
+
+	ion-row {
+		align-items: center;
+		flex-wrap: nowrap;
+		margin: 0.2rem;
+	}
+
+	h5, .order-info, .product-list, .invoice, .shipping-address, .payment {
+		margin: 1rem;
+	}
+
+	.total {
+		margin-top: 2rem;
+	}
+
+	.payment {
+		vertical-align: center;
+	}
+
+	ion-toolbar {
+		min-height: 3.6rem;
+	}
+</style>

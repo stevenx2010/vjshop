@@ -290,7 +290,7 @@
 					<div align="left">{{totalWeight}}{{weightUnit}}</div>
 				</ion-col>
 				<ion-col col-4>
-					<button ion-button full color="secondary" style="font-size: 1.4rem;" (click)="submitOrder()">
+					<button ion-button full color="secondary" style="font-size: 1.4rem;" (click)="submitOrder()" [disabled]="btnDisabled">
 						提交订单
 					</button>
 				</ion-col>

@@ -297,6 +297,13 @@ export class VJAPI {
 
 	 }
 
+	 public getAddressById(addressId: number): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.get(this.apiUrl + 'api/address/query/id/' + addressId, {headers: headers});	 	
+	 }
+
 	/********************************************************************************************
 	 *                   API Section: Distributor related data
 	 *
@@ -488,6 +495,14 @@ export class VJAPI {
 			.pipe(map((data) => data.json()));	 		 	
 	 }
 
+	 public getMyOrdersPaged(mobile, orderStatus, page): Observable<Order[]> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.get(this.apiUrl + 'api/order/myorders/' + mobile + '/' + orderStatus + '/' + page, {headers: headers})
+			.pipe(map((data) => data.json()));	 		 	
+	 }
+
 	 public deleteMyOrder(orderId): Observable<Response> {
 		let headers = new Headers();
 	 	this.initAuthHeader(headers);
@@ -500,6 +515,13 @@ export class VJAPI {
 	 	this.initAuthHeader(headers);
 
 		return this.http.delete(this.apiUrl + 'api/order/delete/orderSerial/' + orderSerial, {headers: headers});	 	
+	 }
+
+	 public updateOrderPaymentMethod(orderId: number, paymentMethod: number): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.get(this.apiUrl + 'api/order/update/paymentMethod/' + orderId + '/' + paymentMethod, {headers: headers});	 	
 	 }
 
 	/********************************************************************************************
