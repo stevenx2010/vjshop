@@ -405,6 +405,14 @@ export class VJAPI {
 	 	return this.http.post(this.apiUrl + 'api/distributor/summary/orders', body, {headers: headers});		 	
 	 }
 
+	 public getDistributorAllInfoById(distributorId: number): Observable<Distributor> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.get(this.apiUrl + 'api/distributor/allinfo/' + distributorId, {headers: headers})
+	 		.pipe(map((data) => data.json()));				 	
+	 }
+
 	/********************************************************************************************
 	 *                   API Section: Coupon related data
 	 *
@@ -563,7 +571,7 @@ export class VJAPI {
 		let headers = new Headers();
 	 	this.initAuthHeader(headers);
 
-		return this.http.get(this.apiUrl + 'api/app/version/', {headers: headers});		 	
+		return this.http.get(this.apiUrl + 'api/app/version', {headers: headers});		 	
 	 }
 
 	/********************************************************************************************
@@ -590,7 +598,7 @@ export class VJAPI {
 		let headers = new Headers();
 	 	this.initAuthHeader(headers);
 
-		return this.http.get(this.apiUrl + 'api/CustomerService/qna/get/', {headers: headers})	 	
+		return this.http.get(this.apiUrl + 'api/CustomerService/qna/get', {headers: headers})	 	
 	 }
 
 	/********************************************************************************************

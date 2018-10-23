@@ -72,6 +72,10 @@ export class CartPage {
       this.getShippingAddressAndMobile();
       this.getShoppingItem();
     });
+
+    this.events.subscribe('order_submitted', () => {
+      this.getShoppingItem();
+    });
   }
 
   ionViewWillLoad() {

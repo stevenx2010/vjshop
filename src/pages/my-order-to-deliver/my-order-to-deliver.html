@@ -20,16 +20,31 @@
 
 <ion-content>
 	<ion-list>
-		<button ion-item (click)="toProductList(i)"  *ngFor="let order of orders; let i = index;" >
-			<ion-avatar item-start>
-				<img src="{{baseUrl}}{{order.products[0]?.thumbnail_url}}">
-			</ion-avatar>
-			<h4>订单号：{{order?.order_serial}}</h4>
-			<p>下单日期：{{order?.order_date}}</p>
-			<p>订单总价：{{order?.total_price}}</p>
-		</button>
-	</ion-list>
+		<ion-item-sliding *ngFor="let order of orders; let i = index;">
+			<button ion-item   (click)="toProductList(i)" >
+				<ion-avatar item-start>
+					<img src="{{baseUrl}}{{order.products[0]?.thumbnail_url}}">
+				</ion-avatar>
+				<h4>订单号：{{order?.order_serial}}</h4>
+				<p>下单日期：{{order?.order_date}}</p>
+				<p>订单总价：{{order?.total_price}}</p>
+			</button>
+			<ion-item *ngIf="selectedItem == i" (click)="hide(i)">
+				<p>名称：{{distributor?.name}}</p>
+				<p>地址：{{distributorAddress?.city}}{{distributorAddress?.street}}</p>
+				<p>电话：{{distributorContact?.phone_area_code}}-{{distributorContact?.telephone}}</p>
+				<p>手机：{{distributorContact?.mobile}}</p>
+				<p>姓名：{{distributorContact?.name}}</p>
+			</ion-item>
 
+			<ion-item-options side="right">
+				<button ion-button color="primary" (click)="getDistributorInfo(i)">
+					<ion-icon name="person"></ion-icon>
+					配送经销商					
+				</button>
+			</ion-item-options>
+		</ion-item-sliding>
+	</ion-list>
 </ion-content>
 
 <style>

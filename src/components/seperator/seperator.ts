@@ -15,7 +15,7 @@ import { Component, Input } from '@angular/core';
   	[style.color]="color" 
   	[style.font-size]="height" 
   	[style.height]="height"
-  	>s</div>`
+  	>.</div>`
 })
 export class SeperatorComponent {
 

@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController, App, Platform } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, App, Platform, Events } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Observable } from 'rxjs';
 
@@ -82,7 +82,7 @@ export class ConfirmOrderPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI,
   				@Inject('API_BASE_URL') private apiUrl: string, private alipay: Alipay, private alertCtrl: AlertController,
-          private app: App, private appAvail: AppAvailability, private platform: Platform) 
+          private app: App, private appAvail: AppAvailability, private platform: Platform, private events: Events) 
   {
   	this.shoppingCart = new Array<ShoppingItem>(new ShoppingItem());
   	this.products = new Array<Product>(new Product());
@@ -429,8 +429,23 @@ export class ConfirmOrderPage {
               console.log(result);
               switch(result.resultStatus) {
                 case '9000':
-                  this.doOrderPrompt('您已成功下单并支付，等候支付系统确认。请继续');
+                  this.doOrderPrompt('您已成功下单并支付，等待后台系统确认。请继续');
                   this.btnDisabled = true;
+                  break;
+                case '8000':
+                  this.doOrderPrompt('正在处理中，支付结果未知（有可能已经支付成功），请查询商户订单列表中订单的支付状态。');
+                  break;
+                case '5000':
+                  this.doOrderPrompt('重复请求');
+                  break;
+                case '6001':
+                  this.doOrderPrompt('用户中途取消');
+                  break;
+                case '6002':
+                  this.doOrderPrompt('网络连接出错');
+                  break;
+                case '6004':
+                  this.doOrderPrompt('支付结果未知（有可能已经支付成功），请查询商户订单列表中订单的支付状态。');
                   break;
                 default:
                   this.doOrderPrompt('支付不成功！请到：我的->我的订单->待付款中，向左滑动要支付的订单继续进行支付或删除订单。' + result.resultStatus);
@@ -467,6 +482,12 @@ export class ConfirmOrderPage {
         }
 
         // clear the shopping cart
+        this.storage.ready().then(() => {
+          this.storage.remove(Constants.SHOPPING_CART_KEY);
+
+          // set submited order event
+          this.events.publish('order_submitted');
+        });
       }
     }, (error) => {
       // remove the order
