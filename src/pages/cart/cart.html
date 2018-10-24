@@ -154,7 +154,7 @@
 					</div>
 				</ion-col>
 				<ion-col col-3>
-					<button ion-button full block color="secondary" style="font-size: 1.4rem;"  [disabled]="!loggedIn || noAddress || noItemSelected" icon-start (click)="toPaymentPage()">
+					<button ion-button full block color="secondary" style="font-size: 1.4rem;"  [disabled]="!loggedIn || noAddress || noItemSelected || shoppingCartEmpty" icon-start (click)="toPaymentPage()">
 						去结算 
 					</button>
 				</ion-col>

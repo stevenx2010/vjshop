@@ -26,7 +26,7 @@ import { Setting } from '../models/setting.model';
 
 @Injectable()
 export class VJAPI {
-	private api_token: string;
+	private api_token: string = '356446b5f16423dc88c75fb00d02eefd';
 	private access_token: string;
 	private loader: any;
 
@@ -34,7 +34,11 @@ export class VJAPI {
 			     @Inject('API_BASE_URL') private apiUrl: string) {
 		this.storage.ready().then(() =>{ 
 			this.storage.get(Constants.API_TOKEN_KEY).then((token) => { 
-				this.api_token = token; }).catch(console.log);
+				if(token) this.api_token = token;
+				else {
+					this.storage.set(Constants.API_TOKEN_KEY, this.api_token);
+				}
+			}).catch(console.log);
 
 			this.storage.get(Constants.ACCESS_TOKEN_KEY).then((token) => {
 				this.access_token = token;
