@@ -70,12 +70,31 @@ export class DistributorOrdersPage {
     this.app.getRootNav().push(TabsPage);
   }
 
-  toProductList(index: number) {
+  toProductList(section:number, index: number) {
     this.shoppingCart = [];
-    this.orders[index].products.forEach((p) => {
-      this.shoppingCart.push(new ShoppingItem(p));
-    });
-    console.log('xxxxxxxxxxx', this.shoppingCart);
+    switch(section) {
+      case 1:
+        this.orders[index].products.forEach((p) => {
+          this.shoppingCart.push(new ShoppingItem(p));
+        });
+        break;
+      case 2:
+        this.ordersToBeDelivered[index].products.forEach((p) => {
+          this.shoppingCart.push(new ShoppingItem(p));
+        });
+        break;
+      case 3:
+        this.ordersWaitForConfirm[index].products.forEach((p) => {
+          this.shoppingCart.push(new ShoppingItem(p));
+        });
+        break;
+      case 4:
+        this.ordersConfirmed[index].products.forEach((p) => {
+          this.shoppingCart.push(new ShoppingItem(p));
+        });
+        break;              
+    }
+
     this.app.getRootNav().push('ProductListPage', {shoppingCart: this.shoppingCart});
   }
 

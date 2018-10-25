@@ -112,7 +112,13 @@ export class ProductDetailPage {
         this.shoppedItems = 0;
         this.numberOfProducts = 1;
       });      
-    })
+    });
+
+    this.events.subscribe('order_submitted', () => {
+      this.shoppingCart=[];
+      this.shoppedItems = 0;
+      this.numberOfProducts = 1;
+    });
   }
 
   ionViewWillUnload() {
