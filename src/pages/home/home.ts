@@ -1,5 +1,6 @@
-import { Component, ViewChild, Inject } from '@angular/core';
-import { Content, Slides, NavController, App, Platform, AlertController, Events} from 'ionic-angular';
+import { Component, ViewChild, Inject, ElementRef, Renderer2 } from '@angular/core';
+import { Content, Slides, NavController, App, Platform, AlertController, Events } from 'ionic-angular';
+import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 
 import { Storage } from '@ionic/storage';
 //import { Geolocation } from '@ionic-native/geolocation';
@@ -11,9 +12,9 @@ import { CouponItem } from '../../models/coupon-item.model';
 import { InitEnv } from '../../utils/initEnv';
 import { Address } from '../../models/address.model';
 
-import { Http } from '@angular/http';
+//import { Http } from '@angular/http';
 
-import { CoordinateTransform } from '../../services/baidu.gps.service';
+//import { CoordinateTransform } from '../../services/baidu.gps.service';
 import { AppVersion } from '@ionic-native/app-version';
 
 declare let cordova: any;
@@ -25,6 +26,7 @@ declare let cordova: any;
 export class HomePage {
   @ViewChild(Content) content: Content;
   @ViewChild(Slides) slides: Slides;
+  @ViewChild('video') video: ElementRef;
 
   remoteImages: Image[][];
   imageUrls: string[][];
@@ -34,6 +36,11 @@ export class HomePage {
   imageUrls_2: string[] = [''];
   imageUrls_3: string[] = [''];
   imageUrls_4: string[] = [''];
+
+  videoUrl: any;
+  trustedVideoUrl: SafeResourceUrl;
+  displayVideo: boolean = true;
+  videoClip: any;
 
   contentWidth: number;
   contentHeight: number;
@@ -47,9 +54,10 @@ export class HomePage {
   appLatestVersion: string;
 
   constructor(public navCtrl: NavController, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string, 
-              private http: Http, private app: App, private storage: Storage, /*private geolocation: Geolocation, */
-              private coordtrans: CoordinateTransform, private platform: Platform, private init: InitEnv,
-              private alertCtrl: AlertController, private events: Events, private appVersion: AppVersion ) 
+              private app: App, private storage: Storage, /*private geolocation: Geolocation, */
+              /*private coordtrans: CoordinateTransform,*/ private platform: Platform, private init: InitEnv,
+              private alertCtrl: AlertController, private events: Events, private appVersion: AppVersion,
+              private domSanitizer: DomSanitizer, private renderer: Renderer2 ) 
   {
   	// initialize arrays
   	this.remoteImages = new Array<Array<Image>>();
@@ -60,26 +68,26 @@ export class HomePage {
     this.events.subscribe('login_success', (loggedIn, mobile, shippingAddress) => {
       this.loggedIn = loggedIn;
       this.mobile = mobile;
-    })
+    });
   }
 
-
   ionViewWillLoad() {
-   this.platform.ready().then(() => {
-     cordova.plugins.baidumap_location.getCurrentPosition((data) => {
 
-      let result = data;
-      this.city = result.province;//;'北京市'
-      if(this.city && this.city !=  '') {
-       this.storage.ready().then(() => {
-         this.storage.set(Constants.LOCATION_KEY, this.city);
-       })
-      }
-   });
-  });
+    // Get current location
+    this.platform.ready().then(() => {
+       cordova.plugins.baidumap_location.getCurrentPosition((data) => {
+
+        let result = data;
+        this.city = result.province;//;'北京市'
+        if(this.city && this.city !=  '') {
+         this.storage.ready().then(() => {
+           this.storage.set(Constants.LOCATION_KEY, this.city);
+         })
+        }
+     });
+    });
 
     // check if there's new version available
-    
     this.vjApi.getAppVersion().subscribe((v) => {
       let versions = v.json();
       if(versions.length > 0) {
@@ -110,8 +118,39 @@ export class HomePage {
         });
       }
     });
-  }
 
+    // Get video for home page: postion 5: for home page
+    this.vjApi.getVideoByPostion(5).subscribe((resp) => {
+      console.log(resp);
+      if(resp.status == 200) {
+        let body = resp.json();
+        if(body.length > 0) {
+          this.videoUrl = this.apiUrl + body[0].video_url;
+          this.trustedVideoUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.videoUrl);
+
+          this.videoClip = this.renderer.createElement('video');
+          this.renderer.setAttribute(this.videoClip, 'width', '100%');
+          this.renderer.setAttribute(this.videoClip, 'controls', 'controls');
+          this.renderer.setAttribute(this.videoClip, 'muted', 'true');
+          this.renderer.setAttribute(this.videoClip, 'autoplay', 'autoplay');
+          this.renderer.setAttribute(this.videoClip, 'webkit-playsinline', 'webkit-playsinline');
+          
+          let source = this.renderer.createElement('source');
+          this.renderer.setAttribute(source, 'src', this.videoUrl + '#t=0,0.01');
+          this.renderer.setAttribute(source, 'type', 'video/mp4');
+
+          this.renderer.appendChild(this.videoClip, source);
+          this.renderer.appendChild(this.video.nativeElement, this.videoClip);
+        } else {
+          this.displayVideo = false;
+        }
+      } else { 
+        this.displayVideo = false;
+      }
+    }, (err) => {
+      this.doPrompt('请检查是否有网络连接!');
+    });   
+  }
 
   ionViewDidEnter() {
     this.initialize();
@@ -120,8 +159,6 @@ export class HomePage {
   	this.slides.autoplayDisableOnInteraction = false;
   	this.slides.startAutoplay();
   }
-
-  image_2: string;
 
   initialize() {
     //this.storage.remove(Constants.LOGIN_KEY);
@@ -186,8 +223,6 @@ export class HomePage {
   			this.imageUrls_3 = this.imageUrls[3];
   			this.imageUrls_4 = this.imageUrls[4];
 
-  			this.http.get(this.imageUrls_2[0]).subscribe((data1) => this.image_2 = data1.json());
-
   			this.vjApi.hideLoader();
   		},
   		(err) => {
@@ -195,6 +230,8 @@ export class HomePage {
         this.doPrompt('请检查是否有网络连接!');
   			this.vjApi.hideLoader();
   		});
+
+    
   }
 
 
@@ -202,7 +239,7 @@ export class HomePage {
     this.app.getRootNav().push('SearchPage');
   }
 
-  //To Login
+  //To distributor Login
   goMulti(): void {
     // check if the distributor has logged in
     this.storage.ready().then(() => {

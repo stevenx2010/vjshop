@@ -110,7 +110,7 @@ export class DistributorOrdersPage {
     alert.addButton({
       text: '确定',
       handler: data => {
-        this.vjApi.updateOrderDeliveryStatus(order.id, DeliveryStatus.DELIVERED_NOT_CONFIRM, Tools.getDateTime()).subscribe((resp) => {
+        this.vjApi.updateOrderDeliveryStatus(order.id, DeliveryStatus.DELIVERED_NOT_CONFIRM, Tools.getDateTime()/*, this.mobile*/).subscribe((resp) => {
           console.log(resp);
           this.deliveryBtnDisabled[index] = true;
           this.isInit = false;
@@ -131,7 +131,7 @@ export class DistributorOrdersPage {
     alert.addButton({
       text: '确定',
       handler: data => {
-        this.vjApi.updateOrderDeliveryStatus(order.id, DeliveryStatus.CONFIRMED, Tools.getDateTime()).subscribe((resp) => {
+        this.vjApi.updateOrderDeliveryStatus(order.id, DeliveryStatus.CONFIRMED, Tools.getDateTime()/*, this.mobile*/).subscribe((resp) => {
           console.log(resp);
           this.confirmBtnDisabled[index] = true;
           this.isInit = false;

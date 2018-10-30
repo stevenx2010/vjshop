@@ -38,6 +38,7 @@
     "cordova-plugin-baidumaplocation": "^4.0.2",
     "cordova-plugin-datepicker": "^0.9.3",
     "cordova-plugin-device": "^2.0.2",
+    "cordova-plugin-geolocation": "^4.0.1",
     "cordova-plugin-gubnoi-alipay": "0.0.4",
     "cordova-plugin-inappbrowser": "^3.0.0",
     "cordova-plugin-ionic-keyboard": "^2.1.2",
@@ -67,10 +68,6 @@
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-ionic-webview": {},
       "cordova-plugin-ionic-keyboard": {},
-      "cordova-plugin-inappbrowser": {},
-      "cordova-plugin-geolocation": {
-        "GEOLOCATION_USAGE_DESCRIPTION": "To locate you"
-      },
       "cordova-plugin-baidumaplocation": {
         "ANDROID_KEY": "hWUwGckpW0S42kMYiiqYW9srIL8hktOg",
         "IOS_KEY": "TEv78fc0HREWpzQZvSc5G0mH85N1sUsK",
@@ -84,7 +81,9 @@
       "cordova-plugin-datepicker": {},
       "cordova-plugin-wechatv2": {
         "WECHATAPPID": "wx83eb94a40765026b"
-      }
+      },
+      "cordova-plugin-geolocation": {},
+      "cordova-plugin-inappbrowser": {}
     },
     "platforms": [
       "android",

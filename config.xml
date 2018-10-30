@@ -12,7 +12,8 @@
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
     <allow-intent href="*" />
-    <allow-navigation href="*" />
+    <allow-navigation href="http://*/*" />
+    <allow-nagivation href="https://api.venjong.cn/*" />
     <preference name="ScrollEnabled" value="false" />
     <preference name="android-minSdkVersion" value="22" />
     <preference name="BackupWebStorage" value="none" />
@@ -83,12 +84,8 @@
     <plugin name="cordova-plugin-splashscreen" spec="5.0.2" />
     <plugin name="cordova-plugin-ionic-webview" spec="^2.0.0" />
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.0.5" />
-    <plugin name="cordova-plugin-inappbrowser" spec="^3.0.0" />
     <allow-navigation href="http://192.168.1.66:8100" />
     <allow-navigation href="http://192.168.1.66:8101" />
-    <plugin name="cordova-plugin-geolocation" spec="^4.0.1">
-        <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="To locate you" />
-    </plugin>
     <plugin name="cordova-plugin-gubnoi-alipay" spec="0.0.4">
         <variable name="APP_ID" value="2018082961114895" />
     </plugin>
@@ -104,4 +101,6 @@
     </plugin>
     <engine name="android" spec="^7.1.1" />
     <engine name="ios" spec="^4.5.5" />
+    <plugin name="cordova-plugin-geolocation" spec="^4.0.1" />
+    <plugin name="cordova-plugin-inappbrowser" spec="^3.0.0" />
 </widget>

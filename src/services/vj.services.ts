@@ -101,6 +101,18 @@ export class VJAPI {
 		}
 	}
 
+	public getVideoByPostion(position?: number): Observable<Response> {
+		let headers = new Headers();
+
+		this.initAuthHeader(headers);
+
+		if(location != null) {
+			return this.http.get(this.apiUrl + 'api/' + 'video/position/' + position, {headers: headers});	//get video at postion
+		} else {
+			return this.http.get(this.apiUrl + 'api/' + 'video', {headers: headers});	// get all videos
+		}		
+	}
+
 	/********************************************************************************************
 	 *                   API Section: products related data
 	 *
@@ -492,11 +504,11 @@ export class VJAPI {
 		return this.http.post(this.apiUrl + 'api/order/submit', body, {headers: headers});	 	
 	 }
 
-	 public updateOrderDeliveryStatus(orderId, status, datetime): Observable<Response> {
+	 public updateOrderDeliveryStatus(orderId, status, datetime/*, distributorMobile*/): Observable<Response> {
 		let headers = new Headers();
 	 	this.initAuthHeader(headers);
 
-		return this.http.get(this.apiUrl + 'api/order/update/delivery/' + orderId + '/' + status + '/' + datetime, {headers: headers});	 	
+		return this.http.get(this.apiUrl + 'api/order/update/delivery/' + orderId + '/' + status + '/' + datetime/* + '/' + distributorMobile*/, {headers: headers});	 	
 	 }
 
 	 public getMyOrders(mobile, orderStatus): Observable<Order[]> {

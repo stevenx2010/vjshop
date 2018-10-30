@@ -39,6 +39,7 @@ export class ProductDetailPage {
   products: Product[];
   productId: number;
   numberOfProducts: number;
+  numberOfCurrentProducts: number;
   shoppingCart: ShoppingItem[];
   shoppedItems: number;
   shippingAddress: Address;
@@ -64,6 +65,7 @@ export class ProductDetailPage {
 
   	this.productId = this.navParams.get('productId');
     this.numberOfProducts = 1;
+    this.numberOfCurrentProducts = 0;
     this.shoppedItems = 0;
 
     this.distributor = new Distributor();
@@ -106,11 +108,13 @@ export class ProductDetailPage {
           this.shoppingCart = [];
           this.shoppedItems = 0;
           this.numberOfProducts = 1;
+          this.numberOfCurrentProducts = 0;
         }
       }, (err) => {
         this.shoppingCart =[];
         this.shoppedItems = 0;
         this.numberOfProducts = 1;
+        this.numberOfCurrentProducts = 0;
       });      
     });
 
@@ -118,6 +122,7 @@ export class ProductDetailPage {
       this.shoppingCart=[];
       this.shoppedItems = 0;
       this.numberOfProducts = 1;
+      this.numberOfCurrentProducts = 0;
     });
   }
 
@@ -125,6 +130,7 @@ export class ProductDetailPage {
     this.events.unsubscribe('login_success', () => console.log());
     this.events.unsubscribe('address_changed');
     this.events.unsubscribe('shopping_items_changed');
+    this.events.unsubscribe('order_submitted');
   }
 
   ionViewWillLoad() {
@@ -254,6 +260,10 @@ export class ProductDetailPage {
   }
 
   addItem() {
+    if((this.numberOfProducts + 1 + this.numberOfCurrentProducts) > this.inventory) {
+      this.doPrompt('购买数量不能超过当前库存量。');
+      return;
+    }
     this.numberOfProducts += 1;
   }
 
@@ -269,6 +279,16 @@ export class ProductDetailPage {
 
     if((this.distributorAddress == null) || (this.distributorAddress && this.distributorAddress.city == '')) {
       this.doPrompt('您所在的区域没有经销商，暂时无法购买，请致电0512-57880688；或者更换其他配送地址重新购买，谢谢您的理解。');
+      return;
+    }
+
+    if(this.inventory < 1) {
+      this.doPrompt('经销商库存不足，暂时无法购买。');
+      return;
+    }
+
+    if(this.inventory < this.numberOfCurrentProducts + this.numberOfProducts) {
+      this.doPrompt('您购物车中已有：' + this.numberOfCurrentProducts + ' 件该产品，加上所选购买数量：'+ this.numberOfProducts + '，总量超过了当前库存量, 请减少欲购买数量后进行购买。');
       return;
     }
 
@@ -321,6 +341,7 @@ export class ProductDetailPage {
       //      console.log(this.shoppingCart);
 
       this.shoppedItems += Number(this.numberOfProducts);
+      this.numberOfCurrentProducts += this.numberOfProducts;
       this.storage.ready().then(() => {
         this.storage.set(Constants.SHOPPING_CART_KEY, this.shoppingCart);
 
@@ -339,6 +360,9 @@ export class ProductDetailPage {
     for(let key in this.shoppingCart) {
       if(this.shoppingCart[key].selected)
         total += this.shoppingCart[key].quantity;
+      if(this.shoppingCart[key].productId == this.productId) {
+        this.numberOfCurrentProducts = this.shoppingCart[key].quantity;
+      }
     }
 
     console.log('total', total);

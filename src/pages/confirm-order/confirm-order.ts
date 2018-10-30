@@ -473,7 +473,9 @@ export class ConfirmOrderPage {
                  this.btnDisabled = true;
                }, (err)=> {
                  console.log(err);
-               this.doOrderPrompt(err);
+                 this.doOrderPrompt(err);
+                 let params = {'mobile': this.mobileNoHide, 'status': err}
+                  this.navCtrl.push('MyOrderTabsPage', {params: params});
              });
             
           }, (no: boolean) => {
