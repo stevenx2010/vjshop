@@ -24,6 +24,7 @@ export class LoginPage {
   confirmDisabled: boolean = true;
   mobileIsValide: boolean = false;
   smsCodeIsValide: boolean = false;
+  smsCountingDown: boolean = false;
 
   couponWallet: Set<Coupon>;
 
@@ -52,13 +53,15 @@ export class LoginPage {
   	// Re-enable to get SMS code after 1 minute
   	let count = 1;
   	this.smsBtnDisabled = true;
+    this.smsCountingDown = true;
   	let timer = setInterval(() => {
 	  				this.caption = count + '秒';
 	  				count += 1;
 	  				if(count > 60) {    // change to 60 in production version
 	  					clearInterval(timer);
 	  					this.caption = '获取验证码';
-	  					this.smsBtnDisabled = false;
+	  					this.smsCountingDown = false;
+              this.smsBtnDisabled = false;
 	  				}
 					}, 1000);
 
@@ -123,7 +126,7 @@ export class LoginPage {
                this.storage.ready().then(() => {
                  this.storage.set(Constants.COUPON_WALLET_KEY, this.couponWallet);
                })
-            //   this.events.publish('login_success', {logged_in: true, mobile: this.mobile});
+               this.events.publish('login_success', {logged_in: true, mobile: this.mobile});
             }
           });
 

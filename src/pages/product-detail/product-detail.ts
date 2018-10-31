@@ -89,9 +89,10 @@ export class ProductDetailPage {
         this.storage.get(Constants.SHIPPING_ADDRESS_KEY).then((a) => {
           if(a) { 
             this.shippingAddress = a;
-            let city = this.shippingAddress.city.split(' ');
+            let city = this.shippingAddress.city;
+            console.log(city);
             if(city.length > 0)
-              this.getDistributorByLocation(city[0]);    
+              this.getDistributorByLocation(city);    
            }
         })
       })
@@ -232,7 +233,7 @@ export class ProductDetailPage {
   getDistributorByLocation(city: string) {
     if(city.length > 0) {
       let temp = city.split(' ');
-      let province = temp[0];
+      let province = temp[0] + ' ' + temp[1];
     
       this.distributorAddress = new DistributorAddress();
       this.distributor = new Distributor();
