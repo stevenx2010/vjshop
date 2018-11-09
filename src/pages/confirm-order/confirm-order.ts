@@ -172,15 +172,16 @@ export class ConfirmOrderPage {
 
          let address = data.city;
          let addressArray = address.split(' ');
-         if(addressArray.length > 0) city = addressArray[0];
+         if(addressArray.length > 0) city = addressArray[0] + ' ' + addressArray[1];
        }
        console.log(city);
        if(city) {
          // Get Distributor at this location
-         this.vjApi.getDistributorAddressByLocation(city).subscribe((data) => {
-           if(data.length > 0) {
+         this.vjApi.getDistributorInfoByLocation(city).subscribe((data) => {
+           if(data) {
              console.log(data);
-             this.distributorAddress = data;
+             let distributor: Distributor = data;
+             this.distributorAddress = distributor.addresses;
 
              let distributorId = this.distributorAddress[0].distributor_id;
 

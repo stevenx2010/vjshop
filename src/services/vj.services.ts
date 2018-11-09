@@ -11,6 +11,7 @@ import { Product } from '../models/product.model';
 import { ProductDetail } from '../models/product-detail.model';
 import { ProductDetailImage } from '../models/product-detail-image.model';
 import { ProductSubCategory } from '../models/product-sub-category.model';
+import { ProductBySubCategory } from '../models/product-by-sub-category.model';
 import { Constants } from '../models/constants.model';
 import { Address } from '../models/address.model';
 import { DistributorAddress } from '../models/distributor-address-model';
@@ -187,6 +188,14 @@ export class VJAPI {
 	 	this.initAuthHeader(headers);
 
 	 	return this.http.get(this.apiUrl + 'api/' + 'product/products/' + categoryId, {headers: headers})
+	 			.pipe(map((res: Response) => res.json()));
+	}
+
+	 public getProductsV2(categoryId: number): Observable<ProductBySubCategory[]> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.get(this.apiUrl + 'api/' + 'product/products/v2/' + categoryId, {headers: headers})
 	 			.pipe(map((res: Response) => res.json()));
 	}
 

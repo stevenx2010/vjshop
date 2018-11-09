@@ -129,7 +129,14 @@ export class CategoryPage {
   }
 
   getProducts(categoryId: number) {
-
+    this.vjApi.getProductsV2(categoryId).subscribe((data) => {
+      console.log(data);      
+      if(data.length > 0) {
+        this.productBySubCategories = data;
+        return;
+      } 
+    })
+/*
     this.vjApi.getProducts(categoryId).subscribe(
       (data) => {
         this.productBySubCategories = [];
@@ -142,9 +149,10 @@ export class CategoryPage {
           preRecord = data[0];
           subCategory = new ProductSubCategory(data[0].product_sub_category_id, data[0].product_sub_category_name);
         } else {
+          console.log('no products retrieved');
           return;
         }
-       
+
         let index =0;
         let saved = false;
         for(let i = 0; i < data.length; i++) {
@@ -170,7 +178,7 @@ export class CategoryPage {
       (err) => {
           console.log(err);
       }
-    );
+    );*/
 
   }
 

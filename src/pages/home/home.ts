@@ -41,6 +41,7 @@ export class HomePage {
   trustedVideoUrl: SafeResourceUrl;
   displayVideo: boolean = true;
   videoClip: any;
+  posterUrl: any;
 
   contentWidth: number;
   contentHeight: number;
@@ -96,7 +97,7 @@ export class HomePage {
         this.appVersion.getVersionNumber().then((currentVersion) => {
           console.log(currentVersion);
           if(currentVersion.trim() != this.appLatestVersion.trim()) {
-            this.doPrompt('本APP有新版本，请下载并进行安装。');
+            this.doPrompt('本APP有新版本：' + this.appLatestVersion + '，请下载并进行安装。' );
           }         
 
           // get version number stored locally
@@ -126,17 +127,19 @@ export class HomePage {
         let body = resp.json();
         if(body.length > 0) {
           this.videoUrl = this.apiUrl + body[0].video_url;
+          this.posterUrl = this.apiUrl + body[0].poster_url;
           this.trustedVideoUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.videoUrl);
 
           this.videoClip = this.renderer.createElement('video');
           this.renderer.setAttribute(this.videoClip, 'width', '100%');
           this.renderer.setAttribute(this.videoClip, 'controls', 'controls');
           this.renderer.setAttribute(this.videoClip, 'muted', 'true');
-          this.renderer.setAttribute(this.videoClip, 'autoplay', 'autoplay');
+ //         this.renderer.setAttribute(this.videoClip, 'autoplay', 'autoplay');
           this.renderer.setAttribute(this.videoClip, 'webkit-playsinline', 'webkit-playsinline');
+          this.renderer.setAttribute(this.videoClip, 'poster', this.posterUrl);
           
           let source = this.renderer.createElement('source');
-          this.renderer.setAttribute(source, 'src', this.videoUrl + '#t=0,0.01');
+          this.renderer.setAttribute(source, 'src', this.videoUrl + '#t=0');
           this.renderer.setAttribute(source, 'type', 'video/mp4');
 
           this.renderer.appendChild(this.videoClip, source);
