@@ -73,5 +73,8 @@ ion-icon {
 	&[class*="distributor"] {
 		mask-image: url(../assets/fonts/distributor.svg);
 	}
+	&[class*="logout"] {
+		mask-image: url(../assets/fonts/logout.svg);
+	}
 }
 
