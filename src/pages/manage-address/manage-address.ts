@@ -80,7 +80,8 @@ export class ManageAddressPage {
   selectAddress(index) {
     this.storage.ready().then(() => {
       this.storage.set(Constants.SHIPPING_ADDRESS_KEY, this.addresses[index]);
-      this.navCtrl.pop();
+      //this.navCtrl.pop();
+      this.editAddress(index);
     });
   }
 

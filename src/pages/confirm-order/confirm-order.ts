@@ -21,6 +21,7 @@ import { Alipay } from '@ionic-native/alipay';
 import { AppAvailability } from '@ionic-native/app-availability';
 
 import { Setting } from '../../models/setting.model';
+import { Invoice } from '../../models/invoice-model';
 
 declare let cordova:any;
 declare let Wechat: any;
@@ -58,9 +59,13 @@ export class ConfirmOrderPage {
 
   invoiceHead: string;
   taxNumber: string;
+  email: string;
 
   invHeadDisabled: boolean = true;
   taxNumDisabled: boolean = true;
+  emailDisabled: boolean = true;
+
+  invoice: Invoice;
 
   isWechat: boolean;
   isAlipay: boolean;
@@ -103,6 +108,8 @@ export class ConfirmOrderPage {
       this.appAlipay = 'com.eg.android.AlipayGphone';
       this.appWechat = 'com.tencent.mm';
     }
+
+    this.invoice = new Invoice();
 
   }
 
@@ -229,7 +236,7 @@ export class ConfirmOrderPage {
 
             this.couponWalletArray.push(couponTemp[0]);
             let previousCouponTypeId = couponTemp[0].coupon_type_id;
-            
+
             for(let i = 1; i < couponTemp.length; i++) {
               if(couponTemp[i].coupon_type_id == previousCouponTypeId) continue;
 
@@ -239,6 +246,17 @@ export class ConfirmOrderPage {
             console.log(this.couponWalletArray);
          }
        });
+
+       // Get invoice info
+       this.storage.get(Constants.INVOICE_INFO_KEY).then((data: Invoice) => {
+         if(data) {
+           this.invoice = data;
+           this.invoiceHead = this.invoice.head;
+           this.invoiceType = this.invoice.type;
+           this.taxNumber = this.invoice.tax_number;
+           this.email = this.invoice.email;
+         }
+       })
 
        this.vjApi.hideLoader();
      })
@@ -309,10 +327,12 @@ export class ConfirmOrderPage {
         this.invoiceRequired = true;
         this.invHeadDisabled = false;
         this.taxNumDisabled = false;
+        this.emailDisabled = false;
       } else {                        // invoice not required
         this.invoiceRequired = false;
         this.invHeadDisabled = true;
-        this.taxNumDisabled = true;       
+        this.taxNumDisabled = true;   
+        this.emailDisabled = true;    
       }   
   }
 
@@ -437,7 +457,17 @@ export class ConfirmOrderPage {
       
       this.order.invoice_type = this.invoiceType;
       this.order.invoice_head = this.invoiceHead;
+      this.order.email = this.email;
       this.order.invoice_status = InvoiceStatus.NOT_ISSUED;
+
+      this.invoice.head = this.invoiceHead;
+      this.invoice.type = this.invoiceType;
+      this.invoice.tax_number = this.taxNumber;
+      this.invoice.email = this.email;
+
+      this.storage.ready().then(() => {
+        this.storage.set(Constants.INVOICE_INFO_KEY, this.invoice);
+      })
     }
 
     // Coupons used

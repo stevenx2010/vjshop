@@ -23,6 +23,7 @@ export class Order {
 	public invoice_type: number = InvoiceType.PERSONAL;
 	public invoice_head: string = '';
 	public invoice_tax_number: string = '';
+	public email: string = '';
 	public refund_status: number = RefundStatus.NA;
 	public coupon_used_ids: number[] = new Array<number>();
 
@@ -50,6 +51,7 @@ export class Order {
 			this.invoice_type = obj.invoice_type || InvoiceType.PERSONAL;
 			this.invoice_head = obj.invoice_head ||'';
 			this.invoice_tax_number = obj.invoice_tax_number || '';
+			this.email = obj.email ||'';
 			this.products = obj.products || new Array<ShoppingItem>(new ShoppingItem());
 			this.coupon_used_ids = obj.coupon_used_ids || new Array<number>();
 		}

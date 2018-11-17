@@ -1,10 +1,13 @@
 import { Component, Inject } from '@angular/core';
 import { IonicPage, NavController, NavParams, App, AlertController } from 'ionic-angular';
+import { Storage } from '@ionic/storage';
 
 import { VJAPI } from '../../services/vj.services';
 import { Order } from '../../models/order-model';
 import { ShoppingItem } from '../../models/shopping-item.model';
 import { Product } from '../../models/product.model';
+import { Coupon } from '../../models/coupon-model';
+import { Constants } from '../../models/constants.model';
 
 /**
  * Generated class for the MyOrderToPayPage page.
@@ -30,8 +33,11 @@ export class MyOrderToPayPage {
   status: string;
   params: any;
 
+  couponWallet: Set<Coupon>;
+
   constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI,
-  				@Inject('API_BASE_URL') private apiUrl: string, private app: App, private alertCtrl: AlertController) 
+  				@Inject('API_BASE_URL') private apiUrl: string, private app: App, private alertCtrl: AlertController,
+          private storage: Storage) 
   {
   	this.params = this.navParams.data;
     this.mobile = this.params.mobile;
@@ -42,12 +48,21 @@ export class MyOrderToPayPage {
   	this.orders = new Array<Order>();
   	this.baseUrl = this.apiUrl;
   	this.ShoppingCart = new Array<ShoppingItem>();
+
+    this.couponWallet = new Set<Coupon>();
   }
 
   ionViewWillEnter() {
    
-   this.getMyOrders();
-   
+    this.getMyOrders();
+
+    this.storage.ready().then(() => {
+      this.storage.get(Constants.COUPON_WALLET_KEY).then((w) => {
+        if(w) {
+          this.couponWallet = w;
+        }
+      });
+    })   
   }
 
   getMyOrders()
@@ -95,7 +110,27 @@ export class MyOrderToPayPage {
         let orderId = this.orders[index].id;
         this.vjApi.showLoader();
         this.vjApi.deleteMyOrder(orderId).subscribe((resp) =>{ 
-          console.log(resp)
+          // Sync coupons
+          let coupons = new Array<Coupon>();
+          coupons = resp.json();
+
+          if(coupons.length > 0) {
+            coupons.forEach((item) => {
+              if(this.couponWallet) {
+                this.couponWallet.forEach((coupon) => {
+                  if(item.id == coupon.id) {
+                    coupon.has_used = false;
+                    this.couponWallet.add(coupon);
+                  }
+                })
+              }
+            })
+          }
+
+          //console.log(this.couponWallet);
+          this.storage.set(Constants.COUPON_WALLET_KEY, this.couponWallet);
+
+          // Sync orders
           let temp_orders = [];
           for(let i = 0; i < this.orders.length; i++) {
             if(i != index) {

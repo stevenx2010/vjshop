@@ -14,6 +14,8 @@ export class Constants {
     static  VERSION_KEY				= 'app_version';
     static  DISTRIBUTOR_LOGIN_KEY	= 'distributor_login';
     static  DISTRIBUTOR_MOBILE		= 'distributor_mobile';
+
+    static INVOICE_INFO_KEY			= 'invoice_info';
 }
 
 export class Login { 
