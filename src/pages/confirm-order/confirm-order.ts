@@ -189,14 +189,23 @@ export class ConfirmOrderPage {
                 if(data) {
                   this.distributors = data;
                 }
+             }, (error) => {
+               this.submitBtnDisabled = true;
+               this.doOrderPrompt('没有经销商!');
              });
 
              this.vjApi.getDistributorContactById(distributorId).subscribe((data) => {
                if(data) {
                  this.distributorContacts = data;
                }
+             }, (error) => {
+               this.submitBtnDisabled = true;
+               this.doOrderPrompt('没有经销商联系人!');              
              })
            }
+         }, (error) => {
+              this.submitBtnDisabled = true;
+              this.doOrderPrompt('没有经销商地址!');           
          })
        } else {
          this.submitBtnDisabled = true;
@@ -206,9 +215,28 @@ export class ConfirmOrderPage {
        // Get coupon wallet
        this.storage.get(Constants.COUPON_WALLET_KEY).then((data: Set<Coupon>) => {
          if(data && data.size > 0) {
-             data.forEach((item) => {
-               if(!item.has_used) this.couponWalletArray.push(item);
-             });
+            let couponTemp = new Array<Coupon>();
+
+            data.forEach((item) => {
+              if(!item.expired && !item.has_used && this.totalPrice >= item.min_purchased_amount) {
+                couponTemp.push(item);
+              }
+            });
+
+            // Selete the coupone whose min_purchase_amount is the closest to the total price in each coupon type 
+            // step 1: sort coupons by type & then by min_purchase_amount
+            couponTemp.sort(this.couponSort);
+
+            this.couponWalletArray.push(couponTemp[0]);
+            let previousCouponTypeId = couponTemp[0].coupon_type_id;
+            
+            for(let i = 1; i < couponTemp.length; i++) {
+              if(couponTemp[i].coupon_type_id == previousCouponTypeId) continue;
+
+              this.couponWalletArray.push(couponTemp[i]);
+              previousCouponTypeId = couponTemp[i].coupon_type_id;
+            }
+            console.log(this.couponWalletArray);
          }
        });
 
@@ -216,6 +244,16 @@ export class ConfirmOrderPage {
      })
      })
   }	
+
+  couponSort(a: Coupon, b: Coupon) {
+    if(a.coupon_type_id == b.coupon_type_id) {
+      if(Number(a.min_purchased_amount) > Number(b.min_purchased_amount)) return -1;
+      if(Number(a.min_purchased_amount) < Number(b.min_purchased_amount)) return 1;
+      return 0;
+    }
+    if(a.coupon_type_id > b.coupon_type_id) return 1;
+    if(a.coupon_type_id < b.coupon_type_id) return -1;
+  }
 
   ionViewWillLeave() {
     this.unregisterBackButtonAction && this.unregisterBackButtonAction();
@@ -300,7 +338,7 @@ export class ConfirmOrderPage {
           this.totalPrice -= this.couponWalletArray[i].discount_value;
           break;
         case CouponDiscountMethod.PERCENTAGE:
-          this.totalPrice *= (this.couponWalletArray[i].discount_percentage / 100.00);
+          this.totalPrice = (this.totalPrice - this.shippingFee) * (this.couponWalletArray[i].discount_percentage / 100.00) + this.shippingFee;
           break;
       }
     } else {      // don't use coupon: i
@@ -316,7 +354,7 @@ export class ConfirmOrderPage {
           this.totalPrice += this.couponWalletArray[i].discount_value;
           break;
         case CouponDiscountMethod.PERCENTAGE:
-          this.totalPrice /= (this.couponWalletArray[i].discount_percentage / 100.0);
+          this.totalPrice = (this.totalPrice - this.shippingFee) / (this.couponWalletArray[i].discount_percentage / 100.0) + this.shippingFee;
       }
     }
 

@@ -154,6 +154,7 @@ export class CouponCenterPage {
       item.expire_date = this.couponTypes[i].coupons[j].expire_date;
       item.image_url = this.couponTypes[i].coupons[j].image_url;
       item.coupon_type_id = this.couponTypes[i].coupons[j].coupon_type_id;
+      item.min_purchased_amount = this.couponTypes[i].coupons[j].min_purchased_amount;
 
       if(!this.couponWallet.has(item)) {
         this.couponWallet.add(item);

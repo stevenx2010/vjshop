@@ -114,12 +114,17 @@ export class CategoryPage {
 
   itemSelected(index: number, id?: number): void {
   	this.clickedItemIndex = index;
-    if(index == 0) this.allProductsSelected = true;
+    if(index == 0) {
+      this.allProductsSelected = true;
+    }
     else this.allProductsSelected = false;
 
     //Set Sub Categories
     this.vjApi.showLoader();
-    this.getProducts(id);
+    if(index == 0) 
+      this.getAllProducts();
+    else
+      this.getProducts(id);
     this.vjApi.hideLoader();
   }
 
@@ -218,6 +223,7 @@ export class CategoryPage {
     this.app.getRootNav().push('SearchPage');
   }
 
+  // distributor functions
   goMulti(): void {
     // check if the distributor has logged in
     this.storage.ready().then(() => {

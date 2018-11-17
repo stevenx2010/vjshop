@@ -14,6 +14,7 @@ export class Coupon {
 	public quantity_available: number = 0;
 	public image_url: string = '';
 	public has_used: boolean = false;
+	public min_purchased_amount: number = 0;
 
 	public pivot: CouponCustomerPivot = new CouponCustomerPivot();
 
@@ -36,7 +37,9 @@ export class Coupon {
 			this.quantity_available = obj.quantity_available || 0;
 			this.image_url = obj.image_url || '';
 			this.has_used = obj.has_used || false;
-			this.btn_disabled = obj.btn_disable || false;
+			this.min_purchased_amount = obj.min_purchased_amount || 0;
+			
+			this.btn_disabled = obj.btn_disable || false;			
 			this.z_index = obj.z_idnex || -1;
 
 			this.pivot = obj.pivot || new CouponCustomerPivot();
