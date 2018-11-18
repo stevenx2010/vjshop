@@ -115,20 +115,17 @@ export class MyOrderToPayPage {
           coupons = resp.json();
 
           if(coupons.length > 0) {
-            coupons.forEach((item) => {
-              if(this.couponWallet) {
-                this.couponWallet.forEach((coupon) => {
-                  if(item.id == coupon.id) {
-                    coupon.has_used = false;
-                    this.couponWallet.add(coupon);
-                  }
-                })
-              }
-            })
-          }
+          coupons.forEach((item) =>{
+            if(item.pivot.quantity == 0) item.has_used = true;
+            else item.has_used = false;
+            this.couponWallet.add(item);
+          });
 
-          //console.log(this.couponWallet);
+        this.storage.ready().then(() => {
+          this.storage.remove(Constants.COUPON_WALLET_KEY);
           this.storage.set(Constants.COUPON_WALLET_KEY, this.couponWallet);
+        });
+      }
 
           // Sync orders
           let temp_orders = [];

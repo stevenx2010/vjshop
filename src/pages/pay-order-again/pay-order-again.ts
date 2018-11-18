@@ -5,6 +5,7 @@ import { VJAPI } from '../../services/vj.services';
 import { Order } from '../../models/order-model';
 import { Product } from '../../models/product.model';
 import { Address } from '../../models/address.model';
+import { Coupon } from '../../models/coupon-model';
 
 import { Alipay } from '@ionic-native/alipay';
 import { AppAvailability } from '@ionic-native/app-availability';
@@ -21,13 +22,17 @@ declare let Wechat: any;
 })
 export class PayOrderAgainPage {
 
-  order: Order;
+  order: any;
   order1: any;
   products: Product[];
   total: number;
+  productPrice: number;
   orderPrice: number;
   address: Address;
   paymentMethod: string;
+
+  coupons: Coupon[];
+  coupons_used: boolean = false;
 
   appAlipay: any;
   appWechat: any;
@@ -39,6 +44,8 @@ export class PayOrderAgainPage {
   	this.order = new Order();
   	this.products = new Array<Product>();
     this.address = new Address();
+
+    this.coupons = new Array<Coupon>();
 
   	this.order = this.navParams.get('order');
     this.order1 = this.navParams.get('order');
@@ -55,6 +62,15 @@ export class PayOrderAgainPage {
   }
 
   ionViewDidLoad() {
+
+    console.log(this.order);
+    this.coupons = this.order.coupons;
+    if(this.coupons.length > 0) {
+      this.coupons_used = true;
+    } else {
+      this.coupons_used = false;
+    }
+
     this.calculateTotalPrice();
     this.orderPrice = Number(this.total) + Number(this.order.shipping_charges);
 
@@ -92,6 +108,22 @@ export class PayOrderAgainPage {
     this.order.products.forEach((p) => {
       total += p.price * p.quantity;
     });
+
+    this.productPrice = total;
+
+    // deduct coupons
+    if(this.coupons.length > 0) {
+      //discount percentage first
+      this.coupons.forEach((item) => {
+        if(item.discount_method == 1)
+            total *= (item.discount_percentage / 100.00);
+      });
+
+      // then deduct value coupons
+      this.coupons.forEach((item) => {
+        total -= item.discount_value;
+      });
+    }
 
     this.total = total;
   }

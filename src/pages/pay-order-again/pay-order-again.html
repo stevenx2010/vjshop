@@ -57,9 +57,22 @@
 					产品合计：
 				</ion-col>
 				<ion-col col-6>
-					<div align="right">{{total | currency:'CNY':symbol-narrow}}</div>
+					<div align="right">{{productPrice | currency:'CNY':symbol-narrow}}</div>
 				</ion-col>
 			</ion-row>
+			
+			<div *ngIf="coupons_used">
+				<ion-row *ngFor="let coupon of coupons">
+					<ion-col col-6>
+						{{coupon?.name}}：
+					</ion-col>
+					<ion-col col-6>
+						<div align="right" *ngIf="coupon.discount_method == 1" class="coupon">{{coupon?.discount_percentage}}%</div>
+						<div align="right" *ngIf="coupon.discount_method == 2" class="coupon">-{{coupon?.discount_value | currency:'CNY':symbol-narrow}}</div>
+					</ion-col>
+				</ion-row>
+			</div>
+
 			<ion-row>
 				<ion-col col-6>
 					配送运费：
@@ -68,12 +81,13 @@
 					<div align="right">{{order?.shipping_charges | currency:'CNY':symbol-narrow}}</div>
 				</ion-col>
 			</ion-row>
+			
 			<ion-row>
 				<ion-col col-6>
 					订单合计：
 				</ion-col>
 				<ion-col col-6>
-					<div align="right" style="color: blue;">{{orderPrice | currency:'CNY':symbol-narrow}}</div>
+					<div align="right" style="color: blue;font-weight: bold;">{{orderPrice | currency:'CNY':symbol-narrow}}</div>
 				</ion-col>
 			</ion-row>
 		</div>
@@ -86,7 +100,7 @@
 					发票抬头：
 				</ion-col>
 				<ion-col col-8>
-					{{order.invoice_head}}
+					{{order?.invoice_head}}
 				</ion-col>
 			</ion-row>
 			<ion-row>
@@ -94,7 +108,15 @@
 					企业税号：
 				</ion-col>
 				<ion-col col-8>
-					{{order.invoice_tax_number}}
+					{{order?.invoice_tax_number}}
+				</ion-col>
+			</ion-row>
+			<ion-row>
+				<ion-col col-4>
+					电子邮箱：
+				</ion-col>
+				<ion-col col-8>
+					{{order?.email}}
 				</ion-col>
 			</ion-row>
 		</div>
@@ -171,5 +193,9 @@
 
 	ion-toolbar {
 		min-height: 3.6rem;
+	}
+
+	.coupon {
+		color: red;
 	}
 </style>

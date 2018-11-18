@@ -413,6 +413,8 @@ export class ConfirmOrderPage {
   }
 
   submitOrder() {
+    this.submitBtnDisabled = true;
+    
     // Order basic info
     this.order.customer_id = this.customer_id;
     this.order.order_serial = this.genOrderSerialNumber();
@@ -445,6 +447,7 @@ export class ConfirmOrderPage {
 
     // Invoice info
     this.order.is_invoice_required = this.invoiceRequired;
+    console.log(this.order.is_invoice_required);
 
     if(this.invoiceRequired) {
       if(this.invoiceHead == '个人') {

@@ -24,6 +24,7 @@ import { CouponItem } from '../models/coupon-item.model';
 import { Order } from '../models/order-model';
 import { Message } from '../models/message.model';
 import { Setting } from '../models/setting.model';
+import { About } from '../models/about-model';
 
 @Injectable()
 export class VJAPI {
@@ -637,6 +638,18 @@ export class VJAPI {
 
 		return this.http.get(this.apiUrl + 'api/setting/shipping/formula/' + weight, {headers: headers})
 			.pipe(map((data) => data.json()));	 		 	
+	 }
+
+	/********************************************************************************************
+	 *                   API Section: About Page Content
+	 *
+	 * 
+	 ********************************************************************************************/
+	 public getAboutPageInfo(): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+		return this.http.get(this.apiUrl + 'api/about/page/info', {headers: headers});	 	 	
 	 }
 }
 
