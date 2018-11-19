@@ -43,6 +43,7 @@ export class ConfirmOrderPage {
   distributorContacts: DistributorContact[];
   shippingAddress: Address;
   couponWalletArray: Coupon[];
+  couponWallet: Set<Coupon>;
   baseUrl: string;
   totalPrice: number = 0;
   totalWeight: number = 0;
@@ -79,7 +80,7 @@ export class ConfirmOrderPage {
 
   unregisterBackButtonAction: any;
 
-  submitBtnDisabled = false;
+  submitBtnDisabled = true;
 
   settings: Setting[];
 
@@ -96,6 +97,7 @@ export class ConfirmOrderPage {
     this.distributorContacts = new Array<DistributorContact>(new DistributorContact());
     this.shippingAddress = new Address();
     this.couponWalletArray = new Array<Coupon>();
+    this.couponWallet = new Set<Coupon>();
     this.baseUrl = this.apiUrl;
     this.order = new Order();
     this.couponUsedIds = new Set<number>();
@@ -139,16 +141,7 @@ export class ConfirmOrderPage {
            })
          }
    			else this.mobile = '';
-   		})
-/*
-      // Get shipping address
-      this.storage.get(Constants.SHIPPING_ADDRESS_KEY).then((data) => {
-        if(data) {
-          this.shippingAddress = data;
-          let regex = /^(\d{3})\d{4}(\d{4})$/gi;
-          this.mobile = this.shippingAddress.mobile.replace(regex, '$1****$2');
-        }
-      });*/
+   		});
 
    		// Get shopping cart
    		this.storage.get(Constants.SHOPPING_CART_KEY).then((data: ShoppingItem[]) => {
@@ -204,6 +197,7 @@ export class ConfirmOrderPage {
              this.vjApi.getDistributorContactById(distributorId).subscribe((data) => {
                if(data) {
                  this.distributorContacts = data;
+                 this.submitBtnDisabled = false;
                }
              }, (error) => {
                this.submitBtnDisabled = true;
@@ -219,33 +213,43 @@ export class ConfirmOrderPage {
          this.doOrderPrompt('没有经销商地址!');
        }
 
-       // Get coupon wallet
-       this.storage.get(Constants.COUPON_WALLET_KEY).then((data: Set<Coupon>) => {
-         if(data && data.size > 0) {
-            let couponTemp = new Array<Coupon>();
+       // Get coupon wallet & check valid coupons for current order
+       /* valid coupon:
+        * 1. not expired
+        * 2. has not been used
+        * 3. total price more than minimun purchased amount required
+        */
+         this.storage.get(Constants.COUPON_WALLET_KEY).then((data: Set<Coupon>) => {
+           if(data && data.size > 0) {
 
-            data.forEach((item) => {
-              if(!item.expired && !item.has_used && this.totalPrice >= item.min_purchased_amount) {
-                couponTemp.push(item);
+              let couponTemp = new Array<Coupon>();
+
+              data.forEach((item,item1,set) => {
+                console.log(item); 
+                if(!item.expired && !item.has_used && this.totalPrice >= item.min_purchased_amount) {
+                  couponTemp.push(item);
+                }
+              });
+
+              // Selete the coupone whose min_purchase_amount is the closest to the total price in each coupon type 
+              // step 1: sort coupons by type & then by min_purchase_amount
+              if(couponTemp.length > 0) {
+                couponTemp.sort(this.couponSort);
+
+                // step 2: select the first coupon in each type
+                this.couponWalletArray.push(couponTemp[0]);
+                let previousCouponTypeId = couponTemp[0].coupon_type_id;
+
+                for(let i = 1; i < couponTemp.length; i++) {
+                  if(couponTemp[i].coupon_type_id == previousCouponTypeId) continue;
+
+                  this.couponWalletArray.push(couponTemp[i]);
+                  previousCouponTypeId = couponTemp[i].coupon_type_id;
+                }
+                console.log(this.couponWalletArray);
               }
-            });
-
-            // Selete the coupone whose min_purchase_amount is the closest to the total price in each coupon type 
-            // step 1: sort coupons by type & then by min_purchase_amount
-            couponTemp.sort(this.couponSort);
-
-            this.couponWalletArray.push(couponTemp[0]);
-            let previousCouponTypeId = couponTemp[0].coupon_type_id;
-
-            for(let i = 1; i < couponTemp.length; i++) {
-              if(couponTemp[i].coupon_type_id == previousCouponTypeId) continue;
-
-              this.couponWalletArray.push(couponTemp[i]);
-              previousCouponTypeId = couponTemp[i].coupon_type_id;
-            }
-            console.log(this.couponWalletArray);
-         }
-       });
+           }
+        });
 
        // Get invoice info
        this.storage.get(Constants.INVOICE_INFO_KEY).then((data: Invoice) => {
@@ -348,6 +352,7 @@ export class ConfirmOrderPage {
 
   onCouponChange(i) {
     console.log(this.couponWalletArray);
+
     if(this.couponWalletArray[i].has_used) {    // use coupon: i
       
       this.couponUsedIds.add(this.couponWalletArray[i].id);
@@ -379,12 +384,16 @@ export class ConfirmOrderPage {
     }
 
     // update the coupon wallet
-    this.storage.ready().then(() => {
-      let couponWallet = new Set<Coupon>();
-      this.couponWalletArray.forEach((item ) => {
-        couponWallet.add(item);
-      })
-      this.storage.set(Constants.COUPON_WALLET_KEY, couponWallet);
+    this.updateCouponWallet();
+  }
+
+  updateCouponWallet() {  
+    this.couponUsedIds.forEach((id) => {
+      this.couponWallet.forEach((item, item1, set) => {
+        if(item.id == id) {
+          item.has_used = true;
+        }
+      });
     });
   }
 
@@ -414,6 +423,12 @@ export class ConfirmOrderPage {
 
   submitOrder() {
     this.submitBtnDisabled = true;
+
+    //sync coupon to local storage
+    this.storage.ready().then(()=> {
+      this.storage.remove(Constants.COUPON_WALLET_KEY);
+      this.storage.set(Constants.COUPON_WALLET_KEY, this.couponWallet);
+    })
     
     // Order basic info
     this.order.customer_id = this.customer_id;
@@ -489,7 +504,8 @@ export class ConfirmOrderPage {
     this.order.order_status = OrderStatus.NOT_PAY_YET;
 
     console.log(this.order);
-    this.vjApi.submitOrder(JSON.stringify(this.order)).subscribe((r) => {
+    this.vjApi.submitOrder(JSON.stringify(this.order)).subscribe((r) => {      
+
       if(r) {
         let orderInfo = r.json();
         console.log(orderInfo);
@@ -562,6 +578,7 @@ export class ConfirmOrderPage {
           // set submited order event
           this.events.publish('order_submitted');
         });
+
       }
     }, (error) => {
       // remove the order

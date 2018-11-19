@@ -37,6 +37,8 @@ export class CartPage {
 
   shoppingItemsChanged: boolean = false;
 
+  toPayBtnDisabled: boolean = true;
+
   constructor(public navCtrl: NavController, private storage: Storage, private app: App, private events: Events, private vjApi: VJAPI,
   				@Inject('API_BASE_URL') private apiUrl: string, private alertCtrl: AlertController) 
   { 	
@@ -151,10 +153,13 @@ export class CartPage {
         this.vjApi.getProductsByIds(JSON.stringify(this.shoppingCart)).subscribe(
           (data) => {
             this.products = data.json();      
-
+            this.toPayBtnDisabled = false;
           },
-          (err) => console.log(err)
-        );
+          (err) => {
+            console.log(err);
+            this.toPayBtnDisabled = true;
+          });
+        
         this.vjApi.hideLoader();
       });    
   }
