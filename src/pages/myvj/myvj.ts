@@ -53,6 +53,7 @@ export class MyvjPage {
     this.storage.remove(Constants.SHIPPING_ADDRESS_KEY);
     this.storage.remove(Constants.COUPON_WALLET_KEY);
     this.storage.remove(Constants.USER_MOBILE_KEY);
+    this.storage.remove(Constants.SHOPPING_CART_KEY);
     this.events.publish('logout', Date.now());    
     this.mobile = null;
     this.isLoggedIn = false;

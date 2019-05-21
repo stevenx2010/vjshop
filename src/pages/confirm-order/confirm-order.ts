@@ -37,6 +37,7 @@ export class ConfirmOrderPage {
   mobileNoHide: string;
   shoppingCart: ShoppingItem[];
   products: Product[];
+  productsFiltered: Product[];
   numberOfItems: number = 0
   distributorAddress: DistributorAddress[];
   distributors: Distributor[];
@@ -92,6 +93,7 @@ export class ConfirmOrderPage {
   {
   	this.shoppingCart = new Array<ShoppingItem>(new ShoppingItem());
   	this.products = new Array<Product>(new Product());
+    this.productsFiltered = new Array<Product>(new Product());
     this.distributorAddress = new Array<DistributorAddress>(new DistributorAddress());
     this.distributors = new Array<Distributor>(new Distributor());
     this.distributorContacts = new Array<DistributorContact>(new DistributorContact());
@@ -156,6 +158,12 @@ export class ConfirmOrderPage {
    				this.vjApi.getProductsByIds(JSON.stringify(this.shoppingCart)).subscribe((data) => {
    					if(data) {
    						this.products = data.json();
+              this.productsFiltered.pop();
+              for(let i = 0; i < this.products.length; i++) {
+                if(this.shoppingCart[i].selected) {
+                  this.productsFiltered.push(this.products[i])
+                }
+              }
    					}
    				});        
    			} else this.shoppingCartEmpty = true;
@@ -455,7 +463,11 @@ export class ConfirmOrderPage {
 
 
     // Products in this order
-    this.order.products = this.shoppingCart;
+    //this.order.products = this.shoppingCart;
+    if(this.order.products.length > 0) this.order.products.pop();
+    for(let item of this.shoppingCart) {
+      if(item.selected) this.order.products.push(item);
+    }
 
     // Distributor info
     this.order.distributor_id = this.distributors[0].id;

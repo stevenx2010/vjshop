@@ -76,6 +76,9 @@ export class CartPage {
     });
 
     this.events.subscribe('order_submitted', () => {
+      this.totalWeight = 0;
+      this.totalPrice = 0;
+      this.shoppingCart = [];
       this.getShoppingItem();
     });
   }
@@ -141,6 +144,8 @@ export class CartPage {
       this.storage.get(Constants.SHOPPING_CART_KEY).then((data: ShoppingItem[]) => {
         if(data == null || data.length < 1)  {
           this.shoppingCartEmpty = true;
+          this.totalWeight = 0;
+          this.totalPrice = 0;
           return;
         } else
           this.shoppingCartEmpty = false;
@@ -209,7 +214,11 @@ export class CartPage {
         text: '确定',
         handler: () => { 
 
-          if(this.shoppingCart == null) return;
+          if(this.shoppingCart == null) {
+            this.totalWeight = 0;
+            this.totalPrice = 0;
+            return;
+          }
           /*
           if(this.shoppingCart.length == 1) {
             this.shoppingCart = new Array<ShoppingItem>();

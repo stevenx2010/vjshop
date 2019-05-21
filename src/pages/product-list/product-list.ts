@@ -23,6 +23,7 @@ export class ProductListPage {
   shoppingCart: ShoppingItem[]; 
   baseUrl: string;
   products: Product[];
+  productsFiltered: Product[];
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI, private storage: Storage,
   			@Inject('API_BASE_URL') private apiUrl: string) 
@@ -32,15 +33,25 @@ export class ProductListPage {
 
     this.shoppingCart = this.navParams.get('shoppingCart');
 
+    this.productsFiltered = new Array<Product>(new Product());
+
   }
 
   ionViewDidLoad() {
     if(this.shoppingCart && this.shoppingCart.length > 0) {
       // get back products info from server
       this.vjApi.getProductsByIds(JSON.stringify(this.shoppingCart)).subscribe((p) => {
-        if(p) this.products = p.json();
-        console.log(this.products);
-        console.log(this.shoppingCart);
+        if(p) {
+          this.products = p.json();
+          this.productsFiltered.pop();
+          for(let i = 0; i < this.products.length; i++) {
+            if(this.shoppingCart[i].selected) {
+              this.productsFiltered.push(this.products[i]);
+            }
+          }
+          console.log(this.products);
+          console.log(this.shoppingCart);
+        }
       })
     }
   }

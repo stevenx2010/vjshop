@@ -41,7 +41,7 @@
 
 			<ion-col col-9>	
 				<ion-row>
-					<ion-col col-3 *ngFor="let product of products; let i = index">	
+					<ion-col col-3 *ngFor="let product of productsFiltered; let i = index">	
 						<img src="{{apiUrl}}{{product[0]?.thumbnail_url}}" *ngIf="i < 3" (click)="toProductList()">
 					</ion-col>
 				</ion-row>
