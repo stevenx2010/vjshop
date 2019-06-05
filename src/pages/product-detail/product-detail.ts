@@ -55,6 +55,8 @@ export class ProductDetailPage {
 
   cartState = 'idle';
 
+  btnDisabled: boolean = true;
+
   constructor(private navCtrl: NavController, private navParams: NavParams, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string,
               private storage: Storage, private app: App, private events: Events, private alertCtrl: AlertController) {
   	this.images_1 = new Array<ProductDetailImage>();
@@ -191,6 +193,7 @@ export class ProductDetailPage {
   		(data) => {
   			this.products = data;
         console.log(this.products);
+        this.btnDisabled = false;
   			//console.log(this.detailInfo);
   		},
   		(err) => {
@@ -274,7 +277,7 @@ export class ProductDetailPage {
 
   addToShoppingCart() {
     if((this.shippingAddress == null) || (this.shippingAddress && this.shippingAddress.city == '')) {
-      this.doPrompt('您没有送货地址，请先增加配送地址，然后在购买。');
+      this.doPrompt('您没有送货地址，请先增加配送地址，然后再购买。');
       return;
     }
 

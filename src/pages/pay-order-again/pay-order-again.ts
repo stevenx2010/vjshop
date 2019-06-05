@@ -37,7 +37,7 @@ export class PayOrderAgainPage {
   appAlipay: any;
   appWechat: any;
 
-  btnDisabled: boolean = false;
+  btnDisabled: boolean = true;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI, 
               private appAvail: AppAvailability, private platform: Platform, private alertCtrl: AlertController) {
@@ -82,6 +82,7 @@ export class PayOrderAgainPage {
       if(resp.json()) {
         let temp = resp.json();
         this.address = temp[0];
+        this.btnDisabled = false;
         console.log(this.address);
       }
     })
@@ -129,6 +130,7 @@ export class PayOrderAgainPage {
   }
 
   toPay() {
+    this.btnDisabled = true;
     if(this.paymentMethod == 'alipay') this.order.payment_method = PaymentMethod.ALIPAY;
     else if(this.paymentMethod == 'wechat') this.order.payment_method = PaymentMethod.WECHAT;
 
