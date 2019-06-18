@@ -24,8 +24,8 @@
 	<ion-segment [(ngModel)]="displayType">
 		<ion-segment-button value="1" full>全部</ion-segment-button>
 		<ion-segment-button value="2" full>待发货</ion-segment-button>
-		<ion-segment-button value="3" full>待确认</ion-segment-button>
-		<ion-segment-button value="4" full>已确认</ion-segment-button>
+		<ion-segment-button value="3" full>送货中</ion-segment-button>
+		<ion-segment-button value="4" full>已送货</ion-segment-button>
 	</ion-segment>
 </ion-header>
 
@@ -46,9 +46,9 @@
 						</ion-col>
 						<ion-col col-3>
 							<div *ngIf="order.delivery_status == 1" align="right" style="color: orange">待发货</div>
-							<div *ngIf="order.delivery_status == 2" align="right" style="coolor: yellow">发货中</div>
-							<div *ngIf="order.delivery_status == 3" align="right" style="color: blue">已发货</div>
-							<div *ngIf="order.delivery_status == 4" align="right" style="color: green">已确认</div>
+							<div *ngIf="order.delivery_status == 2" align="right" style="color: cyan">送货中</div>
+							<div *ngIf="order.delivery_status == 3" align="right" style="color: green">已送货</div>
+							<div *ngIf="order.delivery_status == 4" align="right" style="color: red">已确认</div>
 						</ion-col>
 					</ion-row>
 
@@ -79,7 +79,7 @@
 						</ion-col>
 					</ion-row>
 
-					<div class="address" *ngIf="!shippingAddressHide[i]">
+					<div class="address" *ngIf="!shippingAddressHide[i] && order.delivery_status != 3">
 						<ion-row>
 							<ion-col col-3>
 								联系人：
@@ -115,36 +115,87 @@
 					<ion-row class="action" *ngIf="order.delivery_status != 4 && order.delivery_status != 3">
 						<ion-col col-12>
 							<div align="right">
-
-							<button ion-button ion-icon ion-start outline small class="btn" (click)="toggleAddress(i)">
-								<ion-icon name="arrow-round-down" *ngIf="shippingAddressHide[i]"></ion-icon>
-								<ion-icon name="arrow-round-up" *ngIf="!shippingAddressHide[i]"></ion-icon>
-							送货地址
-							</button>
+								<button ion-button ion-icon ion-start outline small class="btn" (click)="toggleAddress(i)">
+									<ion-icon name="arrow-round-down" *ngIf="shippingAddressHide[i]"></ion-icon>
+									<ion-icon name="arrow-round-up" *ngIf="!shippingAddressHide[i]"></ion-icon>
+								送货地址
+								</button>
 
 								<button ion-button outline  small *ngIf="order.delivery_status == 1" class="btn" (click)="doPromptDelivery(order, i)" [disabled]="deliveryBtnDisabled[i]">立即送货</button>
-								<button ion-button outline  small *ngIf="order.delivery_status == 3" class="btn" (click)="doPromptConfirm(order, i)" [disabled]="confirmBtnDisabled[i]">立即确认</button>
+								<button ion-button outline  small *ngIf="order.delivery_status == 2" class="btn" (click)="doPromptConfirm(order, i)" [disabled]="confirmBtnDisabled[i]">送货完成</button>
 							</div>
 						</ion-col>		
 					</ion-row>
 
-					<ion-row class="action" *ngIf="order.delivery_status == 3">
-						<ion-col col-1>
-							<div>发货</div>
-						</ion-col>
-						<ion-col col-5>
-							<div>{{order.delivery_date}}</div>
-						</ion-col>
-						<ion-col col-7>
-							<button ion-button ion-icon ion-start outline small class="btn" (click)="toggleAddress(i)">
-								<ion-icon name="arrow-round-down" *ngIf="shippingAddressHide[i]"></ion-icon>
-								<ion-icon name="arrow-round-up" *ngIf="!shippingAddressHide[i]"></ion-icon>
-								送货地址
-							</button>
-								<button ion-button outline  small  class="btn" (click)="doPromptConfirm(order, i)" [disabled]="confirmBtnDisabled[i]">立即确认</button>
-						</ion-col>		
-					</ion-row>
+					<!-------------------------3----------------------------------------->
+					<div *ngIf="order.delivery_status == 3">
+						<ion-row class="delivery-date">
+							<ion-col col-3>
+								<div>发货时间：</div>
+							</ion-col>
+							<ion-col col-5>
+								<div>{{order.delivery_date}}</div>
+							</ion-col>
+						</ion-row>
 
+						<ion-row class="delivery-date">
+							<ion-col col-3>
+								<div>送达时间：</div>
+							</ion-col>
+							<ion-col col-5>
+								<div>{{order.delivery_confirm_date}}</div>
+							</ion-col>
+						</ion-row>
+
+						<div class="address" *ngIf="!shippingAddressHide[i]">
+							<ion-row>
+								<ion-col col-3>
+									联系人：
+								</ion-col>
+								<ion-col col-4>
+									{{order.shipping_address.username}}
+								</ion-col>
+								<ion-col col-2>
+									手机：
+								</ion-col>
+								<ion-col col-3>
+									{{order.shipping_address.mobile}}
+								</ion-col>
+							</ion-row>
+							<ion-row>
+								<ion-col col-3>
+									固定电话：
+								</ion-col>
+								<ion-col col-9>
+									{{order.shipping_address.tel}}
+								</ion-col>
+							</ion-row>
+							<ion-row>
+								<ion-col col-3>
+									送货地址：
+								</ion-col>
+								<ion-col col-9>
+									{{order.shipping_address.city}}{{order.shipping_address.street}}
+								</ion-col>
+							</ion-row>
+						</div>
+
+						<ion-row class="action">						
+							<ion-col col-12>
+								<div align="right">
+
+									<button ion-button ion-icon ion-start outline small class="btn" (click)="toggleAddress(i)">
+										<ion-icon name="arrow-round-down" *ngIf="shippingAddressHide[i]"></ion-icon>
+										<ion-icon name="arrow-round-up" *ngIf="!shippingAddressHide[i]"></ion-icon>
+									送货地址
+									</button>
+								</div>
+							</ion-col>		
+						</ion-row>
+
+					</div>
+
+					<!-------------------------4----------------------------------------->
 					<ion-row class="action" *ngIf="order.delivery_status ==4">
 						<ion-col col-1>
 							<div>确认</div>
@@ -187,9 +238,9 @@
 						</ion-col>
 						<ion-col col-3>
 							<div *ngIf="order.delivery_status == 1" align="right" style="color: orange">待发货</div>
-							<div *ngIf="order.delivery_status == 2" align="right" style="color: yellow">发货中</div>
-							<div *ngIf="order.delivery_status == 3" align="right" style="color: blue">已发货</div>
-							<div *ngIf="order.delivery_status == 4" align="right" style="color: green">已确认</div>
+							<div *ngIf="order.delivery_status == 2" align="right" style="color: cyan">送货中</div>
+							<div *ngIf="order.delivery_status == 3" align="right" style="color: green">已送货</div>
+							<div *ngIf="order.delivery_status == 4" align="right" style="color: red">已确认</div>
 						</ion-col>
 					</ion-row>
 
@@ -263,15 +314,15 @@
 								<ion-icon name="arrow-round-up" *ngIf="!shippingAddressHide[i]"></ion-icon>
 							送货地址
 							</button>
-
+							
 								<button ion-button outline  small *ngIf="order.delivery_status == 1" class="btn" (click)="doPromptDelivery(order, i)" [disabled]="deliveryBtnDisabled[i]">立即送货</button>
-								<button ion-button outline  small *ngIf="order.delivery_status == 3" class="btn" (click)="doPromptConfirm(order, i)" [disabled]="confirmBtnDisabled[i]">立即确认</button>
+								<button ion-button outline  small *ngIf="order.delivery_status == 2" class="btn" (click)="doPromptConfirm(order, i)" [disabled]="confirmBtnDisabled[i]">送货完成</button>
 							</div>
 						</ion-col>		
 					</ion-row>
 				</div>
 			</div>	
-<!--FOR CASE 3 Waiting for confirm--------------------------------------------------------------------------------------------->
+<!--FOR CASE 3 In Delivery--------------------------------------------------------------------------------------------->
 			<div *ngSwitchCase="3">
 				<div  *ngFor="let order of ordersWaitForConfirm; let i = index;">			
 					<ion-row class="date">
@@ -280,9 +331,9 @@
 						</ion-col>
 						<ion-col col-3>
 							<div *ngIf="order.delivery_status == 1" align="right" style="color: orange">待发货</div>
-							<div *ngIf="order.delivery_status == 2" align="right" style="color: yellow">发货中</div>
-							<div *ngIf="order.delivery_status == 3" align="right" style="color: blue">已发货</div>
-							<div *ngIf="order.delivery_status == 4" align="right" style="color: green">已确认</div>
+							<div *ngIf="order.delivery_status == 2" align="right" style="color: cyan">送货中</div>
+							<div *ngIf="order.delivery_status == 3" align="right" style="color: green">已送货</div>
+							<div *ngIf="order.delivery_status == 4" align="right" style="color: red">已确认</div>
 						</ion-col>
 					</ion-row>
 
@@ -348,19 +399,29 @@
 
 					<ion-row class="action">
 						<ion-col col-1>
-							<div>送货</div>
+							<div>发货</div>
 						</ion-col>
 						<ion-col col-5>
 							<div>{{order.delivery_date}}</div>
 						</ion-col>
-						<ion-col col-7>
-							<button ion-button ion-icon ion-start outline small class="btn" (click)="toggleAddress(i)">
-								<ion-icon name="arrow-round-down" *ngIf="shippingAddressHide[i]"></ion-icon>
-								<ion-icon name="arrow-round-up" *ngIf="!shippingAddressHide[i]"></ion-icon>
-								送货地址
-							</button>
-								<button ion-button outline  small  class="btn" (click)="doPromptConfirm(order, i)" [disabled]="confirmBtnDisabled[i]">立即确认</button>
-						</ion-col>		
+						<ion-col col-6>
+							<div align="right">
+								<button ion-button ion-icon ion-start outline small class="btn" (click)="toggleAddress(i)">
+									<ion-icon name="arrow-round-down" *ngIf="shippingAddressHide[i]"></ion-icon>
+									<ion-icon name="arrow-round-up" *ngIf="!shippingAddressHide[i]"></ion-icon>
+									送货地址
+								</button>
+														
+								<button ion-button outline  small  class="btn" (click)="doPromptConfirm(order, i)" [disabled]="confirmBtnDisabled[i]">送货完成</button>
+							</div>
+						</ion-col>	
+						<ion-col col-3>
+							<div   align="right" *ngIf="order.delivery_status == 3">
+								<ion-icon name="custom-thumb-up"></ion-icon>
+								<ion-icon name="custom-thumb-up"></ion-icon>
+								<ion-icon name="custom-thumb-up"></ion-icon>
+							</div>	
+						</ion-col>			
 					</ion-row>
 				</div>
 			</div>	
@@ -373,9 +434,9 @@
 						</ion-col>
 						<ion-col col-3>
 							<div *ngIf="order.delivery_status == 1" align="right" style="color: orange">待发货</div>
-							<div *ngIf="order.delivery_status == 2" align="right" style="color: yellow">发货中</div>
-							<div *ngIf="order.delivery_status == 3" align="right" style="color: blue">已发货</div>
-							<div *ngIf="order.delivery_status == 4" align="right" style="color: green">已确认</div>
+							<div *ngIf="order.delivery_status == 2" align="right" style="color: cyan">送货中</div>
+							<div *ngIf="order.delivery_status == 3" align="right" style="color: green">已送货</div>
+							<div *ngIf="order.delivery_status == 4" align="right" style="color: red">已确认</div>
 						</ion-col>
 					</ion-row>
 
@@ -403,6 +464,24 @@
 						</ion-col>
 						<ion-col col-9>
 							<div align="right"> {{order.order_serial}}</div>
+						</ion-col>
+					</ion-row>
+
+					<ion-row class="delivery-date">
+						<ion-col col-3>
+							<div>发货时间：</div>
+						</ion-col>
+						<ion-col col-5>
+							<div *ngIf="order.delivery_status == 3">{{order.delivery_date}}</div>
+							<div *ngIf="order.delivery_status == 4">{{order.delivery_confirm_date}}</div>
+						</ion-col>
+					</ion-row>
+					<ion-row class="delivery-date">
+						<ion-col col-3>
+							<div>送达时间：</div>
+						</ion-col>
+						<ion-col col-5>
+							<div>{{order.delivery_confirm_date}}</div>
 						</ion-col>
 					</ion-row>
 
@@ -439,30 +518,18 @@
 						</ion-row>
 					</div>
 
+
 					<ion-row class="action">
-						<ion-col col-1>
-							<div>确认</div>
-						</ion-col>
-						<ion-col col-5>
-							<div *ngIf="order.delivery_status == 3">{{order.delivery_date}}</div>
-							<div *ngIf="order.delivery_status == 4">{{order.delivery_confirm_date}}</div>
-						</ion-col>						
-						<ion-col col-3>
+						
+						<ion-col col-12>
 							<div align="right">
 
-							<button ion-button ion-icon ion-start outline small class="btn" (click)="toggleAddress(i)">
-								<ion-icon name="arrow-round-down" *ngIf="shippingAddressHide[i]"></ion-icon>
-								<ion-icon name="arrow-round-up" *ngIf="!shippingAddressHide[i]"></ion-icon>
-							送货地址
-							</button>
+								<button ion-button ion-icon ion-start outline small class="btn" (click)="toggleAddress(i)">
+									<ion-icon name="arrow-round-down" *ngIf="shippingAddressHide[i]"></ion-icon>
+									<ion-icon name="arrow-round-up" *ngIf="!shippingAddressHide[i]"></ion-icon>
+								送货地址
+								</button>
 							</div>
-						</ion-col>
-						<ion-col col-3>
-							<div   align="right" *ngIf="order.delivery_status == 4">
-								<ion-icon name="custom-thumb-up"></ion-icon>
-								<ion-icon name="custom-thumb-up"></ion-icon>
-								<ion-icon name="custom-thumb-up"></ion-icon>
-							</div>	
 						</ion-col>		
 					</ion-row>
 				</div>
@@ -526,14 +593,15 @@
 		padding-left: 1rem;
 	}
 
-	ion-grid .address {
+	ion-grid .address,
+	ion-grid .delivery-date {
 		border-bottom: 1px solid #efefef;
 		padding-left: 1rem;
 		padding-top: 0.5rem;
 		padding-bottom: 0.5rem;
 	}
 
-	ion-grid .address ion-row {
+	ion-grid .address ion-row  {
 		margin-bottom: 0.5rem;
 	}
 

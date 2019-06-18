@@ -53,4 +53,8 @@ export class MyOrderToReceivePage {
   		this.app.getRootNav().push('ProductListPage', {shoppingCart: this.ShoppingCart});
   	}
   }
+
+  toMyOrderToConfirm() {
+    this.app.getRootNav().push('MyOrderToConfirmPage', {'mobile': this.mobile});
+  }
 }

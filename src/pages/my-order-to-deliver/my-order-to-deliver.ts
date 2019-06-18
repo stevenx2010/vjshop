@@ -103,4 +103,10 @@ export class MyOrderToDeliverPage {
   hide(index) {
     this.selectedItem = 100000;
   }
+
+  toMyOrderToConfirm() {
+    this.app.getRootNav().push('MyOrderToConfirmPage', {'mobile': this.mobile});
+  }
 }
+
+

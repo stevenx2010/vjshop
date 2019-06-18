@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Platform,AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Platform,AlertController, Events } from 'ionic-angular';
 
 import { VJAPI } from '../../services/vj.services';
 import { Order } from '../../models/order-model';
@@ -40,7 +40,8 @@ export class PayOrderAgainPage {
   btnDisabled: boolean = true;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI, 
-              private appAvail: AppAvailability, private platform: Platform, private alertCtrl: AlertController) {
+              private appAvail: AppAvailability, private platform: Platform, private alertCtrl: AlertController,
+              private events: Events) {
   	this.order = new Order();
   	this.products = new Array<Product>();
     this.address = new Address();
@@ -58,7 +59,6 @@ export class PayOrderAgainPage {
       this.appAlipay = 'com.eg.android.AlipayGphone';
       this.appWechat = 'com.tencent.mm';
     }
-
   }
 
   ionViewDidLoad() {
@@ -135,7 +135,7 @@ export class PayOrderAgainPage {
     else if(this.paymentMethod == 'wechat') this.order.payment_method = PaymentMethod.WECHAT;
 
     this.order.order_date = Tools.getDateTime();
-    this.order.order_serial = this.genOrderSerialNumber();
+    //this.order.order_serial = this.genOrderSerialNumber();
 
     this.vjApi.submitOrder(JSON.stringify(this.order)).subscribe((r) => {
       if(r) {
@@ -149,6 +149,7 @@ export class PayOrderAgainPage {
               console.log(result);
               switch(result.resultStatus) {
                 case '9000':
+                  this.events.publish('order_paid');
                   this.doOrderPrompt('您已成功下单并支付，等候支付系统确认。请继续');
 
                   this.btnDisabled = true;
@@ -169,7 +170,7 @@ export class PayOrderAgainPage {
 
              Wechat.sendPaymentRequest(orderInfo, () => {
                console.log('success');
-
+               this.events.publish('order_paid');
                this.btnDisabled = true;
              }, (err)=> {
                console.log(err);

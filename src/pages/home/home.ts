@@ -54,6 +54,9 @@ export class HomePage {
   address: Address;
   appLatestVersion: string;
 
+  downloadUrl_android: string = '<a href="https://vjshop.venjong.com/vjshop.apk">稳卓商城</a>';
+  downloadUrl_ios: string = '<a href="#">稳卓商城</a>';
+
   constructor(public navCtrl: NavController, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string, 
               private app: App, private storage: Storage, /*private geolocation: Geolocation, */
               /*private coordtrans: CoordinateTransform,*/ private platform: Platform, private init: InitEnv,
@@ -97,7 +100,10 @@ export class HomePage {
         this.appVersion.getVersionNumber().then((currentVersion) => {
           console.log(currentVersion);
           if(currentVersion.trim() != this.appLatestVersion.trim()) {
-            this.doPrompt('本APP有新版本：' + this.appLatestVersion + '，请下载并进行安装。' );
+            if(this.platform.is('android'))
+              this.doPrompt('本APP有新版本：' + this.appLatestVersion + '，请在应用市场中下载更新；或点击' + this.downloadUrl_android + '下载并安装。' );
+            else if(this.platform.is('ios'))
+              this.doPrompt('本APP有新版本：' + this.appLatestVersion + '，请在App Store中下载更新；或点击' + this.downloadUrl_ios + '下载并安装。' );
           }         
 
           // get version number stored locally

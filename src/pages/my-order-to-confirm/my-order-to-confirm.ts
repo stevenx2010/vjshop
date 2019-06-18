@@ -9,15 +9,15 @@ import { Product } from '../../models/product.model';
 
 @IonicPage()
 @Component({
-  selector: 'page-my-order-to-comment',
-  templateUrl: 'my-order-to-comment.html',
+  selector: 'page-my-order-to-confirm',
+  templateUrl: 'my-order-to-confirm.html',
 })
-export class MyOrderToCommentPage {
+export class MyOrderToConfirmPage {
+
   orders: Order[];
   mobile: string;
   baseUrl: string;
   ShoppingCart: ShoppingItem[];
-
   params: any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI,
@@ -30,12 +30,12 @@ export class MyOrderToCommentPage {
   	this.ShoppingCart = new Array<ShoppingItem>();
   }
 
-  ionViewDidEnter() {
+  ionViewDidLoad() {
     this.vjApi.showLoader();
-    this.vjApi.getMyOrders(this.mobile, 'to_comment').subscribe((o) => {
+    this.vjApi.getMyOrders(this.mobile, 'to_confirm').subscribe((o) => {
     	if(o.length > 0) {
     		this.orders = o;
-    		console.log(o);    		  
+    		console.log(o);	
     	}
       this.vjApi.hideLoader();
     }, (err) => {
@@ -47,15 +47,11 @@ export class MyOrderToCommentPage {
   	this.navCtrl.parent.viewCtrl.dismiss();
   }
 
-  toProductComment(index: number) {
+  toProductList(index: number) {
   	this.ShoppingCart = this.orders[index].products;
   	console.log(this.ShoppingCart);
   	if(this.ShoppingCart && this.ShoppingCart.length > 0) {
-  		this.app.getRootNav().push('ProductCommentPage', {shoppingCart: this.ShoppingCart, orderId: this.orders[index].id});
+  		this.app.getRootNav().push('ProductListPage', {shoppingCart: this.ShoppingCart});
   	}
-  }
-
-  toMyOrderToConfirm() {
-    this.app.getRootNav().push('MyOrderToConfirmPage', {'mobile': this.mobile});
   }
 }

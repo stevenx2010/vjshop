@@ -447,6 +447,7 @@ export class ConfirmOrderPage {
     dateString = dateString.replace(regexp, '$1 $2');*/
 
     this.order.order_date = Tools.getDateTime();
+    console.log(this.order.order_date);
 
     this.order.total_price = this.totalPrice;
 

@@ -112,7 +112,7 @@ export class DistributorOrdersPage {
     alert.addButton({
       text: '确定',
       handler: data => {
-        this.vjApi.updateOrderDeliveryStatus(order.id, DeliveryStatus.DELIVERED_NOT_CONFIRM, Tools.getDateTime()/*, this.mobile*/).subscribe((resp) => {
+        this.vjApi.updateOrderDeliveryStatus(order.id, DeliveryStatus.IN_DELIVERY, Tools.getDateTime()/*, this.mobile*/).subscribe((resp) => {
           console.log(resp);
           this.deliveryBtnDisabled[index] = true;
           this.isInit = false;
@@ -133,7 +133,7 @@ export class DistributorOrdersPage {
     alert.addButton({
       text: '确定',
       handler: data => {
-        this.vjApi.updateOrderDeliveryStatus(order.id, DeliveryStatus.CONFIRMED, Tools.getDateTime()/*, this.mobile*/).subscribe((resp) => {
+        this.vjApi.updateOrderDeliveryStatus(order.id, DeliveryStatus.DELIVERED_NOT_CONFIRM, Tools.getDateTime()/*, this.mobile*/).subscribe((resp) => {
           console.log(resp);
           this.confirmBtnDisabled[index] = true;
           this.isInit = false;
@@ -184,7 +184,7 @@ export class DistributorOrdersPage {
 
           //  for case '3':
      //     data.forEach((o) => {
-            if(o.delivery_status == DeliveryStatus.DELIVERED_NOT_CONFIRM) {
+            if(o.delivery_status == DeliveryStatus.IN_DELIVERY) {
               this.ordersWaitForConfirm.push(o);
               this.shippingAddressHide.push(true);
               this.deliveryBtnDisabled.push(false);
@@ -194,7 +194,7 @@ export class DistributorOrdersPage {
 
           //  for case '4':
        //   data.forEach((o) => {
-            if(o.delivery_status == DeliveryStatus.CONFIRMED) {
+            if(o.delivery_status == DeliveryStatus.DELIVERED_NOT_CONFIRM) {
               this.ordersConfirmed.push(o);
               this.shippingAddressHide.push(true);
               this.deliveryBtnDisabled.push(false);

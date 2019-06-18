@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { IonicPage, NavController, NavParams, App, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, App, AlertController, Events } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { VJAPI } from '../../services/vj.services';
@@ -37,7 +37,7 @@ export class MyOrderToPayPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI,
   				@Inject('API_BASE_URL') private apiUrl: string, private app: App, private alertCtrl: AlertController,
-          private storage: Storage) 
+          private storage: Storage, private events: Events) 
   {
   	this.params = this.navParams.data;
     this.mobile = this.params.mobile;
@@ -50,6 +50,10 @@ export class MyOrderToPayPage {
   	this.ShoppingCart = new Array<ShoppingItem>();
 
     this.couponWallet = new Set<Coupon>();
+
+    this.events.subscribe('order_paid', () => {
+      this.getMyOrders();
+    });
   }
 
   ionViewWillEnter() {
@@ -152,4 +156,7 @@ export class MyOrderToPayPage {
     this.app.getRootNav().push('PayOrderAgainPage', {order: order});
   }
 
+  toMyOrderToConfirm() {
+    this.app.getRootNav().push('MyOrderToConfirmPage', {'mobile': this.mobile});
+  }
 }
