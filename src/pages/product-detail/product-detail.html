@@ -1,5 +1,9 @@
 
 <ion-content>
+	<ion-refresher (ionRefresh)="reload($event)">
+		<ion-refresher-content>
+		</ion-refresher-content>
+	</ion-refresher>
 	<ion-fab top left>
 		<button ion-fab (click)="goBack()" mini><ion-icon name="custom-goback" color="primary"></ion-icon></button>
 	</ion-fab>
@@ -43,12 +47,12 @@
 			</ion-row>
 			<ion-row>
 				<ion-col col-12>
-					<div>备&nbsp;&nbsp;&nbsp;&nbsp;注：该产品价格不包含物流配送费用</div>
+					<div>备&nbsp;&nbsp;&nbsp;&nbsp;注：该产品价格包含物流配送费用</div>
 				</ion-col>
 			</ion-row>
 			<ion-row>
 				<ion-col col-12>
-					<div>经销商：{{distributor?.name}}</div>				
+					<div>发&nbsp;&nbsp;&nbsp;&nbsp;货：{{distributor?.name}}</div>				
 				</ion-col>
 			</ion-row>
 			<ion-row>
@@ -76,11 +80,13 @@
 		<seperator height="1.2rem"></seperator>
 	<!--	</div>-->
 
-		<ion-row *ngFor="let image of images_2">
-			<ion-col col-12>
-				<img src="{{ apiUrl }}{{ image.image_url }}">
-			</ion-col>
-		</ion-row>
+		<div class="bottomImages">
+			<ion-row *ngFor="let image of images_2">
+				<ion-col col-12>
+					<img src="{{ apiUrl }}{{ image.image_url }}">
+				</ion-col>
+			</ion-row>
+		</div>
 	</ion-grid>
 </ion-content>
 
@@ -229,6 +235,10 @@
 	ion-footer .android_btn {
 		font-size: 0.7rem;
 		height: 2.1rem;
+	}
+
+	.bottomImaages ion-row + ion-row {
+		margin-top: -4px;
 	}
 </style>
 

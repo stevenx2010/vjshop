@@ -9,7 +9,7 @@ import { MultiPickerModule } from 'ion-multi-picker';
   ],
   imports: [
     IonicPageModule.forChild(AddAdressPage),
-        MultiPickerModule
+    MultiPickerModule
   ],
 })
 export class AddAdressPageModule {}

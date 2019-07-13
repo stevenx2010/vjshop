@@ -40,7 +40,7 @@
 	<ion-grid>
 		<ion-row class="slides">
 			<ion-col col-12>
-				<ion-slides autoplay="2000" pager>
+				<ion-slides autoplay="2000" pager="true">
 					<ion-slide *ngFor="let imageUrl of imageUrls_1">
 						<img src="{{imageUrl}}">
 					</ion-slide>
@@ -71,7 +71,7 @@
 -->
 		<div  class="bottomImages">
 		<ion-row *ngFor="let image of imageUrls_4">
-			<ion-col col-12  width="100%">
+			<ion-col col-12>
 				<img src="{{image}}">
 			</ion-col>
 		</ion-row>
@@ -135,6 +135,7 @@
 		margin-left: 0.8rem;
 		margin-right: 0.8rem;
 		padding: 0;
+		border: none;
 	}
 	.video-container {
 	    position:relative;
@@ -148,6 +149,10 @@
 	    left:0;
 	    width:100%;
 	    height:100%;
+	}
+
+	.bottomImages ion-row + ion-row {
+		margin-top: -4px;
 	}
 
 </style>

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events, ToastController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { VJAPI } from '../../services/vj.services';
@@ -18,7 +18,7 @@ export class ManageAddressPage {
   mobile: string;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI,
-              private events: Events) 
+              private events: Events, private toastCtrl: ToastController) 
   {
   	this.address = new Address();
   	this.addresses = new Array<Address>();
@@ -35,7 +35,9 @@ export class ManageAddressPage {
           this.getAddresses();
         }
       });
-    });    
+    }); 
+
+    this.presentToaster();   
   }
 
 
@@ -81,11 +83,26 @@ export class ManageAddressPage {
     this.storage.ready().then(() => {
       this.storage.set(Constants.SHIPPING_ADDRESS_KEY, this.addresses[index]);
       //this.navCtrl.pop();
-      this.editAddress(index);
+      //this.editAddress(index);
+      // set ad default address
+      this.vjApi.setAddressAsDefault(this.addresses[index].id).subscribe((data) => {
+        console.log(data);
+        this.getAddresses();
+      });
     });
   }
 
   ionViewCanLeave() {
     this.events.publish('address_changed');
+  }
+
+  presentToaster() {
+    let toast = this.toastCtrl.create({
+      message: '向左滑动地址栏可对地址进行编辑和删除; 点击将该地址设置为默认地址。',
+      duration: 3500,
+      position: 'bottom'
+    });
+
+    toast.present();
   }
 }

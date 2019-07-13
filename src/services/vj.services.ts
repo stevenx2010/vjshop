@@ -66,10 +66,14 @@ export class VJAPI {
 	 */
 	public showLoader(text?: string) {
 		this.loader = this.loadingCtrl.create({
-			content: text ||'Loading'
+			content: text ||'加载中...'
 		});
 
 		this.loader.present();
+
+		setTimeout(() => {
+			this.loader.dismiss();
+		}, 4000);
 	}
 
 	/**
@@ -215,6 +219,13 @@ export class VJAPI {
 		return this.http.post(this.apiUrl + 'api/' + 'product/products/ids', body, {headers: headers});
 	}
 
+	public getFilteredProducts(body: any): Observable<Product[]> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.post(this.apiUrl + 'api/' + 'product/filtered', body, {headers: headers})
+	 			.pipe(map((res: Response) => res.json()));		
+	}
 
 	/********************************************************************************************
 	 *                   API Section: User Login related interface
@@ -328,6 +339,13 @@ export class VJAPI {
 	 	this.initAuthHeader(headers);
 
 	 	return this.http.get(this.apiUrl + 'api/address/query/id/' + addressId, {headers: headers});	 	
+	 }
+
+	 public setAddressAsDefault(addressId: number): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.get(this.apiUrl + 'api/address/setdefault/id/' + addressId, {headers: headers});		 	
 	 }
 
 	/********************************************************************************************
@@ -650,6 +668,18 @@ export class VJAPI {
 	 	this.initAuthHeader(headers);
 
 		return this.http.get(this.apiUrl + 'api/about/page/info', {headers: headers});	 	 	
+	 }
+
+	/********************************************************************************************
+	 *                   API Section: Agreement Page Content
+	 *
+	 * 
+	 ********************************************************************************************/
+	 public getAgreementPageInfo(): Observable<Response> {
+	 	let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.get(this.apiUrl + 'api/agreement/page/info', {headers: headers});
 	 }
 }
 

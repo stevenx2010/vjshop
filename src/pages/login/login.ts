@@ -7,6 +7,7 @@ import { VJAPI } from '../../services/vj.services';
 import { InitEnv } from '../../utils/initEnv';
 import { Coupon } from '../../models/coupon-model';
 import { Address } from '../../models/address.model';
+import { Location } from '../../models/location.model';
 
 
 @IonicPage()
@@ -22,8 +23,8 @@ export class LoginPage {
   smsCode: string ='';
   mobile: string = '';
   confirmDisabled: boolean = true;
-  mobileIsValide: boolean = false;
-  smsCodeIsValide: boolean = false;
+  mobileIsValid: boolean = false;
+  smsCodeIsValid: boolean = false;
   smsCountingDown: boolean = false;
 
   couponWallet: Set<Coupon>;
@@ -31,14 +32,27 @@ export class LoginPage {
   loggedIn: boolean = false;
   shippingAddress: Address;
 
+  chkAgreement: boolean = false;
+  isNewUser: boolean = false;
+
+  location: Location;
+
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI, private alertCtrl: AlertController,
   				private events: Events, private init: InitEnv) {
     this.couponWallet = new Set<Coupon>();
     this.shippingAddress = new Address();
+    this.location = new Location();
   }
 
   ionViewDidLoad() {
     if(this.navParams.get('user') == 'distributor') this.pageCaption = '经销商登录';
+    this.storage.ready().then((data) => {
+      this.storage.get(Constants.LOCATION_KEY).then((data) => {
+        if(data) {
+          this.location = data;
+        }
+      })
+    })
   }
 
   getSMSCode() {
@@ -48,16 +62,24 @@ export class LoginPage {
   		"mobile": this.mobile
   	}
 
-  	this.vjApi.auth(JSON.stringify(body)).subscribe((data) => console.log(data));
+  	this.vjApi.auth(JSON.stringify(body)).subscribe((data) => {
+      console.log(data);
+      let resp = data.json();
+      this.isNewUser = resp.newuser;
+      console.log(this.isNewUser);
+      if(!this.isNewUser) {
+        this.chkAgreement = true;
+      }
+    });
 
   	// Re-enable to get SMS code after 1 minute
-  	let count = 1;
+  	let count = 60;
   	this.smsBtnDisabled = true;
     this.smsCountingDown = true;
   	let timer = setInterval(() => {
 	  				this.caption = count + '秒';
-	  				count += 1;
-	  				if(count > 60) {    // change to 60 in production version
+	  				count -= 1;
+	  				if(count < 0) {    // change to 60 in production version
 	  					clearInterval(timer);
 	  					this.caption = '获取验证码';
 	  					this.smsCountingDown = false;
@@ -83,6 +105,7 @@ export class LoginPage {
   		"command": Login.CONFIRM_SMS_CODE,
   		"mobile": this.mobile,
   		"sms_code": this.smsCode,
+      "location": this.location.province + this.location.city + this.location.district + this.location.street
   	}
 
   	this.vjApi.auth(JSON.stringify(body)).subscribe((data) => {
@@ -143,6 +166,8 @@ export class LoginPage {
             });
 
             this.events.unsubscribe('login_address_added');
+
+            this.events.publish('login_address_success', this.mobile);
 
   					this.navCtrl.pop();
           });
@@ -229,11 +254,11 @@ export class LoginPage {
   	let regex_mobile = '^1[0-9]{10}$';
 
   	if(this.mobile.match(regex_mobile)) { 
-  		this.mobileIsValide = true;
+  		this.mobileIsValid = true;
   		this.smsBtnDisabled = false;
   	}
   	else {
-  		this.mobileIsValide = false;
+  		this.mobileIsValid = false;
   		this.smsBtnDisabled = true;
   	}
   
@@ -241,11 +266,11 @@ export class LoginPage {
   	let regex_sms_code = '^[0-9]{6}$';
 
   	if(this.smsCode.match(regex_sms_code))
-  		this.smsCodeIsValide = true;
+  		this.smsCodeIsValid = true;
   	else 
-  		this.smsCodeIsValide = false;
+  		this.smsCodeIsValid = false;
 
-  	if(this.mobileIsValide && this.smsCodeIsValide)
+  	if(this.mobileIsValid && this.smsCodeIsValid && this.chkAgreement)
   		this.confirmDisabled = false;
   	else
   		this.confirmDisabled = true;
@@ -264,6 +289,10 @@ export class LoginPage {
     if(this.loggedIn) {
       this.events.publish('login_success', true, this.mobile, this.shippingAddress);
     }
+  }
+
+  toAgreement() {
+    this.navCtrl.push('AgreementPage');
   }
 
 }

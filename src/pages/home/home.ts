@@ -11,6 +11,7 @@ import { Constants } from '../../models/constants.model';
 import { CouponItem } from '../../models/coupon-item.model';
 import { InitEnv } from '../../utils/initEnv';
 import { Address } from '../../models/address.model';
+import { Location } from '../../models/location.model';
 
 //import { Http } from '@angular/http';
 
@@ -52,6 +53,7 @@ export class HomePage {
   mobile: string = '';
   couponWallet: Set<CouponItem>;
   address: Address;
+  location: Location;
   appLatestVersion: string;
 
   downloadUrl_android: string = '<a href="https://vjshop.venjong.com/vjshop.apk">稳卓商城</a>';
@@ -82,11 +84,15 @@ export class HomePage {
        cordova.plugins.baidumap_location.getCurrentPosition((data) => {
 
         let result = data;
+        console.log(result);
         this.city = result.province;//;'北京市'
         if(this.city && this.city !=  '') {
          this.storage.ready().then(() => {
-           this.storage.set(Constants.LOCATION_KEY, this.city);
-         })
+           //this.storage.set(Constants.LOCATION_KEY, this.city);
+           this.location = new Location(data);
+           console.log(this.location);
+           this.storage.set(Constants.LOCATION_KEY, this.location);
+         });
         }
      });
     });

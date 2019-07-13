@@ -1,5 +1,5 @@
 import { Component, Inject, ViewChild } from '@angular/core';
-import { NavController, App, Events, AlertController, Toolbar, Navbar } from 'ionic-angular';
+import { NavController, App, Events, AlertController, Toolbar, Navbar, ToastController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { Constants } from '../../models/constants.model';
@@ -40,7 +40,7 @@ export class CartPage {
   toPayBtnDisabled: boolean = true;
 
   constructor(public navCtrl: NavController, private storage: Storage, private app: App, private events: Events, private vjApi: VJAPI,
-  				@Inject('API_BASE_URL') private apiUrl: string, private alertCtrl: AlertController) 
+  				@Inject('API_BASE_URL') private apiUrl: string, private alertCtrl: AlertController, private toastCtrl: ToastController) 
   { 	
   	this.address = new Address();
   	this.shoppingCart = new Array<ShoppingItem>();
@@ -97,6 +97,10 @@ export class CartPage {
       });    
     });
     this.getShippingAddressAndMobile();
+
+    if(!this.shoppingCartEmpty) {
+      this.presentToaster();
+    }
   }
 
   ionViewDidEnter() {
@@ -354,6 +358,16 @@ export class CartPage {
     alert.addButton('取消');
 
     alert.present();
+  }
+
+  presentToaster() {
+    let toast = this.toastCtrl.create({
+      message: '向左滑动收货地址栏可清空购物车。',
+      duration: 3500,
+      position: 'top'
+    });
+
+    toast.present();
   }
 }
 

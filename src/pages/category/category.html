@@ -37,7 +37,8 @@
 </ion-header>
 
 <ion-content>
-<!--	<ion-refresher (ionRefresh)="reload($event)">
+	<!--
+	<ion-refresher (ionRefresh)="reload($event)">
 		<ion-refresher-content></ion-refresher-content>
 	</ion-refresher>-->
 	<ion-grid [style.height]="gridHeight">
@@ -55,29 +56,91 @@
 			<ion-col col-9>
 				<div  *ngIf="allProductsSelected" class="sort">
 					<ion-list #sortlist>
-					<ion-item-sliding>
-						<ion-item>
-							<div align="right"><ion-icon name="rewind" color="secondary" style="vertical-align: bottom;"></ion-icon><span style="color: white;">s</span>排序</div>
-						</ion-item>
-						<ion-item-options side="right">
-							<button ion-button small (click)="priceSortUp()">
-								<ion-icon name="logo-yen"></ion-icon>价格升序
-							</button>
-							<button ion-button color="secondary" small (click)="priceSortDown()">
-								<ion-icon name="logo-yen"></ion-icon>价格降序
-							</button>
-							<button ion-button small (click)="soldAmountSortUp()">
-								<ion-icon name="podium"></ion-icon>销量升序
-							</button>
-							<button ion-button color="secondary"small (click)="soldAmountSortDown()">
-								<ion-icon name="podium"></ion-icon>销量降序
-							</button>
-						</ion-item-options>
-
-					</ion-item-sliding>
-				</ion-list>
+						<ion-item-sliding>
+							<ion-item>
+								<div align="right" (click)="openFilter()"><ion-icon name="rewind" color="secondary" style="vertical-align: bottom;"></ion-icon><span style="color: white;">s</span>向左滑动排序/点击设置过滤条件</div>
+							</ion-item>
+							<ion-item-options side="right">
+								<button ion-button small (click)="priceSortUp()">
+									<ion-icon name="logo-yen"></ion-icon>价格升序
+								</button>
+								<button ion-button color="secondary" small (click)="priceSortDown()">
+									<ion-icon name="logo-yen"></ion-icon>价格降序
+								</button>
+								<button ion-button small (click)="soldAmountSortUp()">
+									<ion-icon name="podium"></ion-icon>销量升序
+								</button>
+								<button ion-button color="secondary"small (click)="soldAmountSortDown()">
+									<ion-icon name="podium"></ion-icon>销量降序
+								</button>
+							</ion-item-options>
+						</ion-item-sliding>	
+					</ion-list>
 				</div>
 
+<!----------------------------------------------------------------------------------->
+
+				<ion-scroll scrollY="true" [style.height]="clickedItemIndex == 0 ? scrollHeightForAll : scrollHeightForCat">
+					<div  class="content-all" *ngIf="clickedItemIndex === 0">
+						<div *ngFor="let product of products; let i = index">
+							<ion-row>
+								<ion-col col-6 class="product1" *ngIf="i < products.length && i % 2 == 0">
+									<div class="image" align="center" (click)="toProductDetail(products[i].id)">
+										<img src="{{ baseUrl }}{{ products[i].thumbnail_url }}">
+									</div>
+									<div class="text" align="center" (click)="toProductDetail(products[i].id)">
+										{{ products[i].model }}
+									</div>
+								</ion-col>
+								<ion-col col-6 class="product2" *ngIf="i+1 < products.length && (i+1) % 2 == 1">
+									<div class="image" align="center" (click)="toProductDetail(products[i+1].id)" >
+										<img src="{{ baseUrl }}{{ products[i+1].thumbnail_url }}">
+									</div>
+									<div class="text" align="center" (click)="toProductDetail(products[i+1].id)" >
+										{{ products[i+1].model }}
+									</div>
+								</ion-col>
+							</ion-row>
+						</div>
+					</div>
+
+					<div class="content-category" *ngIf="clickedItemIndex != 0">
+						<div *ngFor="let category of productBySubCategories;">
+							<ion-row class="category" text-wrap>
+								<ion-col></ion-col>
+								<ion-col style="padding-right: 0.5em"><seperator></seperator></ion-col>
+								<ion-col>							
+									<span>{{ category.subCategory.name}}</span>
+								</ion-col>
+								<ion-col style="padding-left: 0.5em"><seperator></seperator></ion-col>
+								<ion-col></ion-col>
+							</ion-row>
+							<div *ngFor="let product of category.products; let j = index;">
+								<ion-row>
+									<ion-col col-6 class="product1" *ngIf="j < category.products.length && j % 2 == 0">
+										<div class="image" align="center" (click)="toProductDetail(category.products[j].id)">
+											<img src="{{ baseUrl }}{{ category.products[j].thumbnail_url}}">
+										</div>
+										<div class="text" align="center" (click)="toProductDetail(category.products[j].id)">
+											{{category.products[j].model}}
+										</div>
+									</ion-col>
+									<ion-col col-6 class="product2" *ngIf="j+1 < category.products.length && (j+1) % 2 == 1">
+										<div class="image" align="center" (click)="toProductDetail(category.products[j+1].id)">
+											<img src="{{ baseUrl }}{{ category.products[j+1].thumbnail_url}}">
+										</div>
+										<div class="text" align="center" (click)="toProductDetail(category.products[j+1].id)">
+											{{category.products[j+1].model}}
+										</div>
+									</ion-col>
+								</ion-row>
+							</div>
+						</div>
+					</div>
+
+				</ion-scroll>
+<!----------------------------------------------------------------------------------->
+<!--
 				<ion-scroll scrollY="true" [style.height]="clickedItemIndex == 0 ? scrollHeightForAll : scrollHeightForCat">
 					<div  class="content-all" *ngIf="clickedItemIndex === 0">
 						<seperator color="white" height="2rem"></seperator>
@@ -173,9 +236,93 @@
 					</div>
 
 				</ion-scroll>
+-->
 			</ion-col>
 		</ion-row>
 	</ion-grid>
+
+	<div class="modal-backdrop" [style.display]="filterConditionDisplay">
+	</div>
+
+	<div class="filter-condition" [style.display]="filterConditionDisplay">
+		<div class="container">
+			<ion-grid>
+				<ion-row>
+				<ion-col col-6 class="filter-list1">
+					<ion-list no-lines class="column-left">
+						<ion-list-header class="list-row-1">
+							品牌
+						</ion-list-header>
+						<ion-item>
+							<ion-label>稳卓</ion-label>
+							<ion-checkbox color="dark" [(ngModel)]="filter.brand_vj"></ion-checkbox>
+						</ion-item>
+						<ion-item>
+							<ion-label>Hofmann</ion-label>
+							<ion-checkbox color="dark" [(ngModel)]="filter.brand_hf"></ion-checkbox>
+						</ion-item>
+						<ion-list-header class="list-row-2">
+							包装
+						</ion-list-header>
+						<ion-item>
+							<ion-label>盒装</ion-label>
+							<ion-checkbox color="dark" [(ngModel)]="filter.package_box"></ion-checkbox>
+						</ion-item>
+						<ion-item>
+							<ion-label>盘装</ion-label>
+							<ion-checkbox color="dark" [(ngModel)]="filter.package_pan"></ion-checkbox>
+						</ion-item>
+					</ion-list>
+				</ion-col>
+				<ion-col col-6 class="filter-list2">
+					<ion-list no-lines>
+						<ion-list-header class="list-row-1">
+							涂层
+						</ion-list-header>
+						<ion-item>
+							<ion-label>镀锌</ion-label>
+							<ion-checkbox color="dark" [(ngModel)]="filter.coating_zinc"></ion-checkbox>
+						</ion-item>
+						<ion-item>
+							<ion-label>彩色</ion-label>
+							<ion-checkbox color="dark" [(ngModel)]="filter.coating_color"></ion-checkbox>
+						</ion-item>
+						<ion-list-header class="list-row-2">
+							品质
+						</ion-list-header>
+						<ion-item>
+							<ion-label>售后</ion-label>
+							<ion-checkbox color="dark" [(ngModel)]="filter.quality_aftermarket"></ion-checkbox>
+						</ion-item>
+						<ion-item>
+							<ion-label>OEM原厂</ion-label>
+							<ion-checkbox color="dark" [(ngModel)]="filter.quality_oem"></ion-checkbox>
+						</ion-item>
+					</ion-list>
+				</ion-col>
+				</ion-row>
+				<div class="btn">
+					<ion-row>
+						<ion-col col-4>
+							<div align="center">
+								<button ion-button color="secondary" full (click)="clearFilter()">清除过滤</button>
+							</div>
+						</ion-col>
+						<ion-col col-4>
+							<div align="center">
+								<button ion-button color="secondary" full (click)="startFilter()">确定</button>
+							</div>
+						</ion-col>
+						<ion-col col-4>
+							<div align="center">
+								<button ion-button color="secondary" full (click)="closeFilter()">取消</button>
+							</div>
+						</ion-col>
+					</ion-row>
+				</div>
+			</ion-grid>
+		</div>
+	</div>
 </ion-content>
 
 
@@ -221,7 +368,7 @@
 	}
 
 	.content img {
-		width: 3.5rem;
+		width: 5em;
 	}
 
 	.content ion-col {
@@ -278,5 +425,89 @@
 	span {
 		white-space: nowrap;
 	}
+
+	.product1 {
+		width: 100%;
+		height: 100%;
+		margin: 1em 0;
+		padding: 1em 0.5em 1em 1em;
+	}
+
+	.product2 {
+		width: 100%;
+		height: 100%;
+		margin: 1em 0;
+		padding: 1em 1em 1em 0.5em;
+	}
+
+	.modal-backdrop {
+		position: fixed;
+		background-color: rgba(0,0,0,0.5);
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		display: none;
+		z-index: 1;
+	}
+
+	@keyframes fadeIn {
+		0% {
+			opacity: 0;
+		}
+
+		100% {
+			opacity: 1;
+		}
+	}
+
+	@-webkit-keyframes fadeIn {
+		0% {opacity:0}
+		100%{opacity:1}
+	}
+
+	.filter-condition {
+		position: absolute;
+		top: 1em;
+		bottom: 1em;
+		right: 1em;
+		left: 1em;
+		background-color: white;
+		display: none;
+		z-index: 3;
+
+		animation: fadeIn 1s ease-in;
+		-web-kit-animation: fadeIn 1s ease-in;
+	}
+
+	.container {
+		padding: 1em 2em;
+	}
+
+	.filter-list1 {
+		padding-right: 0.5em;
+	}
+
+	.filter-list2 {
+		padding-left: 0.5em;
+	}
+
+	ion-list-header {
+		font-weight: bolder;
+		background-color: #488aff;
+		color: white;
+		text-align: center;
+		height: 1em;
+	}
+
+	.list-row-2 {
+		margin-top: 2em;
+		border-top: 1px solid #efefef;
+	}
+
+	.btn {
+		margin-top: 25%;
+	}
+
 
 </style>

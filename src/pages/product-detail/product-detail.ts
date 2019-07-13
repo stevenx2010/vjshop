@@ -85,6 +85,14 @@ export class ProductDetailPage {
       }
     });
 
+    // Event: login_address_added
+    this.events.subscribe('login_address_success', (mobile) => {
+      console.log('event: login_address_success');
+      console.log(mobile);
+      this.mobile = mobile;
+      this.getDefaultAddress();
+    });
+
     // Event: address_changed
     this.events.subscribe('address_changed', () => {
       this.storage.ready().then(() => {
@@ -403,5 +411,13 @@ export class ProductDetailPage {
     alert.addButton('确定');
 
     alert.present();
+  }
+
+  reload(refresher) {
+    this.ionViewWillLoad();
+    this.vjApi.hideLoader();
+    setTimeout(() => {
+      refresher.complete();
+    }, 100);
   }
 }

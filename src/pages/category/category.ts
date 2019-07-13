@@ -8,6 +8,8 @@ import { Product } from '../../models/product.model';
 import { ProductSubCategory } from '../../models/product-sub-category.model';
 import { ProductBySubCategory } from '../../models/product-by-sub-category.model';
 import { Constants } from '../../models/constants.model';
+import { Location } from '../../models/location.model';
+import { Filter } from '../../models/filter-model';
 
 @Component({
   selector: 'page-category',
@@ -32,8 +34,24 @@ export class CategoryPage {
 
   allProductsSelected: boolean = true;
   city: string = '';
+  location: Location;
   loggedIn: boolean = false;
   mobile: string;
+
+  modalDropStyle: string;
+  filterConditionDisplay: string;
+
+  filter: Filter;
+  oldFilter: Filter;
+
+  brand_vj: boolean = false;
+  brand_hf: boolean = false;
+  package_box: boolean = false;
+  package_pan: boolean = false;
+  coating_zinc: boolean = false;
+  coating_color: boolean = false;
+  quality_aftermarket: boolean = false;
+  quality_oem: boolean = false;
 
   constructor(public navCtrl: NavController, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string,
             private app: App, private storage: Storage, private events: Events) 
@@ -42,6 +60,8 @@ export class CategoryPage {
     this.productBySubCategories = new Array<ProductBySubCategory>();
 
   	this.products = new Array<Product>();
+    this.filter = new Filter();
+    this.oldFilter = new Filter();
 
 	  this.clickedItemIndex = 0;
 	  this.baseUrl = this.apiUrl;
@@ -68,12 +88,14 @@ export class CategoryPage {
   ngOnInit() {
     this.storage.ready().then(() => {
       this.storage.get(Constants.LOCATION_KEY).then((data) => {
-        this.city = data;
-      })
+        //this.city = data;
+        this.location = data;
+        this.city = this.location.city;
+      });
       this.storage.get(Constants.LOGIN_KEY).then((l) => {
         if(l) this.loggedIn = l;
-      })
-    })
+      });
+    });
   }
 
   getAllProducts() {
@@ -87,6 +109,28 @@ export class CategoryPage {
       );      
   }
 
+  getFilteredProducts() {
+    let body = {
+      'brand_vj': this.brand_vj,
+      'brand_hf': this.brand_hf,
+      'package_box': this.package_box,
+      'package_pan': this.package_pan,
+      'coating_zinc': this.coating_zinc,
+      'coating_color': this.coating_color,
+      'quality_aftermarket': this.quality_aftermarket,
+      'quality_oem': this.quality_oem
+    }
+
+    this.vjApi.getFilteredProducts(this.filter).subscribe((data) => {
+      console.log(data);
+      console.log(data.length);
+
+      if(data) {
+        this.products = data;
+      }
+    }, (err) => {console.log(err)});
+  }
+
   ionViewDidEnter() {
 
   	let scroll = this.content.getScrollElement();
@@ -97,6 +141,8 @@ export class CategoryPage {
     this.scrollHeightMenu = h + 'px';
     this.scrollHeightForCat = h + 'px';
     this.gridHeight = h +'px';
+
+    console.log(this.content);
 
     //console.log(this.sortlist.nativeElement.height);
 
@@ -276,5 +322,25 @@ export class CategoryPage {
     } else {
       this.app.getRootNav().push('LoginPage');
     }
+  }
+
+  openFilter() {
+    this.filterConditionDisplay = 'block';
+  }
+
+  closeFilter() {
+    this.filter = this.oldFilter;
+    this.filterConditionDisplay = 'none';
+  }
+
+  startFilter() {
+    this.getFilteredProducts();
+    this.oldFilter = this.filter;
+    this.filterConditionDisplay = 'none';
+  }
+
+  clearFilter(){
+    this.oldFilter = this.filter;
+    this.filter = new Filter();
   }
 }

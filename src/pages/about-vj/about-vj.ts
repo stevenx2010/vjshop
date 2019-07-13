@@ -33,7 +33,7 @@ export class AboutVjPage {
  		this.about = info.json();
   		if(this.about) {
   			this.images = this.about.images;
-  			this.content = this.about[0].content;
+  			this.content = this.about.content;
   			this.displayContent();
   		}
   		this.vjApi.hideLoader();

@@ -8,6 +8,8 @@ import { MultiPicker } from 'ion-multi-picker';
 import { Constants, Login } from '../../models/constants.model';
 import { VJAPI } from '../../services/vj.services';
 
+import { Location } from '../../models/location.model';
+
 /**
  * Generated class for the AddAdressPage page.
  *
@@ -37,6 +39,10 @@ export class AddAdressPage {
   mobile: string;
   userId: number;
 
+  default: string;
+
+  location: Location;
+
   constructor(public navCtrl: NavController, public navParams: NavParams, private alertCtrl: AlertController, private storage: Storage, private vjApi: VJAPI,
               private events: Events) 
   {
@@ -46,6 +52,8 @@ export class AddAdressPage {
 
     this.action = this.navParams.get('action');
     this.mobile = this.navParams.get('mobile');
+
+
   }
 
   ionViewWillLoad() {
@@ -58,7 +66,6 @@ export class AddAdressPage {
       }
       else {
         this.storage.ready().then(() => {
-          console.log('xxxxxxxxxxx');
           this.storage.get(Constants.USER_MOBILE_KEY).then((data) => {
             if(data) {
               this.address.mobile = data;
@@ -67,6 +74,15 @@ export class AddAdressPage {
           })
         })
       }
+
+      // Get GPS location to fill address automatically
+      this.storage.ready().then(() => {
+        this.storage.get(Constants.LOCATION_KEY).then((data) => {
+          if(data) {
+            this.location = data;
+          }
+        });
+      });
     } else if(this.action == 'edit') {      // Edit current address
       this.address = this.navParams.get('address');
       this.placeholder = this.address.city;
@@ -82,6 +98,11 @@ export class AddAdressPage {
     });
     this.vjApi.hideLoader();
 
+  }
+
+  ionViewDidEnter() {
+        this.multiPicker._text = this.location.province + ' ' + this.location.city + ' ' + this.location.district;
+        if(this.multiPicker._text != '') this.address.city = this.multiPicker._text;
   }
 
   validate(): void {

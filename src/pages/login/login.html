@@ -14,7 +14,6 @@
 
 
 <ion-content>
-
 	<ion-list class="login">
 		<ion-item>
 			<ion-label>+86</ion-label>
@@ -30,14 +29,22 @@
 		<ion-row>
 			<ion-col col-1></ion-col>
 			<ion-col col-10>
-	<button ion-button block (click)="confirmLogin()" [disabled]="confirmDisabled">确认</button>
-</ion-col>
-<ion-col col-1></ion-col>
-</ion-row>
-</ion-grid>
-
+				<button ion-button block (click)="confirmLogin()" [disabled]="confirmDisabled">确认</button>
+			</ion-col>
+			<ion-col col-1></ion-col>
+		</ion-row>
+		<ion-row id="agreement" *ngIf="isNewUser">
+			<ion-col col-3 id="checkbox_col">
+				<div align="right" id="checkbox">
+					<ion-checkbox [(ngModel)]="chkAgreement" (ionChange)="validate()"></ion-checkbox>
+				</div>
+			</ion-col>
+			<ion-col col-9>
+					<p>我已认真阅读理解并同意<a href="#" (click)="toAgreement()">注册协议</a></p>
+			</ion-col>
+		</ion-row>
+	</ion-grid>
 </ion-content>
-
 
 <style>
 	* {
@@ -61,4 +68,16 @@
 		height: 2.5rem;
 	}
 
+	#agreement {
+		margin-top: 20em;
+	}
+
+	#checkbox {
+		margin-top: 1.1em;
+		margin-right: 0;
+	}
+
+	#checkbox_col {
+		padding-right: 0;
+	}
 </style>
