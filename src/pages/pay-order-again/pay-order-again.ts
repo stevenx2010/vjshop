@@ -74,7 +74,6 @@ export class PayOrderAgainPage {
     this.calculateTotalPrice();
     this.orderPrice = Number(this.total) + Number(this.order.shipping_charges);
 
-    this.vjApi.showLoader();
 
     // get shipping address
     this.vjApi.getAddressById(this.order1.shipping_address_id).subscribe((resp) => {
@@ -85,7 +84,9 @@ export class PayOrderAgainPage {
         this.btnDisabled = false;
         console.log(this.address);
       }
-    })
+    }, (err) => {
+      console.log(err);
+    });
 
     // get product list
     this.vjApi.getProductsByIds(JSON.stringify(this.order.products)).subscribe((resp) => {
@@ -96,11 +97,9 @@ export class PayOrderAgainPage {
         temp.forEach((p) => {
           this.products.push(p[0]);
         });
-        this.vjApi.hideLoader();
       }
     }, (err) => {
       console.log(err);
-      this.vjApi.hideLoader();
     });
   }
 
@@ -130,7 +129,7 @@ export class PayOrderAgainPage {
   }
 
   toPay() {
-    this.btnDisabled = true;
+    //this.btnDisabled = true;
     if(this.paymentMethod == 'alipay') this.order.payment_method = PaymentMethod.ALIPAY;
     else if(this.paymentMethod == 'wechat') this.order.payment_method = PaymentMethod.WECHAT;
 

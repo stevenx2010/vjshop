@@ -37,8 +37,8 @@ export class MyvjPage {
           this.mobile = m;
           console.log(this.mobile);
         }
-      })
-    })    
+      });
+    });   
   }
 
   logout() {
@@ -116,4 +116,5 @@ export class MyvjPage {
   toQuestionAndAnswer() {
     this.app.getRootNav().push('QuestionAndAnswerPage');
   }
+
 }

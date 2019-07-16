@@ -28,13 +28,17 @@ export class CouponForNewComerPage {
   }
 
   ionViewDidLoad() {
+    this.vjApi.showLoader();
   	this.vjApi.getPageInforOfNewComer().subscribe((data) => {
   		if(data.length > 0) {
   			console.log(data);
   			this.couponNewComers = data;
   			this.title = this.couponNewComers[0].description;
   		}
-  	})
+      this.vjApi.hideLoader();
+  	}, (err) => {
+      this.vjApi.hideLoader();
+    })
 
   }
 

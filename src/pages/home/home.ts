@@ -18,7 +18,9 @@ import { Location } from '../../models/location.model';
 //import { CoordinateTransform } from '../../services/baidu.gps.service';
 import { AppVersion } from '@ionic-native/app-version';
 
-declare let cordova: any;
+import { Loader } from '../../utils/loader';
+
+declare let baidumap_location: any;
 
 @Component({
   selector: 'page-home',
@@ -60,8 +62,8 @@ export class HomePage {
   downloadUrl_ios: string = '<a href="#">稳卓商城</a>';
 
   constructor(public navCtrl: NavController, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string, 
-              private app: App, private storage: Storage, /*private geolocation: Geolocation, */
-              /*private coordtrans: CoordinateTransform,*/ private platform: Platform, private init: InitEnv,
+              private app: App, private storage: Storage, /*private geolocation: Geolocation, 
+              private coordtrans: CoordinateTransform,*/ private platform: Platform, private init: InitEnv,
               private alertCtrl: AlertController, private events: Events, private appVersion: AppVersion,
               private domSanitizer: DomSanitizer, private renderer: Renderer2 ) 
   {
@@ -80,8 +82,21 @@ export class HomePage {
   ionViewWillLoad() {
 
     // Get current location
+    this.storage.ready().then(() => {
+      this.storage.get(Constants.LOCATION_KEY).then((data) => {
+        if(data) {
+          this.location = data;
+          this.city = this.location.city;
+        }
+      }, (err) => {
+        console.log(err);
+      });
+    }, (err) => {
+      console.log(err);
+    });
+
     this.platform.ready().then(() => {
-       cordova.plugins.baidumap_location.getCurrentPosition((data) => {
+      baidumap_location.getCurrentPosition((data) => {
 
         let result = data;
         console.log(result);
@@ -94,7 +109,9 @@ export class HomePage {
            this.storage.set(Constants.LOCATION_KEY, this.location);
          });
         }
-     });
+       }, (err) => {
+         console.log(err);
+       });
     });
 
     // check if there's new version available
@@ -133,6 +150,7 @@ export class HomePage {
     });
 
     // Get video for home page: postion 5: for home page
+    //this.vjApi.showLoader();
     this.vjApi.getVideoByPostion(5).subscribe((resp) => {
       console.log(resp);
       if(resp.status == 200) {
@@ -160,9 +178,11 @@ export class HomePage {
           this.displayVideo = false;
         }
       } else { 
-        this.displayVideo = false;
+        this.displayVideo = false;        
       }
+      //this.vjApi.hideLoader();
     }, (err) => {
+      //this.vjApi.hideLoader();
       this.doPrompt('请检查是否有网络连接!');
     });   
   }
@@ -203,11 +223,18 @@ export class HomePage {
                   this.storage.remove(Constants.COUPON_WALLET_KEY);
                 } else {
                   // Get default address;
+                  //this.vjApi.showLoader();
                   this.init.getUserAddresses(this.mobile).subscribe((r1) => {
                     console.log('address', r1);
                     if(r1) this.address = r1;
                     this.storage.set(Constants.SHIPPING_ADDRESS_KEY, this.address);
+                    //this.vjApi.hideLoader();
+                  }, (err) => {
+                    //this.vjApi.hideLoader();
                   });
+
+                  // Get coupons
+                  this.getCouponsOfTheUser();
                 } 
               })   
             }
@@ -222,8 +249,9 @@ export class HomePage {
       })
     })
 
-  	this.vjApi.getHomePageImages().subscribe(
-  		(data) => { 
+
+    this.vjApi.showLoader();
+  	this.vjApi.getHomePageImages().subscribe((data) => { 
   			this.remoteImages = data.json();
 
   			for(let i in this.remoteImages){
@@ -241,14 +269,34 @@ export class HomePage {
   			this.vjApi.hideLoader();
   		},
   		(err) => {
+        this.vjApi.hideLoader();
   			console.log('error: ', err);
-        this.doPrompt('请检查是否有网络连接!');
-  			this.vjApi.hideLoader();
+        this.doPrompt('请检查是否有网络连接!');  			
   		});
 
     
   }
 
+  getCouponsOfTheUser() {
+    //this.vjApi.showLoader();
+    this.vjApi.getCouponsByMobile(this.mobile).subscribe((coupons) => {
+      if(coupons.length > 0) {
+        coupons.forEach((item) =>{
+          if(item.pivot.quantity == 0) item.has_used = true;
+          else item.has_used = false;
+          this.couponWallet.add(item);
+        });
+
+        this.storage.ready().then(() => {
+          this.storage.remove(Constants.COUPON_WALLET_KEY);
+          this.storage.set(Constants.COUPON_WALLET_KEY, this.couponWallet);
+        });
+      }
+      //this.vjApi.hideLoader();
+    }, (err)=> {
+      //this.vjApi.hideLoader();
+    });    
+  }
 
   toSearchPage(): void {
     this.app.getRootNav().push('SearchPage');
@@ -274,15 +322,15 @@ export class HomePage {
                 let login = resp.json();
                 console.log(login.valid);
                 if(login.valid) {
-                  this.vjApi.hideLoader();
                   this.app.getRootNav().push('DistributorToolsPage', {mobile: mobile});
                 }
                 else {
-                  this.vjApi.hideLoader();
                   this.storage.remove(Constants.DISTRIBUTOR_LOGIN_KEY);
                   this.storage.remove(Constants.DISTRIBUTOR_MOBILE);
                   this.app.getRootNav().push('LoginPage', {user: 'distributor'});
                 }
+
+                this.vjApi.hideLoader();
               }, (err) => {
                 console.log(err);
                 this.vjApi.hideLoader();
@@ -293,7 +341,7 @@ export class HomePage {
         } else {
           this.app.getRootNav().push('LoginPage', {user: 'distributor'});
         }
-      })
+      });
     })
    
    // this.app.getRootNav().push('LoginPage', {user: 'distributor'});
@@ -329,6 +377,7 @@ export class HomePage {
 
     alert.present();
   }
+
 
   getLocation() {
     if(this.loggedIn) {

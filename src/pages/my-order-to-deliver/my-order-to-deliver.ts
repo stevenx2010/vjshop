@@ -1,10 +1,10 @@
 import { Component, Inject } from '@angular/core';
-import { IonicPage, NavController, NavParams, App, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, App, AlertController, ToastController } from 'ionic-angular';
 
 import { VJAPI } from '../../services/vj.services';
 import { Order } from '../../models/order-model';
 import { ShoppingItem } from '../../models/shopping-item.model';
-import { Product } from '../../models/product.model';
+//import { Product } from '../../models/product.model';
 import { Distributor } from '../../models/distributor-model';
 import { DistributorAddress } from '../../models/distributor-address-model';
 import { DistributorContact } from '../../models/distributor-contact-model';
@@ -37,7 +37,8 @@ export class MyOrderToDeliverPage {
   selectedItem: number;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI,
-  				@Inject('API_BASE_URL') private apiUrl: string, private app: App, private alertCtrl: AlertController) 
+  				@Inject('API_BASE_URL') private apiUrl: string, private app: App/*, private alertCtrl: AlertController*/,
+          private toastCtrl: ToastController) 
   {
   	this.params = this.navParams.data;
     this.mobile = this.params.mobile;
@@ -60,6 +61,10 @@ export class MyOrderToDeliverPage {
     }, (err) => {
       this.vjApi.hideLoader();
     })
+  }
+
+  ionViewDidEnter() {
+    this.presentToaster();
   }
 
   goback() {
@@ -106,6 +111,16 @@ export class MyOrderToDeliverPage {
 
   toMyOrderToConfirm() {
     this.app.getRootNav().push('MyOrderToConfirmPage', {'mobile': this.mobile});
+  }
+
+  presentToaster() {
+    let toast = this.toastCtrl.create({
+      message: '向左滑动订单可以查看发货人相关信息。',
+      duration: 3500,
+      position: 'bottom'
+    });
+
+    toast.present();
   }
 }
 

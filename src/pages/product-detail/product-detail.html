@@ -1,7 +1,9 @@
 
 <ion-content>
-	<ion-refresher (ionRefresh)="reload($event)">
-		<ion-refresher-content>
+	<ion-refresher (ionRefresh)="reload($event)" slot="fixed" pullFactor="2" pullMin="200">
+		<ion-refresher-content
+			pullingText="下拉可以刷新"
+			refreshingText="松开刷新页面">
 		</ion-refresher-content>
 	</ion-refresher>
 	<ion-fab top left>
@@ -239,6 +241,10 @@
 
 	.bottomImaages ion-row + ion-row {
 		margin-top: -4px;
+	}
+
+	ion-refresher-content {
+		font-size: 0.5rem;
 	}
 </style>
 

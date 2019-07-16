@@ -163,13 +163,13 @@ export class CartPage {
           (data) => {
             this.products = data.json();      
             this.toPayBtnDisabled = false;
+            this.vjApi.hideLoader();
           },
           (err) => {
             console.log(err);
             this.toPayBtnDisabled = true;
-          });
-        
-        this.vjApi.hideLoader();
+            this.vjApi.hideLoader();
+          });        
       });    
   }
 

@@ -418,6 +418,6 @@ export class ProductDetailPage {
     this.vjApi.hideLoader();
     setTimeout(() => {
       refresher.complete();
-    }, 100);
+    }, 2000);
   }
 }

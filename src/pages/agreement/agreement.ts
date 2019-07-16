@@ -37,4 +37,8 @@ export class AgreementPage {
   	return this.agreement;
   }
 
+  ionViewWillLeave() {
+    this.vjApi.hideLoader();
+  }
+
 }

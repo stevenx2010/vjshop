@@ -4,7 +4,7 @@ import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
 import { VJAPI } from '../../services/vj.services';
 import { Order } from '../../models/order-model';
 import { ShoppingItem } from '../../models/shopping-item.model';
-import { Product } from '../../models/product.model';
+//import { Product } from '../../models/product.model';
 
 
 @IonicPage()

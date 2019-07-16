@@ -1,15 +1,17 @@
 import { Component, ViewChild, Inject, ElementRef } from '@angular/core';
-import { NavController, Content, App, Events } from 'ionic-angular';
+import { NavController, Content, App, Events, LoadingController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { VJAPI } from '../../services/vj.services';
 import { ProductCategory } from '../../models/product-category.model';
 import { Product } from '../../models/product.model';
-import { ProductSubCategory } from '../../models/product-sub-category.model';
+//import { ProductSubCategory } from '../../models/product-sub-category.model';
 import { ProductBySubCategory } from '../../models/product-by-sub-category.model';
 import { Constants } from '../../models/constants.model';
 import { Location } from '../../models/location.model';
 import { Filter } from '../../models/filter-model';
+
+import { Loader } from '../../utils/loader';
 
 @Component({
   selector: 'page-category',
@@ -53,8 +55,10 @@ export class CategoryPage {
   quality_aftermarket: boolean = false;
   quality_oem: boolean = false;
 
+  currentSelectedItemIndex: number = 999;
+
   constructor(public navCtrl: NavController, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string,
-            private app: App, private storage: Storage, private events: Events) 
+            private app: App, private storage: Storage, private events: Events, private loadingCtrl: LoadingController) 
   {
   	this.productCategories = new Array<ProductCategory>();
     this.productBySubCategories = new Array<ProductBySubCategory>();
@@ -69,8 +73,10 @@ export class CategoryPage {
     this.events.subscribe('login_success', (loggedIn, mobile, shippingAddress) => {
       this.loggedIn = loggedIn;
       this.mobile = mobile;
-    })
+    });
+  }
 
+  ngOnInit() {
     // start to show loader
     this.vjApi.showLoader();
 
@@ -78,14 +84,13 @@ export class CategoryPage {
     this.vjApi.getProductCategories().subscribe( 
       (data) => {
         this.productCategories = data;
+        this.vjApi.hideLoader();
       },
       (err) => {
         console.log(err);
-
+        this.vjApi.hideLoader();
       });  
-  }
 
-  ngOnInit() {
     this.storage.ready().then(() => {
       this.storage.get(Constants.LOCATION_KEY).then((data) => {
         //this.city = data;
@@ -99,17 +104,22 @@ export class CategoryPage {
   }
 
   getAllProducts() {
+    let loader = new Loader(this.loadingCtrl);
+    loader.show();
       this.vjApi.getProductAll().subscribe(
         (data) => {
           if(data) this.products = data;
+          loader.hide();
         },
         (err) => {
+          loader.hide();
           console.log(err);
         }
       );      
   }
 
   getFilteredProducts() {
+    /*
     let body = {
       'brand_vj': this.brand_vj,
       'brand_hf': this.brand_hf,
@@ -119,8 +129,9 @@ export class CategoryPage {
       'coating_color': this.coating_color,
       'quality_aftermarket': this.quality_aftermarket,
       'quality_oem': this.quality_oem
-    }
-
+    }*/
+    let loader = new Loader(this.loadingCtrl);
+    loader.show();
     this.vjApi.getFilteredProducts(this.filter).subscribe((data) => {
       console.log(data);
       console.log(data.length);
@@ -128,7 +139,11 @@ export class CategoryPage {
       if(data) {
         this.products = data;
       }
-    }, (err) => {console.log(err)});
+
+      loader.hide();
+    }, (err) => {
+      loader.hide();
+      console.log(err)});
   }
 
   ionViewDidEnter() {
@@ -150,28 +165,30 @@ export class CategoryPage {
   	this.scrollHeightForAll = h + 'px';
 
     this.getAllProducts();
-    this.vjApi.hideLoader();
   }
-
+/*
   reload(refresher) {
     this.getAllProducts();
     refresher.complete();
-  }
+  }*/
 
   itemSelected(index: number, id?: number): void {
   	this.clickedItemIndex = index;
+
+    if(this.clickedItemIndex == this.currentSelectedItemIndex) return;
+    
     if(index == 0) {
       this.allProductsSelected = true;
     }
     else this.allProductsSelected = false;
 
     //Set Sub Categories
-    this.vjApi.showLoader();
     if(index == 0) 
       this.getAllProducts();
     else
       this.getProducts(id);
-    this.vjApi.hideLoader();
+
+    this.currentSelectedItemIndex = this.clickedItemIndex;
   }
 
 
@@ -180,12 +197,19 @@ export class CategoryPage {
   }
 
   getProducts(categoryId: number) {
+    let loader = new Loader(this.loadingCtrl);
+    loader.show();
     this.vjApi.getProductsV2(categoryId).subscribe((data) => {
       console.log(data);      
       if(data.length > 0) {
         this.productBySubCategories = data;
+        loader.hide();
         return;
       } 
+      loader.hide();
+    }, (err) => {
+      loader.hide();
+      console.log(err);
     })
 /*
     this.vjApi.getProducts(categoryId).subscribe(
@@ -281,7 +305,6 @@ export class CategoryPage {
             if(m) {
               mobile = m;
               // check if the distributor still in valid login duration
-              this.vjApi.showLoader();
 
               this.vjApi.checkDistributorLogin(mobile).subscribe((resp) => {
                 console.log(resp.json());
@@ -289,18 +312,17 @@ export class CategoryPage {
                 let login = resp.json();
                 console.log(login.valid);
                 if(login.valid) {
-                  this.vjApi.hideLoader();
+
                   this.app.getRootNav().push('DistributorToolsPage', {mobile: mobile});
                 }
                 else {
-                  this.vjApi.hideLoader();
+
                   this.storage.remove(Constants.DISTRIBUTOR_LOGIN_KEY);
                   this.storage.remove(Constants.DISTRIBUTOR_MOBILE);
                   this.app.getRootNav().push('LoginPage', {user: 'distributor'});
                 }
               }, (err) => {
                 console.log(err);
-                this.vjApi.hideLoader();
                 this.app.getRootNav().push('LoginPage', {user: 'distributor'});
               })                   
             }

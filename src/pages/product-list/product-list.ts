@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { Storage } from '@ionic/storage';
+//import { Storage } from '@ionic/storage';
 
 import { VJAPI } from '../../services/vj.services';
 import { ShoppingItem } from '../../models/shopping-item.model';
@@ -25,7 +25,7 @@ export class ProductListPage {
   products: Product[];
   productsFiltered: Product[];
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI, private storage: Storage,
+  constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI, /*private storage: Storage,*/
   			@Inject('API_BASE_URL') private apiUrl: string) 
   {
   	this.shoppingCart = new Array<ShoppingItem>(new ShoppingItem());

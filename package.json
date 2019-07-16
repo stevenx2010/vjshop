@@ -31,20 +31,19 @@
     "@ionic-native/status-bar": "~4.11.0",
     "@ionic-native/wechat": "^4.15.0",
     "@ionic/storage": "2.1.3",
-    "cordova-android": "^7.1.1",
-    "cordova-ios": "^4.5.5",
+    "cordova-android": "7.1.4",
+    "cordova-plugin-alipay": "..\\cordova-plugin-alipay",
     "cordova-plugin-app-version": "^0.1.9",
     "cordova-plugin-appavailability": "^0.4.2",
-    "cordova-plugin-baidumaplocation": "^4.0.2",
+    "cordova-plugin-baidumaplocation": "^3.2.0",
     "cordova-plugin-datepicker": "^0.9.3",
     "cordova-plugin-device": "^2.0.2",
-    "cordova-plugin-geolocation": "^4.0.1",
-    "cordova-plugin-gubnoi-alipay": "0.0.4",
+    "cordova-plugin-gubnoi-alipay": "file:../cordova-plugin-alipay",
     "cordova-plugin-inappbrowser": "^3.0.0",
     "cordova-plugin-ionic-keyboard": "^2.1.2",
     "cordova-plugin-ionic-webview": "^2.0.2",
     "cordova-plugin-splashscreen": "^5.0.2",
-    "cordova-plugin-wechatv2": "^2.1.3",
+    "cordova-plugin-wechatv2": "^2.1.6",
     "cordova-plugin-whitelist": "^1.3.3",
     "in-app-browser": "^1.0.7",
     "ion-multi-picker": "^2.1.2",
@@ -68,26 +67,24 @@
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-ionic-webview": {},
       "cordova-plugin-ionic-keyboard": {},
+      "cordova-plugin-appavailability": {},
+      "cordova-plugin-app-version": {},
+      "cordova-plugin-datepicker": {},
+      "cordova-plugin-inappbrowser": {},
+      "cordova-plugin-alipay": {
+        "APP_ID": "2018082961114895"
+      },
       "cordova-plugin-baidumaplocation": {
         "ANDROID_KEY": "hWUwGckpW0S42kMYiiqYW9srIL8hktOg",
         "IOS_KEY": "TEv78fc0HREWpzQZvSc5G0mH85N1sUsK",
         "IOS_LOCATION_DESC": "请点击'好'以允许访问。"
       },
-      "cordova-plugin-gubnoi-alipay": {
-        "APP_ID": "2018082961114895"
-      },
-      "cordova-plugin-appavailability": {},
-      "cordova-plugin-app-version": {},
-      "cordova-plugin-datepicker": {},
       "cordova-plugin-wechatv2": {
         "WECHATAPPID": "wx83eb94a40765026b"
-      },
-      "cordova-plugin-geolocation": {},
-      "cordova-plugin-inappbrowser": {}
+      }
     },
     "platforms": [
-      "android",
-      "ios"
+      "android"
     ]
   }
 }

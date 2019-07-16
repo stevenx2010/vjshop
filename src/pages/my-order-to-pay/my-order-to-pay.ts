@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { IonicPage, NavController, NavParams, App, AlertController, Events } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, App, AlertController, Events, ToastController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { VJAPI } from '../../services/vj.services';
@@ -37,7 +37,7 @@ export class MyOrderToPayPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI,
   				@Inject('API_BASE_URL') private apiUrl: string, private app: App, private alertCtrl: AlertController,
-          private storage: Storage, private events: Events) 
+          private storage: Storage, private events: Events, private toastCtrl: ToastController) 
   {
   	this.params = this.navParams.data;
     this.mobile = this.params.mobile;
@@ -67,6 +67,10 @@ export class MyOrderToPayPage {
         }
       });
     })   
+  }
+
+  ionViewDidEnter() {
+    this.presentToaster();
   }
 
   getMyOrders()
@@ -158,5 +162,15 @@ export class MyOrderToPayPage {
 
   toMyOrderToConfirm() {
     this.app.getRootNav().push('MyOrderToConfirmPage', {'mobile': this.mobile});
+  }
+
+  presentToaster() {
+    let toast = this.toastCtrl.create({
+      message: '向左滑动订单可以进行支付或者删除订单；点击可查看订单详情。',
+      duration: 3500,
+      position: 'bottom'
+    });
+
+    toast.present();
   }
 }

@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
-import { DistributorOrdersPage } from '../distributor-orders/distributor-orders';
-import { DistributorInventoryPage } from '../distributor-inventory/distributor-inventory';
-import { DistributorStatisticsPage } from '../distributor-statistics/distributor-statistics';
-import { DistributorMyPage } from '../distributor-my/distributor-my';
+//import { DistributorOrdersPage } from '../distributor-orders/distributor-orders';
+//import { DistributorInventoryPage } from '../distributor-inventory/distributor-inventory';
+//import { DistributorStatisticsPage } from '../distributor-statistics/distributor-statistics';
+//import { DistributorMyPage } from '../distributor-my/distributor-my';
 
 /**
  * Generated class for the DistributorToolsPage page.

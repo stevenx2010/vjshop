@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import { LoadingController } from 'ionic-angular';
 import { Http, Headers, Response } from '@angular/http';
-import { InAppBrowser } from '@ionic-native/in-app-browser';
+//import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { Storage } from '@ionic/storage';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -20,11 +20,11 @@ import { Distributor } from '../models/distributor-model';
 import { CouponType } from '../models/coupon-type-model';
 import { Coupon } from '../models/coupon-model';
 import { CouponNewComer } from '../models/coupon-newcomer-model';
-import { CouponItem } from '../models/coupon-item.model';
+//import { CouponItem } from '../models/coupon-item.model';
 import { Order } from '../models/order-model';
 import { Message } from '../models/message.model';
 import { Setting } from '../models/setting.model';
-import { About } from '../models/about-model';
+//import { About } from '../models/about-model';
 
 @Injectable()
 export class VJAPI {
@@ -33,7 +33,7 @@ export class VJAPI {
 	private loader: any;
 
 	constructor(private http: Http, private storage: Storage, private loadingCtrl: LoadingController,
-			     @Inject('API_BASE_URL') private apiUrl: string) {
+			     @Inject('API_BASE_URL') private apiUrl: string ) {
 		this.storage.ready().then(() =>{ 
 			this.storage.get(Constants.API_TOKEN_KEY).then((token) => { 
 				if(token) this.api_token = token;
@@ -66,14 +66,16 @@ export class VJAPI {
 	 */
 	public showLoader(text?: string) {
 		this.loader = this.loadingCtrl.create({
-			content: text ||'加载中...'
+			//content: text ||'加载中...'
+			spinner: 'ios',
+			cssClass: 'transparent'
 		});
 
 		this.loader.present();
 
 		setTimeout(() => {
 			this.loader.dismiss();
-		}, 4000);
+		}, 8000);
 	}
 
 	/**
@@ -92,8 +94,6 @@ export class VJAPI {
 	 *   GET: http://api_url/api/HomePageImages/images/{location}
 	 ********************************************************************************************/
 	public getHomePageImages(location?: number): Observable<Response> {
-		this.showLoader();
-
 		let headers = new Headers();
 
 		this.initAuthHeader(headers);
@@ -139,8 +139,6 @@ export class VJAPI {
 	 ********************************************************************************************/
 
 	 public getProductCategories(): Observable<ProductCategory[]> {
-//	 	this.showLoader();
-
 	 	let headers = new Headers();
 	 	this.initAuthHeader(headers);
 
@@ -150,8 +148,6 @@ export class VJAPI {
 	 }
 
 	 public getProductAll(): Observable<Product[]> {
-//	 	this.showLoader();
-
 		let headers = new Headers();
 	 	this.initAuthHeader(headers);
 
@@ -161,8 +157,6 @@ export class VJAPI {
 	 }
 
 	 public getProductById(productId: number): Observable<Product[]> {
-//	 	this.showLoader();
-
 		let headers = new Headers();
 	 	this.initAuthHeader(headers);
 
@@ -171,8 +165,6 @@ export class VJAPI {
 	 }
 
 	 public getProductDetailImages(productId: number, position: number): Observable<ProductDetailImage[]> {
-//	 	this.showLoader();
-
 		let headers = new Headers();
 	 	this.initAuthHeader(headers);
 

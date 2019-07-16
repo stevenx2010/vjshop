@@ -34,7 +34,7 @@
 			<ion-col col-1></ion-col>
 		</ion-row>
 		<!--<ion-row id="agreement" *ngIf="isNewUser">-->
-			<ion-row id="agreement">
+			<ion-row id="agreement" *ngIf="isCustomer">
 			<ion-col col-3 id="checkbox_col">
 				<div align="right" id="checkbox">
 					<ion-checkbox [(ngModel)]="chkAgreement" (ionChange)="validate()"></ion-checkbox>

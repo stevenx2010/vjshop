@@ -1,14 +1,15 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController, Events } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { Constants, Login } from '../../models/constants.model';
 import { VJAPI } from '../../services/vj.services';
-import { InitEnv } from '../../utils/initEnv';
+//import { InitEnv } from '../../utils/initEnv';
 import { Coupon } from '../../models/coupon-model';
 import { Address } from '../../models/address.model';
 import { Location } from '../../models/location.model';
 
+export enum CurrentUser { DISTRIBUTOR, CUSTOMER };
 
 @IonicPage()
 @Component({
@@ -34,18 +35,26 @@ export class LoginPage {
 
   chkAgreement: boolean = false;
   isNewUser: boolean = false;
+  isCustomer: boolean = true;
 
   location: Location;
 
+  currentUser: CurrentUser = CurrentUser.CUSTOMER;
+
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI, private alertCtrl: AlertController,
-  				private events: Events, private init: InitEnv) {
+  				private events: Events/*, private init: InitEnv*/) {
     this.couponWallet = new Set<Coupon>();
     this.shippingAddress = new Address();
     this.location = new Location();
   }
 
   ionViewDidLoad() {
-    if(this.navParams.get('user') == 'distributor') this.pageCaption = '经销商登录';
+    if(this.navParams.get('user') == 'distributor') {
+      this.pageCaption = '经销商登录';
+      this.currentUser = CurrentUser.DISTRIBUTOR;
+      this.isCustomer = false;
+    }
+
     this.storage.ready().then((data) => {
       this.storage.get(Constants.LOCATION_KEY).then((data) => {
         if(data) {
@@ -90,8 +99,7 @@ export class LoginPage {
   }
 
   confirmLogin() {
-    if(this.navParams.get('user') == 'distributor') {
-
+    if(this.currentUser == CurrentUser.DISTRIBUTOR) {
       this.confirmLoginDistributor();
     } else {
       this.confirmLoginUser();
@@ -199,8 +207,9 @@ export class LoginPage {
           //    }) 
               } else {
                 this.doPrompt('获取配送地址失败！');
-                this.vjApi.hideLoader();
+                
             }
+            this.vjApi.hideLoader();
           }, (err) => {
             console.log(err),
             this.vjApi.hideLoader();
@@ -241,6 +250,7 @@ export class LoginPage {
         this.vjApi.hideLoader();
         this.navCtrl.push('DistributorToolsPage', {mobile: this.mobile});      
       }
+      this.vjApi.hideLoader();
     },
     (err) => {
       console.log(err.status);
@@ -292,6 +302,7 @@ export class LoginPage {
   }
 
   toAgreement() {
+    this.vjApi.hideLoader();
     this.navCtrl.push('AgreementPage');
   }
 

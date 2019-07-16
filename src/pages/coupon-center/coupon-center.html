@@ -14,29 +14,29 @@
 
 
 <ion-content>
-	<ion-grid>
-		<ion-row *ngFor="let type of couponTypes; let i = index;">
-			<ion-col col-12>
-				<ion-card>
-					<ion-card-header>
-						<div align="center">{{type?.type}} </div>
-					</ion-card-header>
-					<ion-list class="coupon">
-						<ion-row *ngFor="let coupon of type?.coupons; let j = index;">
-							<ion-col col-12  *ngIf="!coupon?.expired">
-								<img src="{{baseUrl}}{{coupon?.image_url}}">
-							
-								<button ion-fab mini class="take" color="light" (click)="takeCoupon(i,j)" disabled="{{coupon?.btn_disabled}}"> 领取</button>
-
-								<button ion-button outline color="alert" class="takenIOs" [style.z-index]="coupon?.z_index" showWhen="ios">已领取</button>
-								<button ion-button outline color="alert" class="takenMD" [style.z-index]="coupon?.z_index" showWhen="android">已领取</button>
-							</ion-col>
-					</ion-row>
-					</ion-list>
-				</ion-card>
-			</ion-col>
-		</ion-row>
-	</ion-grid>
+	<div *ngFor="let type of couponTypes; let i = index;">
+		<ion-card>
+			<ion-card-header>
+				<div align="center">{{type?.type}} </div>
+			</ion-card-header>
+			<ion-list class="coupon">
+				<ion-row *ngFor="let coupon of type?.coupons; let j = index;">
+					<ion-col col-12  *ngIf="!coupon?.expired">
+						<div>
+							<img src="{{baseUrl}}{{coupon?.image_url}}">
+						
+							<button ion-fab mini class="take" color="primary" (click)="takeCoupon(i,j)" 
+								disabled="{{coupon?.btn_disabled}}">
+								<span class="take-text1" *ngIf="!coupon.btn_disabled">领取</span>
+								<span class="take-text2" *ngIf="coupon.btn_disabled">已领取</span>
+							</button>
+							<div class="backdrop" [style.z-index]="coupon?.z_index"></div>
+						</div>
+					</ion-col>
+			</ion-row>
+			</ion-list>
+		</ion-card>
+	</div>
 
 </ion-content>
 
@@ -71,22 +71,26 @@
 		top: 18%;
 	}
 
-	ion-content {
-		background-color: #efefef;
+	.backdrop {
+		position: absolute;
+		top: 5px;
+		left: 5px;
+		bottom: 5px;
+		right: 5px;
+		background-color: rgba(255,255,255,0.3);
+		z-index: -1;
 	}
 
-	.takenIOs {
-		z-index: -1;
-		position: absolute;
-		left: 35%;
-		top: 17%;
+	.take-text1 {
+		font-size: 1.2rem;
 	}
 
-	.takenMD {
-		z-index: -1;
-		position: absolute;
-		left: 38%;
-		top: 23%;
+	.take-text2 {
+		font-size: 1rem;
+	}
+
+	ion-card {
+		background-color: #dfdfdf;
 	}
 
 </style>
