@@ -1,5 +1,5 @@
 import { Component, Inject, ViewChild } from '@angular/core';
-import { NavController, App, Events, AlertController, Toolbar, Navbar, ToastController } from 'ionic-angular';
+import { NavController, App, Events, AlertController, Toolbar, Navbar, ToastController, LoadingController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { Constants } from '../../models/constants.model';
@@ -8,6 +8,8 @@ import { VJAPI } from '../../services/vj.services';
 import { ShoppingItem } from '../../models/shopping-item.model';
 import { Product } from '../../models/product.model';
 import { CategoryPage } from '../category/category';
+
+import { Loader } from '../../utils/loader';
 
 @Component({
   selector: 'page-cart',
@@ -40,7 +42,8 @@ export class CartPage {
   toPayBtnDisabled: boolean = true;
 
   constructor(public navCtrl: NavController, private storage: Storage, private app: App, private events: Events, private vjApi: VJAPI,
-  				@Inject('API_BASE_URL') private apiUrl: string, private alertCtrl: AlertController, private toastCtrl: ToastController) 
+  				@Inject('API_BASE_URL') private apiUrl: string, private alertCtrl: AlertController, private toastCtrl: ToastController,
+          private loadingCtrl: LoadingController) 
   { 	
   	this.address = new Address();
   	this.shoppingCart = new Array<ShoppingItem>();
@@ -97,13 +100,12 @@ export class CartPage {
       });    
     });
     this.getShippingAddressAndMobile();
-
-    if(!this.shoppingCartEmpty) {
-      this.presentToaster();
-    }
   }
 
   ionViewDidEnter() {
+    if(!this.shoppingCartEmpty) {
+      this.presentToaster();
+    }
     this.getShoppingItem();
   }
 
@@ -158,17 +160,18 @@ export class CartPage {
 
         this.calculateTotle();
 
-        this.vjApi.showLoader();
+        let loader = new Loader(this.loadingCtrl);
+        loader.show();
         this.vjApi.getProductsByIds(JSON.stringify(this.shoppingCart)).subscribe(
           (data) => {
             this.products = data.json();      
             this.toPayBtnDisabled = false;
-            this.vjApi.hideLoader();
+            loader.hide();
           },
           (err) => {
             console.log(err);
             this.toPayBtnDisabled = true;
-            this.vjApi.hideLoader();
+            loader.hide();
           });        
       });    
   }

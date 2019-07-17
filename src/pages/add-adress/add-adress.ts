@@ -1,5 +1,5 @@
 import { Component,ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController, Events } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, Events, LoadingController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { ChineseCities }  from '../../models/chinese-cities';
@@ -9,6 +9,7 @@ import { Constants, Login } from '../../models/constants.model';
 import { VJAPI } from '../../services/vj.services';
 
 import { Location } from '../../models/location.model';
+import { Loader } from '../../utils/loader';
 
 /**
  * Generated class for the AddAdressPage page.
@@ -44,7 +45,7 @@ export class AddAdressPage {
   location: Location;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private alertCtrl: AlertController, private storage: Storage, private vjApi: VJAPI,
-              private events: Events) 
+              private events: Events, private loadingCtrl: LoadingController) 
   {
     this.cityColumns = ChineseCities.cities;
     this.address = new Address();
@@ -90,14 +91,16 @@ export class AddAdressPage {
     }   
 
     // Get current user id
-    this.vjApi.showLoader();
+    let loader = new Loader(this.loadingCtrl);
+    loader.show();
     this.vjApi.getUserId(this.mobile).subscribe((resp) => {
       if(resp.json()) {
         this.userId = (resp.json()).user_id;
       }
+      loader.hide();
+    }, (err) => {
+      loader.hide();
     });
-    this.vjApi.hideLoader();
-
   }
 
   ionViewDidEnter() {
@@ -185,7 +188,28 @@ export class AddAdressPage {
           "default_address": this.address.default_address
         }
 
-        this.vjApi.showLoader();
+        let loader = new Loader(this.loadingCtrl);
+        loader.show();
+        this.vjApi.createAddress(body).subscribe((data) => {
+            let response = data.json();
+            console.log(response);
+            console.log(response.status);
+            console.log(Login.CREATE_SHIPPING_ADDRESS_SUCCESS);
+            if(response.status === Login.CREATE_SHIPPING_ADDRESS_SUCCESS) {
+              // get the address id
+              this.address.id = response.address.id;
+               //save to local, note: only default address is saved locally
+              this.storage.set(Constants.SHIPPING_ADDRESS_KEY, response.address);
+              this.saveBtnDisable = true;
+              this.doPromptFinish();          
+            } else {
+              this.doPromptError();
+            }
+            loader.hide();
+        }, (err) => {
+          loader.hide();
+        });
+        /*
         this.vjApi.auth(JSON.stringify(body)).subscribe((data) => {
             console.log(data);
             let response = data.json();
@@ -202,13 +226,15 @@ export class AddAdressPage {
             } else {
               this.doPromptError();
             }
+
+            loader.hide();
         },
         (err) => {
+          loader.hide();
           this.doPromptError();
-        });
+        });*/
 
-        this.vjApi.hideLoader();
-      })     
+      });     
     });  
   }
 

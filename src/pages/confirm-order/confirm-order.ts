@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController, App, Platform, Events } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, App, Platform, Events, LoadingController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Observable } from 'rxjs';
 
@@ -23,6 +23,8 @@ import { AppAvailability } from '@ionic-native/app-availability';
 import { Setting } from '../../models/setting.model';
 import { Invoice } from '../../models/invoice-model';
 
+import { Loader } from '../../utils/loader';
+
 declare let cordova:any;
 declare let Wechat: any;
 
@@ -39,10 +41,15 @@ export class ConfirmOrderPage {
   products: Product[];
   productsFiltered: Product[];
   numberOfItems: number = 0
-  distributorAddress: DistributorAddress[];
+  
+  distributorAddresses: DistributorAddress[];
   distributors: Distributor[];
   distributorContacts: DistributorContact[];
   shippingAddress: Address;
+  distributor: Distributor;
+  distributorDefaultAddress: DistributorAddress;
+  distributorDefaultContact: DistributorContact;
+
   couponWalletArray: Coupon[];
   couponWallet: Set<Coupon>;
   baseUrl: string;
@@ -89,15 +96,20 @@ export class ConfirmOrderPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI,
   				@Inject('API_BASE_URL') private apiUrl: string, private alipay: Alipay, private alertCtrl: AlertController,
-          private app: App, private appAvail: AppAvailability, private platform: Platform, private events: Events) 
+          private app: App, private appAvail: AppAvailability, private platform: Platform, private events: Events,
+          private loadingCtrl: LoadingController) 
   {
   	this.shoppingCart = new Array<ShoppingItem>(new ShoppingItem());
   	this.products = new Array<Product>(new Product());
     this.productsFiltered = new Array<Product>(new Product());
-    this.distributorAddress = new Array<DistributorAddress>(new DistributorAddress());
+
+    this.distributorAddresses = new Array<DistributorAddress>(new DistributorAddress());
     this.distributors = new Array<Distributor>(new Distributor());
     this.distributorContacts = new Array<DistributorContact>(new DistributorContact());
+    this.distributor = new Distributor();
+
     this.shippingAddress = new Address();
+
     this.couponWalletArray = new Array<Coupon>();
     this.couponWallet = new Set<Coupon>();
     this.baseUrl = this.apiUrl;
@@ -154,7 +166,8 @@ export class ConfirmOrderPage {
           this.calculateTotal();
 
    				// Get product info of the prodcuts cart
-          this.vjApi.showLoader();
+          let loader = new Loader(this.loadingCtrl);
+          loader.show();
    				this.vjApi.getProductsByIds(JSON.stringify(this.shoppingCart)).subscribe((data) => {
    					if(data) {
    						this.products = data.json();
@@ -165,9 +178,13 @@ export class ConfirmOrderPage {
                 }
               }
    					}
-   				});        
+             loader.hide();
+   				}, (err) => {
+             loader.hide();
+           });   
+
    			} else this.shoppingCartEmpty = true;
-   		})
+   		});
    	
      // get shiping address & distributor location
      this.storage.get(Constants.SHIPPING_ADDRESS_KEY).then((data) => {
@@ -184,14 +201,19 @@ export class ConfirmOrderPage {
        }
        console.log(city);
        if(city) {
-         // Get Distributor at this location
+         // Get Distributor at this location         
+         this.getDistributorInfoByCity(city);
+
+         /*
+         let loader1 = new Loader(this.loadingCtrl);
+         loader1.show();
          this.vjApi.getDistributorInfoByLocation(city).subscribe((data) => {
            if(data) {
              console.log(data);
              let distributor: Distributor = data;
-             this.distributorAddress = distributor.addresses;
+             this.distributorAddresses = distributor.addresses;
 
-             let distributorId = this.distributorAddress[0].distributor_id;
+             let distributorId = this.distributorAddresses[0].distributor_id;
 
              this.vjApi.getDistributorById(distributorId).subscribe((data) => {
                 if(data) {
@@ -212,13 +234,17 @@ export class ConfirmOrderPage {
                this.doOrderPrompt('没有经销商联系人!');              
              })
            }
+           loader1.hide();
          }, (error) => {
-              this.submitBtnDisabled = true;
-              this.doOrderPrompt('没有经销商地址!');           
-         })
+           loader1.hide();
+           this.submitBtnDisabled = true;
+           this.doOrderPrompt('没有经销商地址!');           
+         });
+         */
+         
        } else {
          this.submitBtnDisabled = true;
-         this.doOrderPrompt('没有经销商地址!');
+         this.doOrderPrompt('错误：无法获取您当前位置，或者没有设置送货地址!');
        }
 
        // Get coupon wallet & check valid coupons for current order
@@ -268,12 +294,57 @@ export class ConfirmOrderPage {
            this.taxNumber = this.invoice.tax_number;
            this.email = this.invoice.email;
          }
-       })
-
-       this.vjApi.hideLoader();
-     })
-     })
+       });
+     });
+     });
   }	
+
+  getDistributorInfoByCity(city) {
+    let loader = new Loader(this.loadingCtrl);
+      loader.show();
+      this.vjApi.getDistributorInfoByLocation(city).subscribe((data) => {
+        if(data) {
+          console.log(data);
+          this.distributor = data;
+          this.distributorAddresses = this.distributor.addresses;
+          this.distributorContacts = this.distributor.contacts;
+
+          for(let i = 0; i < this.distributorAddresses.length; i++) {
+            if(this.distributorAddresses[i].default_address) {
+              this.distributorDefaultAddress = this.distributorAddresses[i];
+              break;
+            }
+          }
+
+          for(let i = 0; i < this.distributorContacts.length; i++) {
+            if(this.distributorContacts[i].default_contact) {
+              this.distributorDefaultContact = this.distributorContacts[i];
+              break;
+            }
+          }
+
+          if(!this.distributorDefaultAddress) {
+            this.doOrderPrompt('错误：发货商没有地址信息！');
+            this.submitBtnDisabled = true;
+          } else if(!this.distributorDefaultContact) {
+            this.doOrderPrompt('错误：发货商没有联系方式!');
+            this.submitBtnDisabled = true;
+          } else {
+            this.submitBtnDisabled = false;
+          }
+
+        } else {
+          this.submitBtnDisabled = true;
+          this.doOrderPrompt('错误：该区域没有发货商!')
+        }
+
+        loader.hide();
+      }, (err) => {
+        this.submitBtnDisabled = true;
+        this.doOrderPrompt('错误：获取发货商信息失败!：网络故障');
+        loader.hide();
+      });
+  }
 
   couponSort(a: Coupon, b: Coupon) {
     if(a.coupon_type_id == b.coupon_type_id) {
@@ -471,7 +542,8 @@ export class ConfirmOrderPage {
     }
 
     // Distributor info
-    this.order.distributor_id = this.distributors[0].id;
+    //this.order.distributor_id = this.distributors[0].id;
+    this.order.distributor_id = this.distributor.id;
 
     // Invoice info
     this.order.is_invoice_required = this.invoiceRequired;

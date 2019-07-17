@@ -16,7 +16,7 @@
 <ion-content>
 	<ion-grid>
 		<ion-row *ngFor="let coupon of couponNewComers">
-			<ion-col col-12>
+			<ion-col col-12 *ngIf="couponNewComers.length > 0">
 				<img src="{{baseUrl}}{{coupon?.image_url}}">
 			</ion-col>
 		</ion-row>

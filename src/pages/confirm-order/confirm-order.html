@@ -109,27 +109,32 @@
 			<ion-col col-9>
 				<ion-row>
 					<ion-col>
-						{{distributors[0]?.name}}
+						<!--{{distributors[0]?.name}}-->
+						{{ distributor?.name }}
 					</ion-col>
 				</ion-row>
 				<ion-row>
 					<ion-col>
-						{{distributorAddress[0]?.city}}{{distributorAddress[0]?.street}}
+						<!--{{distributorAddresses[0]?.city}}{{distributorAddresses[0]?.street}}-->
+						{{ distributorDefaultAddress?.city }}{{ distributorDefaultAddress?.street }}
 					</ion-col>
 				</ion-row>
 				<ion-row>
 					<ion-col>
-						电话：{{distributorContacts[0]?.phone_area_code}}-{{distributorContacts[0]?.telephone}}
+						<!--电话：{{distributorContacts[0]?.phone_area_code}}-{{distributorContacts[0]?.telephone}}-->
+						电话：{{ distributorDefaultContact?.phone_area_code }}-{{ distributorDefaultContact?.telephone }}
 					</ion-col>
 				</ion-row>
 				<ion-row>
 					<ion-col>
-						手机：+86-{{distributorContacts[0]?.mobile}}
+						<!--手机：+86-{{distributorContacts[0]?.mobile}}-->
+						手机：+86-{{ distributorDefaultContact?.mobile }}
 					</ion-col>
 				</ion-row>
 				<ion-row>
 					<ion-col>
-						联系人：{{distributorContacts[0]?.name}}
+						<!--联系人：{{distributorContacts[0]?.name}}-->
+						联系人：{{ distributorDefaultContact?.name}}
 					</ion-col>
 				</ion-row>
 			</ion-col>

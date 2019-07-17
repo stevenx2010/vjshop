@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events, ToastController, LoadingController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { VJAPI } from '../../services/vj.services';
 import { Address } from '../../models/address.model';
 import { Constants } from '../../models/constants.model';
+
+import { Loader } from '../../utils/loader';
 
 
 @IonicPage()
@@ -18,7 +20,7 @@ export class ManageAddressPage {
   mobile: string;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI,
-              private events: Events, private toastCtrl: ToastController) 
+              private events: Events, private toastCtrl: ToastController, private loadingCtrl: LoadingController) 
   {
   	this.address = new Address();
   	this.addresses = new Array<Address>();
@@ -42,7 +44,8 @@ export class ManageAddressPage {
 
 
   getAddresses() {
-    this.vjApi.showLoader();
+    let loader = new Loader(this.loadingCtrl);
+    loader.show();
   	this.vjApi.getAddressAll(this.mobile).subscribe((data) => {
   			if(data.length > 0) {
           this.addresses = data;
@@ -56,8 +59,10 @@ export class ManageAddressPage {
             }
           })
         }
-  		});
-    this.vjApi.hideLoader();
+        loader.hide();
+  		}, (err) => {
+        loader.hide();
+      });
   }
 
   editAddress(index) {
@@ -71,28 +76,35 @@ export class ManageAddressPage {
   deleteAddress(index: number) {
     let addressId = this.addresses[index].id;
 
-    this.vjApi.showLoader();
+    let loader = new Loader(this.loadingCtrl);
+    loader.show();
     this.vjApi.deleteAddressById(addressId).subscribe((resp) => {
       console.log(resp)
       this.getAddresses();
+      loader.hide();
+    }, (err) => {
+      loader.hide();
     });
-    this.vjApi.hideLoader();
   }
 
   selectAddress(index) {
-    this.storage.ready().then(() => {
-      this.storage.set(Constants.SHIPPING_ADDRESS_KEY, this.addresses[index]);
-      //this.navCtrl.pop();
-      //this.editAddress(index);
-      // set ad default address
-      this.vjApi.setAddressAsDefault(this.addresses[index].id).subscribe((data) => {
-        console.log(data);
-        this.getAddresses();
+    if(this.addresses.length > 1) {
+      this.storage.ready().then(() => {
+        this.storage.set(Constants.SHIPPING_ADDRESS_KEY, this.addresses[index]);
+        let loader = new Loader(this.loadingCtrl);
+        loader.show();
+        this.vjApi.setAddressAsDefault(this.addresses[index].id).subscribe((data) => {
+          console.log(data);
+          this.getAddresses();
+          loader.hide();
+        }, (err) => {
+          loader.hide();
+        });
       });
-    });
+    }
   }
 
-  ionViewCanLeave() {
+  ionViewWillLeave() {
     this.events.publish('address_changed');
   }
 

@@ -29,6 +29,8 @@ import { AppVersion } from '@ionic-native/app-version';
 
 import { WechatChenyu } from 'wechat-chenyu';
 
+import { ScreenOrientation } from '@ionic-native/screen-orientation';
+
 @NgModule({
   declarations: [
     MyApp,
@@ -74,7 +76,8 @@ import { WechatChenyu } from 'wechat-chenyu';
     {provide: 'API_BASE_URL', useValue: 'http://www.yitongxun.cn:8080/api/'},
 //    {provide: 'API_BASE_URL', useValue: 'http://vjshop.venjong.com:8080/api/'},
     CoordinateTransform,
-    WechatChenyu
+    WechatChenyu,
+    ScreenOrientation
   ]
 })
 export class AppModule {}

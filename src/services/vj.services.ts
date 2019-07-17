@@ -340,6 +340,13 @@ export class VJAPI {
 	 	return this.http.get(this.apiUrl + 'api/address/setdefault/id/' + addressId, {headers: headers});		 	
 	 }
 
+	 public createAddress(body): Observable<Response> {
+		let headers = new Headers();
+	 	this.initAuthHeader(headers);
+
+	 	return this.http.post(this.apiUrl + 'api/address/create', body, {headers: headers});		 	
+	 }
+
 	/********************************************************************************************
 	 *                   API Section: Distributor related data
 	 *

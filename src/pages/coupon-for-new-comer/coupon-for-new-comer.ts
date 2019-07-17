@@ -27,7 +27,7 @@ export class CouponForNewComerPage {
   	this.baseUrl = this.apiUrl;
   }
 
-  ionViewDidLoad() {
+  ionViewDidEnter() {
     this.vjApi.showLoader();
   	this.vjApi.getPageInforOfNewComer().subscribe((data) => {
   		if(data.length > 0) {

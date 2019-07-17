@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController, Events } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, Events, LoadingController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { Constants, Login } from '../../models/constants.model';
@@ -8,6 +8,8 @@ import { VJAPI } from '../../services/vj.services';
 import { Coupon } from '../../models/coupon-model';
 import { Address } from '../../models/address.model';
 import { Location } from '../../models/location.model';
+
+import { Loader } from '../../utils/loader';
 
 export enum CurrentUser { DISTRIBUTOR, CUSTOMER };
 
@@ -41,8 +43,9 @@ export class LoginPage {
 
   currentUser: CurrentUser = CurrentUser.CUSTOMER;
 
+
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI, private alertCtrl: AlertController,
-  				private events: Events/*, private init: InitEnv*/) {
+  				private events: Events/*, private init: InitEnv*/, private loadingCtrl: LoadingController) {
     this.couponWallet = new Set<Coupon>();
     this.shippingAddress = new Address();
     this.location = new Location();
@@ -64,6 +67,7 @@ export class LoginPage {
     })
   }
 
+
   getSMSCode() {
   	// step 1: Send request to get a SMS code
   	let body = {
@@ -71,6 +75,8 @@ export class LoginPage {
   		"mobile": this.mobile
   	}
 
+    let loader = new Loader(this.loadingCtrl);
+    loader.show();
   	this.vjApi.auth(JSON.stringify(body)).subscribe((data) => {
       console.log(data);
       let resp = data.json();
@@ -79,6 +85,11 @@ export class LoginPage {
       if(!this.isNewUser) {
         this.chkAgreement = true;
       }
+
+      loader.hide();
+    }, (err) => {
+      console.log('login: check if he"s new user failed');
+      loader.hide();
     });
 
   	// Re-enable to get SMS code after 1 minute
@@ -116,6 +127,8 @@ export class LoginPage {
       "location": this.location.province + this.location.city + this.location.district + this.location.street
   	}
 
+    let loader = new Loader(this.loadingCtrl);
+    loader.show();
   	this.vjApi.auth(JSON.stringify(body)).subscribe((data) => {
 
   		let response = data.json();
@@ -177,6 +190,7 @@ export class LoginPage {
 
             this.events.publish('login_address_success', this.mobile);
 
+            loader.hide();
   					this.navCtrl.pop();
           });
 
@@ -189,8 +203,7 @@ export class LoginPage {
   				this.storage.ready().then(() => {
   					this.storage.set(Constants.LOGIN_KEY, 1);
   				}).catch(console.log);
-
-          this.vjApi.showLoader();
+;
           // retrieve shipping address from server
           this.vjApi.getDefaultAddress(this.mobile).subscribe((data) => {
             console.log(data);
@@ -199,8 +212,10 @@ export class LoginPage {
                 this.storage.set(Constants.SHIPPING_ADDRESS_KEY, data[0]);
                 this.loggedIn = true;
                 this.shippingAddress  = data[0];
+                
+                loader.hide();
                 this.doPrompt('登录成功，请继续！');
-                this.vjApi.hideLoader();
+
                 console.log('page will be popped');
                 this.navCtrl.pop();
 
@@ -209,23 +224,27 @@ export class LoginPage {
                 this.doPrompt('获取配送地址失败！');
                 
             }
-            this.vjApi.hideLoader();
+            //this.vjApi.hideLoader();
           }, (err) => {
-            console.log(err),
-            this.vjApi.hideLoader();
-          })
+            console.log(err)
+            //this.vjApi.hideLoader();
+          });
            				
   			}
   		} else
   		  	this.doPrompt('登录信息错误，请检查后重新登录');
+
+      loader.hide();
   	},
     (err) => {
+      loader.hide();
       console.log(err);
       let msg;
       if(err.status == 403)
         msg = '验证码错误，请检查后重新登录';
-      else if(err.status == 404)
-        msg = '验证码超时!';
+      else if(err.status == 404) {
+          msg = '验证码超时! 或者发送验证短信过于频繁，发送系统暂时屏蔽该号码！';
+      }
       else if(err.status == 500)
         msg = '服务器响应错误!';
       else
@@ -236,7 +255,8 @@ export class LoginPage {
   }
 
   confirmLoginDistributor() {
-    this.vjApi.showLoader();
+    let loader = new Loader(this.loadingCtrl);
+    loader.show();
 
     this.vjApi.getDistributorLogin(this.mobile).subscribe((data) => {
 
@@ -247,15 +267,14 @@ export class LoginPage {
           this.storage.set(Constants.DISTRIBUTOR_MOBILE, this.mobile).catch((err) => console.log(err));
         });
 
-        this.vjApi.hideLoader();
         this.navCtrl.push('DistributorToolsPage', {mobile: this.mobile});      
       }
-      this.vjApi.hideLoader();
+      loader.hide();
     },
     (err) => {
+      loader.hide();
       console.log(err.status);
       this.doPrompt('您输入有误或者您不是指定的经销商');
-      this.vjApi.hideLoader();
     });
     //this.navCtrl.push('DistributorToolsPage', {mobile: '18910109898'});
   }
@@ -299,6 +318,8 @@ export class LoginPage {
     if(this.loggedIn) {
       this.events.publish('login_success', true, this.mobile, this.shippingAddress);
     }
+
+    this.vjApi.hideLoader();
   }
 
   toAgreement() {

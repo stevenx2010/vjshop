@@ -1,9 +1,11 @@
 import { Component, ViewChild, Inject, ElementRef, Renderer2 } from '@angular/core';
-import { Content, Slides, NavController, App, Platform, AlertController, Events } from 'ionic-angular';
+import { Content, Slides, NavController, App, Platform, AlertController, Events, LoadingController } from 'ionic-angular';
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 
 import { Storage } from '@ionic/storage';
 //import { Geolocation } from '@ionic-native/geolocation';
+
+import { ScreenOrientation } from '@ionic-native/screen-orientation';
 
 import { VJAPI } from '../../services/vj.services';
 import { Image } from '../../models/image.model';
@@ -65,7 +67,8 @@ export class HomePage {
               private app: App, private storage: Storage, /*private geolocation: Geolocation, 
               private coordtrans: CoordinateTransform,*/ private platform: Platform, private init: InitEnv,
               private alertCtrl: AlertController, private events: Events, private appVersion: AppVersion,
-              private domSanitizer: DomSanitizer, private renderer: Renderer2 ) 
+              private domSanitizer: DomSanitizer, private renderer: Renderer2, private scrOrientation: ScreenOrientation,
+              private loadingCtrl: LoadingController ) 
   {
   	// initialize arrays
   	this.remoteImages = new Array<Array<Image>>();
@@ -77,11 +80,13 @@ export class HomePage {
       this.loggedIn = loggedIn;
       this.mobile = mobile;
     });
+
+    
   }
 
   ionViewWillLoad() {
 
-    // Get current location
+    // Get current location stored
     this.storage.ready().then(() => {
       this.storage.get(Constants.LOCATION_KEY).then((data) => {
         if(data) {
@@ -95,26 +100,12 @@ export class HomePage {
       console.log(err);
     });
 
-    this.platform.ready().then(() => {
-      baidumap_location.getCurrentPosition((data) => {
-
-        let result = data;
-        console.log(result);
-        this.city = result.province;//;'北京市'
-        if(this.city && this.city !=  '') {
-         this.storage.ready().then(() => {
-           //this.storage.set(Constants.LOCATION_KEY, this.city);
-           this.location = new Location(data);
-           console.log(this.location);
-           this.storage.set(Constants.LOCATION_KEY, this.location);
-         });
-        }
-       }, (err) => {
-         console.log(err);
-       });
-    });
+    // get current location
+    this.getCurrentLoadtionByGPS();
 
     // check if there's new version available
+    let loader = new Loader(this.loadingCtrl);
+    loader.show();
     this.vjApi.getAppVersion().subscribe((v) => {
       let versions = v.json();
       if(versions.length > 0) {
@@ -147,10 +138,12 @@ export class HomePage {
           })*/
         });
       }
-    });
+      loader.hide();
+    }, (err) => loader.hide());
 
     // Get video for home page: postion 5: for home page
-    //this.vjApi.showLoader();
+    let loader1 = new Loader(this.loadingCtrl);
+    loader1.show();
     this.vjApi.getVideoByPostion(5).subscribe((resp) => {
       console.log(resp);
       if(resp.status == 200) {
@@ -180,9 +173,9 @@ export class HomePage {
       } else { 
         this.displayVideo = false;        
       }
-      //this.vjApi.hideLoader();
+      loader1.hide();
     }, (err) => {
-      //this.vjApi.hideLoader();
+      loader1.hide();
       this.doPrompt('请检查是否有网络连接!');
     });   
   }
@@ -193,6 +186,33 @@ export class HomePage {
   	this.contentHeight = this.content.contentHeight;
   	this.slides.autoplayDisableOnInteraction = false;
   	this.slides.startAutoplay();
+
+    this.scrOrientation.unlock();
+  }
+
+  ionViewWillLeave() {
+    this.scrOrientation.lock('portrait');
+  }
+
+  getCurrentLoadtionByGPS() {
+    this.platform.ready().then(() => {
+      baidumap_location.getCurrentPosition((data) => {
+
+        let result = data;
+        console.log(result);
+        this.city = result.province;//;'北京市'
+        if(this.city && this.city !=  '') {
+         this.storage.ready().then(() => {
+           //this.storage.set(Constants.LOCATION_KEY, this.city);
+           this.location = new Location(data);
+           console.log(this.location);
+           this.storage.set(Constants.LOCATION_KEY, this.location);
+         });
+        }
+       }, (err) => {
+         console.log(err);
+       });
+    });    
   }
 
   initialize() {
@@ -214,6 +234,8 @@ export class HomePage {
               this.storage.set(Constants.USER_MOBILE_KEY, this.mobile);
 
               // check if there's user in the remote server
+              let loader = new Loader(this.loadingCtrl);
+              //loader.show();
               this.vjApi.checkUserExist(this.mobile).subscribe((r0) => {
                 if(!(r0.status)) {
                   this.loggedIn = false;
@@ -236,7 +258,10 @@ export class HomePage {
                   // Get coupons
                   this.getCouponsOfTheUser();
                 } 
-              })   
+                //loader.hide();
+              }, (err) => {
+                //loader.hide();
+              });   
             }
           });
         } else {
@@ -250,7 +275,8 @@ export class HomePage {
     })
 
 
-    this.vjApi.showLoader();
+    let loader1 = new Loader(this.loadingCtrl);
+    loader1.show();
   	this.vjApi.getHomePageImages().subscribe((data) => { 
   			this.remoteImages = data.json();
 
@@ -266,19 +292,18 @@ export class HomePage {
   			this.imageUrls_3 = this.imageUrls[3];
   			this.imageUrls_4 = this.imageUrls[4];
 
-  			this.vjApi.hideLoader();
+  			loader1.hide();
   		},
   		(err) => {
-        this.vjApi.hideLoader();
+        loader1.hide();
   			console.log('error: ', err);
-        this.doPrompt('请检查是否有网络连接!');  			
-  		});
-
-    
+        this.doPrompt('请检查是否有网络连接!' + err);  			
+  		});    
   }
 
   getCouponsOfTheUser() {
-    //this.vjApi.showLoader();
+    let loader = new Loader(this.loadingCtrl);
+    loader.show();
     this.vjApi.getCouponsByMobile(this.mobile).subscribe((coupons) => {
       if(coupons.length > 0) {
         coupons.forEach((item) =>{
@@ -292,9 +317,10 @@ export class HomePage {
           this.storage.set(Constants.COUPON_WALLET_KEY, this.couponWallet);
         });
       }
-      //this.vjApi.hideLoader();
+      loader.hide();
     }, (err)=> {
-      //this.vjApi.hideLoader();
+      loader.hide();
+      console.log(err);
     });    
   }
 
@@ -314,7 +340,8 @@ export class HomePage {
             if(m) {
               mobile = m;
               // check if the distributor still in valid login duration
-              this.vjApi.showLoader();
+              let loader = new Loader(this.loadingCtrl);
+              loader.show();
 
               this.vjApi.checkDistributorLogin(mobile).subscribe((resp) => {
                 console.log(resp.json());
@@ -330,10 +357,10 @@ export class HomePage {
                   this.app.getRootNav().push('LoginPage', {user: 'distributor'});
                 }
 
-                this.vjApi.hideLoader();
+                loader.hide();
               }, (err) => {
                 console.log(err);
-                this.vjApi.hideLoader();
+                loader.hide();
                 this.app.getRootNav().push('LoginPage', {user: 'distributor'});
               })                   
             }

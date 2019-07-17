@@ -76,20 +76,8 @@ export class CategoryPage {
     });
   }
 
-  ngOnInit() {
-    // start to show loader
-    this.vjApi.showLoader();
+  ionViewWillLoad() {
 
-    // Get Product Categories
-    this.vjApi.getProductCategories().subscribe( 
-      (data) => {
-        this.productCategories = data;
-        this.vjApi.hideLoader();
-      },
-      (err) => {
-        console.log(err);
-        this.vjApi.hideLoader();
-      });  
 
     this.storage.ready().then(() => {
       this.storage.get(Constants.LOCATION_KEY).then((data) => {
@@ -164,6 +152,7 @@ export class CategoryPage {
     h = h - this.content.contentBottom + 7;
   	this.scrollHeightForAll = h + 'px';
 
+    this.getCategories();
     this.getAllProducts();
   }
 /*
@@ -172,11 +161,27 @@ export class CategoryPage {
     refresher.complete();
   }*/
 
+  getCategories() {
+        // start to show loader
+    let loader = new Loader(this.loadingCtrl);
+    loader.show();
+    // Get Product Categories
+    this.vjApi.getProductCategories().subscribe( 
+      (data) => {
+        this.productCategories = data;
+        loader.hide();
+      },
+      (err) => {
+        loader.hide();
+        console.log(err);
+      });  
+  }
+
   itemSelected(index: number, id?: number): void {
   	this.clickedItemIndex = index;
 
     if(this.clickedItemIndex == this.currentSelectedItemIndex) return;
-    
+
     if(index == 0) {
       this.allProductsSelected = true;
     }
@@ -305,7 +310,8 @@ export class CategoryPage {
             if(m) {
               mobile = m;
               // check if the distributor still in valid login duration
-
+              let loader = new Loader(this.loadingCtrl);
+              loader.show();
               this.vjApi.checkDistributorLogin(mobile).subscribe((resp) => {
                 console.log(resp.json());
                 console.log(mobile);
@@ -321,7 +327,9 @@ export class CategoryPage {
                   this.storage.remove(Constants.DISTRIBUTOR_MOBILE);
                   this.app.getRootNav().push('LoginPage', {user: 'distributor'});
                 }
+                loader.hide();
               }, (err) => {
+                loader.hide();
                 console.log(err);
                 this.app.getRootNav().push('LoginPage', {user: 'distributor'});
               })                   
