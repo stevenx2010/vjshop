@@ -17,7 +17,7 @@
 	<ion-list class="login">
 		<ion-item>
 			<ion-label>+86</ion-label>
-			<ion-input type="text" placeholder="手机号" [(ngModel)]="mobile" (input)="validate()"></ion-input>
+			<ion-input type="text" placeholder="手机号" [(ngModel)]="mobile" (keyup)="validate()"></ion-input>
 			<button ion-button item-end (click)="getSMSCode()" class="counter" [disabled]="smsBtnDisabled || smsCountingDown">{{caption}}</button>
 		</ion-item>
 		<ion-item>

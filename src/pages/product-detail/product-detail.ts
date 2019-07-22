@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { IonicPage, NavController, NavParams, App, Events, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, App, Events, AlertController, LoadingController, ToastController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { VJAPI } from '../../services/vj.services';
@@ -15,6 +15,7 @@ import { CartPage } from '../cart/cart';
 
 import { trigger, state, style, animate, transition } from '@angular/animations';
 
+import { Loader } from '../../utils/loader';
 
 @IonicPage()
 @Component({
@@ -58,7 +59,8 @@ export class ProductDetailPage {
   btnDisabled: boolean = true;
 
   constructor(private navCtrl: NavController, private navParams: NavParams, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string,
-              private storage: Storage, private app: App, private events: Events, private alertCtrl: AlertController) {
+              private storage: Storage, private app: App, private events: Events, private alertCtrl: AlertController,
+              private loadingCtrl: LoadingController, private toastCtrl: ToastController) {
   	this.images_1 = new Array<ProductDetailImage>();
   	this.images_2 = new Array<ProductDetailImage>();
   	this.products = new Array<Product>(new Product());
@@ -176,22 +178,30 @@ export class ProductDetailPage {
     });
 
     // step 3: get product information from server
-    this.vjApi.showLoader();
-
+    let loader = new Loader(this.loadingCtrl);
+    loader.show();
     this.vjApi.getProductDetailImages(this.productId,1).subscribe(
       (data) => {
         this.images_1 = data; 
+        loader.hide();
       },
       (err) => {
+        loader.hide();
+        console.log('Product Detail: getProductDetailImages(1) error');
         console.log(err);
       }
     );
 
+    let loader1 = new Loader(this.loadingCtrl);
+    loader1.show();
     this.vjApi.getProductDetailImages(this.productId,2).subscribe(
       (data) => {
         this.images_2 = data;
+        loader1.hide();
       },
       (err) => {
+        loader1.hide();
+        console.log('Product Detail: getProductDetailImages(2) error');
         console.log(err);
       }
     );
@@ -215,8 +225,8 @@ export class ProductDetailPage {
     else {
       this.getDistributorByLocation(this.shippingAddress.city);    
     }
-    
-    this.vjApi.hideLoader();
+   
+    this.presentToaster();
   }
 
   getDefaultAddress() {
@@ -413,11 +423,22 @@ export class ProductDetailPage {
     alert.present();
   }
 
+
   reload(refresher) {
     this.ionViewWillLoad();
     this.vjApi.hideLoader();
     setTimeout(() => {
       refresher.complete();
     }, 2000);
+  }
+
+  presentToaster() {
+    let toast = this.toastCtrl.create({
+      message: '点击购物车图标可立即购买购物车中的商品。',
+      duration: 3500,
+      position: 'top'
+    });
+
+    toast.present();
   }
 }

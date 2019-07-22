@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController, Events, LoadingController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, Events/*, LoadingController*/ } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { Constants, Login } from '../../models/constants.model';
@@ -9,7 +9,7 @@ import { Coupon } from '../../models/coupon-model';
 import { Address } from '../../models/address.model';
 import { Location } from '../../models/location.model';
 
-import { Loader } from '../../utils/loader';
+//import { Loader } from '../../utils/loader';
 
 export enum CurrentUser { DISTRIBUTOR, CUSTOMER };
 
@@ -45,7 +45,7 @@ export class LoginPage {
 
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI, private alertCtrl: AlertController,
-  				private events: Events/*, private init: InitEnv*/, private loadingCtrl: LoadingController) {
+  				private events: Events/*, private init: InitEnv*/,/* private loadingCtrl: LoadingController*/) {
     this.couponWallet = new Set<Coupon>();
     this.shippingAddress = new Address();
     this.location = new Location();
@@ -75,8 +75,8 @@ export class LoginPage {
   		"mobile": this.mobile
   	}
 
-    let loader = new Loader(this.loadingCtrl);
-    loader.show();
+    //let loader = new Loader(this.loadingCtrl);
+    //loader.show();
   	this.vjApi.auth(JSON.stringify(body)).subscribe((data) => {
       console.log(data);
       let resp = data.json();
@@ -86,10 +86,10 @@ export class LoginPage {
         this.chkAgreement = true;
       }
 
-      loader.hide();
+      //loader.hide();
     }, (err) => {
       console.log('login: check if he"s new user failed');
-      loader.hide();
+      //loader.hide();
     });
 
   	// Re-enable to get SMS code after 1 minute
@@ -127,8 +127,8 @@ export class LoginPage {
       "location": this.location.province + this.location.city + this.location.district + this.location.street
   	}
 
-    let loader = new Loader(this.loadingCtrl);
-    loader.show();
+    //let loader = new Loader(this.loadingCtrl);
+    //loader.show();
   	this.vjApi.auth(JSON.stringify(body)).subscribe((data) => {
 
   		let response = data.json();
@@ -190,7 +190,7 @@ export class LoginPage {
 
             this.events.publish('login_address_success', this.mobile);
 
-            loader.hide();
+            //loader.hide();
   					this.navCtrl.pop();
           });
 
@@ -213,7 +213,7 @@ export class LoginPage {
                 this.loggedIn = true;
                 this.shippingAddress  = data[0];
                 
-                loader.hide();
+                //loader.hide();
                 this.doPrompt('登录成功，请继续！');
 
                 console.log('page will be popped');
@@ -227,6 +227,7 @@ export class LoginPage {
             //this.vjApi.hideLoader();
           }, (err) => {
             console.log(err)
+            this.doPrompt('登录：网络连接错误！请检查是否有网络。')
             //this.vjApi.hideLoader();
           });
            				
@@ -234,10 +235,10 @@ export class LoginPage {
   		} else
   		  	this.doPrompt('登录信息错误，请检查后重新登录');
 
-      loader.hide();
+      //loader.hide();
   	},
     (err) => {
-      loader.hide();
+      //loader.hide();
       console.log(err);
       let msg;
       if(err.status == 403)
@@ -255,8 +256,8 @@ export class LoginPage {
   }
 
   confirmLoginDistributor() {
-    let loader = new Loader(this.loadingCtrl);
-    loader.show();
+    //let loader = new Loader(this.loadingCtrl);
+    //loader.show();
 
     this.vjApi.getDistributorLogin(this.mobile).subscribe((data) => {
 
@@ -266,13 +267,13 @@ export class LoginPage {
           this.storage.set(Constants.DISTRIBUTOR_LOGIN_KEY, 1).catch((err) => console.log(err));
           this.storage.set(Constants.DISTRIBUTOR_MOBILE, this.mobile).catch((err) => console.log(err));
         });
-
+        //loader.hide();
         this.navCtrl.push('DistributorToolsPage', {mobile: this.mobile});      
       }
-      loader.hide();
+      //loader.hide();
     },
     (err) => {
-      loader.hide();
+      //loader.hide();
       console.log(err.status);
       this.doPrompt('您输入有误或者您不是指定的经销商');
     });
@@ -318,12 +319,9 @@ export class LoginPage {
     if(this.loggedIn) {
       this.events.publish('login_success', true, this.mobile, this.shippingAddress);
     }
-
-    this.vjApi.hideLoader();
   }
 
   toAgreement() {
-    this.vjApi.hideLoader();
     this.navCtrl.push('AgreementPage');
   }
 

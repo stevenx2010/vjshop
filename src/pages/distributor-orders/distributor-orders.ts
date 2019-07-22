@@ -1,4 +1,4 @@
-import { Component, /*Inject,*/ ChangeDetectorRef } from '@angular/core';
+import { Component, Inject, ChangeDetectorRef } from '@angular/core';
 import { IonicPage, NavController, NavParams, App, AlertController } from 'ionic-angular';
 
 import { Storage } from '@ionic/storage';
@@ -43,7 +43,7 @@ export class DistributorOrdersPage {
   isInit: boolean = true;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI,
-  				/*@Inject('API_BASE_URL') private apiUrl: string,*/ private app: App, private alertCtrl: AlertController,
+  				@Inject('API_BASE_URL') private apiUrl: string, private app: App, private alertCtrl: AlertController,
           private cf: ChangeDetectorRef, private storage: Storage) 
   {
   	this.mobile = this.navParams.data;

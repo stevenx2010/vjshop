@@ -35,20 +35,24 @@
 </ion-content>
 
 <ion-footer>
-	<ion-toolbar color="#a3a2a2">
+	<!--<ion-toolbar color="#a3a2a2">-->
 		<ion-grid>
 			<ion-row>
-				<ion-col col-11>
+				<ion-col col-10>
 					<ion-input type="text" class="form-control" [(ngModel)]="message"></ion-input>
 				</ion-col>
+				<ion-col col-2>
+					<button ion-button block color="secondary" (click)="sendMessage()">发送</button>
+				</ion-col>
+				<!--
 				<ion-col col-1>
 				
 						<ion-icon name="paper-plane"(click)="sendMessage()" color="primary"></ion-icon>
 
-				</ion-col>
+				</ion-col>-->
 			</ion-row>
 		</ion-grid>
-	</ion-toolbar>
+	<!--</ion-toolbar>-->
 </ion-footer>
 
 <style>
@@ -75,6 +79,10 @@
 		position: absolute;;
 		top:8%;
 		left: 5%;
+	}
+
+	ion-footer {
+		background-color: #efefef;
 	}
 
 </style>

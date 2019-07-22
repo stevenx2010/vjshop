@@ -35,4 +35,6 @@ src/services/interfaces.service.ts
 Thumbs.db
 UserInterfaceState.xcuserstate
 
+*.bat
+
 

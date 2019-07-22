@@ -1,4 +1,4 @@
-import { LoadingController } from 'ionic-angular';
+import { LoadingController, AlertController } from 'ionic-angular';
 
 export class Loader {
 	loader: any;
@@ -18,7 +18,7 @@ export class Loader {
 
 		setTimeout(() => {
 			this.loader.dismiss();
-		}, 8000);
+		}, 10000);
 	}
 
 	/**

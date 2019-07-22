@@ -16,6 +16,7 @@ export class ContactUsPage {
   constructor(public navCtrl: NavController, public navParams: NavParams) {
   }
 
+/*
   ionViewDidEnter() {
   	this.map = new BMap.Map(this.map_container.nativeElement, { enableMapClick: true});
   	let point = new BMap.Point(120.936486,31.500371);
@@ -32,6 +33,6 @@ export class ContactUsPage {
 
   	this.marker = new BMap.Marker(point, {icon:myIcon});
   	this.map.addOverlay(this.marker);
-  }
+  }*/
 
 }

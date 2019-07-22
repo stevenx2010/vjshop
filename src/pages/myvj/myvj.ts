@@ -106,11 +106,17 @@ export class MyvjPage {
   }
 
   toMyComment() {
-    this.app.getRootNav().push('MyCommentListPage', {mobile: this.mobile});
+    if(this.isLoggedIn)
+      this.app.getRootNav().push('MyCommentListPage', {mobile: this.mobile});
+    else
+      this.app.getRootNav().push('LoginPage');
   }
 
   toCustomerService() {
-    this.app.getRootNav().push('CustomerServicePage', {mobile: this.mobile});
+    if(this.isLoggedIn)
+      this.app.getRootNav().push('CustomerServicePage', {mobile: this.mobile});
+    else
+      this.app.getRootNav().push('LoginPage');
   }
 
   toQuestionAndAnswer() {

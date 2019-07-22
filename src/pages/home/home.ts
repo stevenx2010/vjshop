@@ -60,6 +60,9 @@ export class HomePage {
   location: Location;
   appLatestVersion: string;
 
+  timeout_5: boolean = true;
+  timeout_15: boolean = true;
+
   downloadUrl_android: string = '<a href="https://vjshop.venjong.com/vjshop.apk">稳卓商城</a>';
   downloadUrl_ios: string = '<a href="#">稳卓商城</a>';
 
@@ -101,87 +104,43 @@ export class HomePage {
     });
 
     // get current location
-    this.getCurrentLoadtionByGPS();
+    //this.getCurrentLoadtionByGPS();
+
+    // get video
+    this.getHomePageVideo();  
+
+    // get images
+    if(this.imageUrls.length < 1) {
+      this.getHomePageImages();
+    }
 
     // check if there's new version available
-    let loader = new Loader(this.loadingCtrl);
-    loader.show();
-    this.vjApi.getAppVersion().subscribe((v) => {
-      let versions = v.json();
-      if(versions.length > 0) {
-        this.appLatestVersion = versions[0].latest_version;
-        console.log(this.appLatestVersion);
-        this.appVersion.getVersionNumber().then((currentVersion) => {
-          console.log(currentVersion);
-          if(currentVersion.trim() != this.appLatestVersion.trim()) {
-            if(this.platform.is('android'))
-              this.doPrompt('本APP有新版本：' + this.appLatestVersion + '，请在应用市场中下载更新；或点击' + this.downloadUrl_android + '下载并安装。' );
-            else if(this.platform.is('ios'))
-              this.doPrompt('本APP有新版本：' + this.appLatestVersion + '，请在App Store中下载更新；或点击' + this.downloadUrl_ios + '下载并安装。' );
-          }         
-
-          // get version number stored locally
-        /*  this.storage.ready().then(() => {
-            this.storage.get(Constants.VERSION_KEY).then((v) => {
-              if(v == null || v.trim() != currentVersion.trim()) {
-                this.storage.remove(Constants.LOCATION_KEY);
-                this.storage.remove(Constants.LOGIN_KEY);
-                this.storage.remove(Constants.SHOPPING_CART_KEY);
-                this.storage.remove(Constants.SHIPPING_ADDRESS_KEY);
-                this.storage.remove(Constants.COUPON_WALLET_KEY);
-              } else {
-                this.storage.set(Constants.VERSION_KEY, currentVersion.trim());
-              }
-            }, (err) => {
-              this.storage.set(Constants.VERSION_KEY, currentVersion.trim());
-            })
-          })*/
-        });
-      }
-      loader.hide();
-    }, (err) => loader.hide());
-
-    // Get video for home page: postion 5: for home page
-    let loader1 = new Loader(this.loadingCtrl);
-    loader1.show();
-    this.vjApi.getVideoByPostion(5).subscribe((resp) => {
-      console.log(resp);
-      if(resp.status == 200) {
-        let body = resp.json();
-        if(body.length > 0) {
-          this.videoUrl = this.apiUrl + body[0].video_url;
-          this.posterUrl = this.apiUrl + body[0].poster_url;
-          this.trustedVideoUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.videoUrl);
-
-          this.videoClip = this.renderer.createElement('video');
-          this.renderer.setAttribute(this.videoClip, 'width', '100%');
-          this.renderer.setAttribute(this.videoClip, 'controls', 'controls');
-          this.renderer.setAttribute(this.videoClip, 'muted', 'true');
- //         this.renderer.setAttribute(this.videoClip, 'autoplay', 'autoplay');
-          this.renderer.setAttribute(this.videoClip, 'webkit-playsinline', 'webkit-playsinline');
-          this.renderer.setAttribute(this.videoClip, 'poster', this.posterUrl);
-          
-          let source = this.renderer.createElement('source');
-          this.renderer.setAttribute(source, 'src', this.videoUrl + '#t=0');
-          this.renderer.setAttribute(source, 'type', 'video/mp4');
-
-          this.renderer.appendChild(this.videoClip, source);
-          this.renderer.appendChild(this.video.nativeElement, this.videoClip);
-        } else {
-          this.displayVideo = false;
-        }
-      } else { 
-        this.displayVideo = false;        
-      }
-      loader1.hide();
-    }, (err) => {
-      loader1.hide();
-      this.doPrompt('请检查是否有网络连接!');
-    });   
+    //let loader = new Loader(this.loadingCtrl);
   }
 
   ionViewDidEnter() {
     this.initialize();
+
+    // check app version after 5 minutes
+    if(this.timeout_5) {
+      this.checkAppVersion();
+      this.timeout_5 = false;
+
+      setTimeout(() => {
+        this.timeout_5 = true;
+      }, 5 * 60 * 1000);
+    }
+
+    // get current location after 15 minutes
+    if(this.timeout_15) {
+      this.getCurrentLoadtionByGPS();
+      this.timeout_15 = false;
+
+      setTimeout(() => {
+        this.timeout_15 = true;
+      }, 15 * 60 * 1000); 
+    }
+
   	this.contentWidth = this.content.contentWidth;
   	this.contentHeight = this.content.contentHeight;
   	this.slides.autoplayDisableOnInteraction = false;
@@ -215,6 +174,45 @@ export class HomePage {
     });    
   }
 
+  checkAppVersion() {
+    this.vjApi.getAppVersion().subscribe((v) => {
+      let versions = v.json();
+      if(versions.length > 0) {
+        this.appLatestVersion = versions[0].latest_version;
+        console.log(this.appLatestVersion);
+        this.appVersion.getVersionNumber().then((currentVersion) => {
+          console.log(currentVersion);
+          if(currentVersion.trim() != this.appLatestVersion.trim()) {
+            if(this.platform.is('android'))
+              this.doPrompt('本APP有新版本：' + this.appLatestVersion + '，请在应用市场中下载更新；或点击' + this.downloadUrl_android + '下载并安装。' );
+            else if(this.platform.is('ios'))
+              this.doPrompt('本APP有新版本：' + this.appLatestVersion + '，请在App Store中下载更新；或点击' + this.downloadUrl_ios + '下载并安装。' );
+          }         
+
+          // get version number stored locally
+        /*  this.storage.ready().then(() => {
+            this.storage.get(Constants.VERSION_KEY).then((v) => {
+              if(v == null || v.trim() != currentVersion.trim()) {
+                this.storage.remove(Constants.LOCATION_KEY);
+                this.storage.remove(Constants.LOGIN_KEY);
+                this.storage.remove(Constants.SHOPPING_CART_KEY);
+                this.storage.remove(Constants.SHIPPING_ADDRESS_KEY);
+                this.storage.remove(Constants.COUPON_WALLET_KEY);
+              } else {
+                this.storage.set(Constants.VERSION_KEY, currentVersion.trim());
+              }
+            }, (err) => {
+              this.storage.set(Constants.VERSION_KEY, currentVersion.trim());
+            })
+          })*/
+        });
+      }
+      //loader.hide();
+    }, (err) => {
+      console.log(err);
+    });    
+  }
+
   initialize() {
     //this.storage.remove(Constants.LOGIN_KEY);
     //this.storage.remove(Constants.SHOPPING_CART_KEY);
@@ -234,7 +232,7 @@ export class HomePage {
               this.storage.set(Constants.USER_MOBILE_KEY, this.mobile);
 
               // check if there's user in the remote server
-              let loader = new Loader(this.loadingCtrl);
+              //let loader = new Loader(this.loadingCtrl);
               //loader.show();
               this.vjApi.checkUserExist(this.mobile).subscribe((r0) => {
                 if(!(r0.status)) {
@@ -245,22 +243,18 @@ export class HomePage {
                   this.storage.remove(Constants.COUPON_WALLET_KEY);
                 } else {
                   // Get default address;
-                  //this.vjApi.showLoader();
                   this.init.getUserAddresses(this.mobile).subscribe((r1) => {
                     console.log('address', r1);
                     if(r1) this.address = r1;
                     this.storage.set(Constants.SHIPPING_ADDRESS_KEY, this.address);
-                    //this.vjApi.hideLoader();
                   }, (err) => {
-                    //this.vjApi.hideLoader();
                   });
 
                   // Get coupons
                   this.getCouponsOfTheUser();
                 } 
-                //loader.hide();
               }, (err) => {
-                //loader.hide();
+                console.log('Home page: checkUserExist error');
               });   
             }
           });
@@ -271,39 +265,89 @@ export class HomePage {
           this.storage.remove(Constants.USER_MOBILE_KEY);
           this.storage.remove(Constants.COUPON_WALLET_KEY);
         }
-      })
-    })
+      });
+    });
 
+
+    // get images
+    if(this.imageUrls.length < 1) {
+      this.getHomePageImages();
+    }
+  }
+
+  getHomePageImages() {
 
     let loader1 = new Loader(this.loadingCtrl);
     loader1.show();
-  	this.vjApi.getHomePageImages().subscribe((data) => { 
-  			this.remoteImages = data.json();
+    this.vjApi.getHomePageImages().subscribe((data) => { 
+        this.remoteImages = data.json();
 
-  			for(let i in this.remoteImages){
-  				this.imageUrls[i] = new Array<string>();
-  				for(let j in this.remoteImages[i]) {
-  					this.imageUrls[i].push(this.apiUrl + this.remoteImages[i][j].image_url);
-  				}
-  			}
+        for(let i in this.remoteImages){
+          this.imageUrls[i] = new Array<string>();
+          for(let j in this.remoteImages[i]) {
+            this.imageUrls[i].push(this.apiUrl + this.remoteImages[i][j].image_url);
+          }
+        }
 
-  			this.imageUrls_1 = this.imageUrls[1];
-  			this.imageUrls_2 = this.imageUrls[2];
-  			this.imageUrls_3 = this.imageUrls[3];
-  			this.imageUrls_4 = this.imageUrls[4];
+        this.imageUrls_1 = this.imageUrls[1];
+        this.imageUrls_2 = this.imageUrls[2];
+        this.imageUrls_3 = this.imageUrls[3];
+        this.imageUrls_4 = this.imageUrls[4];
 
-  			loader1.hide();
-  		},
-  		(err) => {
         loader1.hide();
-  			console.log('error: ', err);
-        this.doPrompt('请检查是否有网络连接!' + err);  			
-  		});    
+      },
+      (err) => {
+        loader1.hide();
+        console.log('Home Page: getHomePageImages error');
+        this.doPrompt('图片获取失败：请检查是否有网络连接!');        
+      });        
+  }
+
+  getHomePageVideo() {
+    // Get video for home page: postion 5: for home page
+    let loader1 = new Loader(this.loadingCtrl);
+    loader1.show();
+    this.vjApi.getVideoByPostion(5).subscribe((resp) => {
+      console.log(resp);
+      if(resp.status == 200) {
+        let body = resp.json();
+        if(body.length > 0) {
+          this.videoUrl = this.apiUrl + body[0].video_url;
+          this.posterUrl = this.apiUrl + body[0].poster_url;
+          this.trustedVideoUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.videoUrl);
+
+          this.videoClip = this.renderer.createElement('video');
+          this.renderer.setAttribute(this.videoClip, 'width', '100%');
+          this.renderer.setAttribute(this.videoClip, 'controls', 'controls');
+          this.renderer.setAttribute(this.videoClip, 'muted', 'true');
+ //         this.renderer.setAttribute(this.videoClip, 'autoplay', 'autoplay');
+          this.renderer.setAttribute(this.videoClip, 'webkit-playsinline', 'webkit-playsinline');
+          this.renderer.setAttribute(this.videoClip, 'poster', this.posterUrl);
+          
+          let source = this.renderer.createElement('source');
+          this.renderer.setAttribute(source, 'src', this.videoUrl + '#t=0');
+          this.renderer.setAttribute(source, 'type', 'video/mp4');
+
+          this.renderer.appendChild(this.videoClip, source);
+          this.renderer.appendChild(this.video.nativeElement, this.videoClip);
+
+        } else {
+          this.displayVideo = false;
+        }
+      } else { 
+        this.displayVideo = false;     
+      }
+      loader1.hide();
+    }, (err) => {
+      loader1.hide();
+      console.log('Home page: getHomePageVideo error');
+      this.doPrompt('视频获取失败：请检查是否有网络连接!');
+    });       
   }
 
   getCouponsOfTheUser() {
-    let loader = new Loader(this.loadingCtrl);
-    loader.show();
+    //let loader = new Loader(this.loadingCtrl);
+    //loader.show();
     this.vjApi.getCouponsByMobile(this.mobile).subscribe((coupons) => {
       if(coupons.length > 0) {
         coupons.forEach((item) =>{
@@ -317,9 +361,9 @@ export class HomePage {
           this.storage.set(Constants.COUPON_WALLET_KEY, this.couponWallet);
         });
       }
-      loader.hide();
+      //loader.hide();
     }, (err)=> {
-      loader.hide();
+      //loader.hide();
       console.log(err);
     });    
   }
@@ -340,8 +384,8 @@ export class HomePage {
             if(m) {
               mobile = m;
               // check if the distributor still in valid login duration
-              let loader = new Loader(this.loadingCtrl);
-              loader.show();
+              //let loader = new Loader(this.loadingCtrl);
+              //loader.show();
 
               this.vjApi.checkDistributorLogin(mobile).subscribe((resp) => {
                 console.log(resp.json());
@@ -357,10 +401,10 @@ export class HomePage {
                   this.app.getRootNav().push('LoginPage', {user: 'distributor'});
                 }
 
-                loader.hide();
+                //loader.hide();
               }, (err) => {
                 console.log(err);
-                loader.hide();
+                //loader.hide();
                 this.app.getRootNav().push('LoginPage', {user: 'distributor'});
               })                   
             }

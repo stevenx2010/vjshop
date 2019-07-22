@@ -19,10 +19,13 @@ export class CustomerServicePage {
   timer: any;
   preLength: number = 0;
 
+  order_serial: string = '';
+
   constructor(public navCtrl: NavController, public navParams: NavParams, private events: Events, private vjApi: VJAPI) {
     this.messages = new Array<Message>();
 
   	this.mobile = this.navParams.get('mobile');
+    this.order_serial = this.navParams.get('order_serial');
 
   	if(this.mobile == null) {
   		this.navCtrl.push('LoginPage');
@@ -31,7 +34,7 @@ export class CustomerServicePage {
     this.events.subscribe('login_success', (logged_in, mobile, address) => {
       this.mobile = mobile;
       this.loggedIn = logged_in;
-    })
+    });
   }
 
   ionViewWillUnload() {
@@ -42,10 +45,16 @@ export class CustomerServicePage {
   ionViewWillLoad() {  
     this.timer = setInterval(() => {
       this.getMessage();
-    }, 1000);
+    }, 2000);
   }
 
   ionViewDidEnter() {
+    if(this.order_serial != '') {
+      this.message = this.order_serial;
+      this.sendMessage();
+      this.order_serial ='';
+    }
+
     this.content.scrollToBottom();
   }
 
@@ -75,7 +84,7 @@ export class CustomerServicePage {
         this.messages = m;    
 
         if(m.length > this.preLength) {
-          setTimeout(() => {this.content.scrollToBottom()},200);
+          setTimeout(() => {this.content.scrollToBottom()},300);
           this.preLength = m.length;
         }    
       }

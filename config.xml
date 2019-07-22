@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="cn.yitongxun.vjshop" version="2.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>稳卓商城TEST</name>
+<widget id="com.venjong.vjshop" version="2.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>稳卓商城</name>
     <description>Venjong online shop</description>
     <author email="stevenx@yitongxun.cn" href="http://www.yitongxun.cn/">Technology Team</author>
     <content src="index.html" />
@@ -91,16 +91,15 @@
     <plugin name="cordova-plugin-app-version" spec="^0.1.9" />
     <plugin name="cordova-plugin-inappbrowser" spec="^3.0.0" />
     <plugin name="cordova-plugin-alipay" spec="..\cordova-plugin-alipay">
-        <variable name="APP_ID" value="2018092761495657" />
+        <variable name="APP_ID" value="2018102361791282" />
     </plugin>
     <plugin name="cordova-plugin-baidumaplocation" spec="^3.2.0">
-        <variable name="ANDROID_KEY" value="0klwOqUuxg2x5pCIXDHhgQestRIxmkmn" />
+        <variable name="ANDROID_KEY" value="hWUwGckpW0S42kMYiiqYW9srIL8hktOg" />
         <variable name="IOS_KEY" value="TEv78fc0HREWpzQZvSc5G0mH85N1sUsK" />
         <variable name="IOS_LOCATION_DESC" value="请点击'好'以允许访问。" />
     </plugin>
-    <plugin name="cordova-plugin-wechatv2" spec="^2.1.6">
-        <variable name="WECHATAPPID" value="wx83eb94a40765026b" />
+    <plugin name="cordova-plugin-wechatv2" spec="2.1.6">
+        <variable name="WECHATAPPID" value="wxb7c3416b7f992b57" />
     </plugin>
-    <plugin name="cordova-plugin-screen-orientation" spec="3.0.2" />
     <engine name="android" spec="7.1.4" />
 </widget>

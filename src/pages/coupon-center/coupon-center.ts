@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { IonicPage, NavController, NavParams, /*AlertController,*/ Events } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, /*AlertController,*/ Events, LoadingController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 //import { Observable } from 'rxjs';
 
@@ -10,7 +10,7 @@ import { Coupon } from '../../models/coupon-model';
 //import { CouponItem } from '../../models/coupon-item.model';
 import { Constants } from '../../models/constants.model';
 
-
+import { Loader } from '../../utils/loader';
 
 @IonicPage()
 @Component({
@@ -28,7 +28,8 @@ export class CouponCenterPage {
   mobile: string = '';
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string, 
-              private storage: Storage/*, private alertCtrl: AlertController*/, private init: InitEnv, private events: Events) 
+              private storage: Storage/*, private alertCtrl: AlertController*/, private init: InitEnv, private events: Events,
+              private loadingCtrl: LoadingController) 
   {
   	this.couponTypes = new Array<CouponType>();
   	this.couponsByType= new Array<Coupon[]>();
@@ -63,7 +64,6 @@ export class CouponCenterPage {
   }
 
   getCouponsOfTheUser() {
-    this.vjApi.showLoader();
     this.vjApi.getCouponsByMobile(this.mobile).subscribe((coupons) => {
       if(coupons.length > 0) {
         coupons.forEach((item) =>{
@@ -76,17 +76,17 @@ export class CouponCenterPage {
           this.storage.remove(Constants.COUPON_WALLET_KEY);
           this.storage.set(Constants.COUPON_WALLET_KEY, this.couponWallet);
         });
-        this.vjApi.hideLoader();
       }
-      this.vjApi.hideLoader();
       this.getListOfCoupons();
+    }, (err) => {
+      console.log('Coupon Center: getCouponsOfTheUser error');
     });    
   }
 
  
   getListOfCoupons() {
-    this.vjApi.showLoader();
-
+    let loader = new Loader(this.loadingCtrl);
+    loader.show();
     this.vjApi.getCouponAllTypes().subscribe((types) => {
 
       console.log(types);
@@ -135,9 +135,11 @@ export class CouponCenterPage {
           j = 0;
           i++;
         }
-        this.vjApi.hideLoader();
       }
-      this.vjApi.hideLoader();
+      loader.hide();
+    }, (err) => {
+      loader.hide();
+      console.log('Coupon Center: getListOfCoupons error');
     });
     
   }

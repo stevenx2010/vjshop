@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { VJAPI } from '../../services/vj.services';
+import { Loader } from '../../utils/loader';
 
 @IonicPage()
 @Component({
@@ -14,11 +15,12 @@ export class AgreementPage {
   content: any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI,
-  				private sanitizer: DomSanitizer) {
+  				private sanitizer: DomSanitizer, private loadingCtrl: LoadingController) {
   }
 
-  ionViewDidLoad() {
-  	this.vjApi.showLoader();
+  ionViewWillEnter() {
+  	let loader = new Loader(this.loadingCtrl);
+    loader.show();
     this.vjApi.getAgreementPageInfo().subscribe((info) => {
     	console.log(info);
     	this.content = info.json();
@@ -26,19 +28,15 @@ export class AgreementPage {
     		this.agreement = this.sanitizer.bypassSecurityTrustHtml(this.content);
     		this.displayContent();
     	}
-    	this.vjApi.hideLoader();
+    	loader.hide();
     }, (err) => {
     	console.log(err);
-    	this.vjApi.hideLoader();
+    	loader.hide();
     });
   }
 
   displayContent() {
   	return this.agreement;
-  }
-
-  ionViewWillLeave() {
-    this.vjApi.hideLoader();
   }
 
 }

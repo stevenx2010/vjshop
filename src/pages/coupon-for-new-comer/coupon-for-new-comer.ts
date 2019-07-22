@@ -1,15 +1,10 @@
 import { Component, Inject } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 
 import { VJAPI } from '../../services/vj.services';
 import { CouponNewComer } from '../../models/coupon-newcomer-model';
 
-/**
- * Generated class for the CouponForNewComerPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { Loader } from '../../utils/loader';
 
 @IonicPage()
 @Component({
@@ -22,24 +17,25 @@ export class CouponForNewComerPage {
   title: string;
   baseUrl: string;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI, 
+            @Inject('API_BASE_URL') private apiUrl: string, private loadingCtrl: LoadingController) {
   	this.couponNewComers = new Array<CouponNewComer>(new CouponNewComer());
   	this.baseUrl = this.apiUrl;
   }
 
-  ionViewDidEnter() {
-    this.vjApi.showLoader();
+  ionViewWillLoad() {
+    let loader = new Loader(this.loadingCtrl);
+    loader.show();
   	this.vjApi.getPageInforOfNewComer().subscribe((data) => {
   		if(data.length > 0) {
   			console.log(data);
   			this.couponNewComers = data;
   			this.title = this.couponNewComers[0].description;
   		}
-      this.vjApi.hideLoader();
+      loader.hide();
   	}, (err) => {
-      this.vjApi.hideLoader();
-    })
-
+      loader.hide();
+      console.log('Coupon For New User: ionViewWillLoad Error');
+    });
   }
-
 }

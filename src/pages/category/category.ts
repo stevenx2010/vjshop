@@ -57,6 +57,8 @@ export class CategoryPage {
 
   currentSelectedItemIndex: number = 999;
 
+  timeout: boolean = false;
+
   constructor(public navCtrl: NavController, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string,
             private app: App, private storage: Storage, private events: Events, private loadingCtrl: LoadingController) 
   {
@@ -89,21 +91,35 @@ export class CategoryPage {
         if(l) this.loggedIn = l;
       });
     });
+    
+    this.getCategories();
+    this.getAllProducts();
+
+    setTimeout(() => {
+      this.timeout = true;
+    }, 10 * 1000);
+
   }
 
   getAllProducts() {
+    this.filter = new Filter();
+    this.oldFilter = this.filter;
+
     let loader = new Loader(this.loadingCtrl);
     loader.show();
-      this.vjApi.getProductAll().subscribe(
-        (data) => {
-          if(data) this.products = data;
-          loader.hide();
-        },
-        (err) => {
-          loader.hide();
-          console.log(err);
-        }
-      );      
+    this.vjApi.getProductAll().subscribe(
+      (data) => {
+        loader.hide();
+        console.log(data);
+        if(data) this.products = data;
+        
+      },
+      (err) => {
+        loader.hide();
+        console.log('Category: getAllProducts error');
+        console.log(err);
+      }
+    );      
   }
 
   getFilteredProducts() {
@@ -152,8 +168,16 @@ export class CategoryPage {
     h = h - this.content.contentBottom + 7;
   	this.scrollHeightForAll = h + 'px';
 
-    this.getCategories();
-    this.getAllProducts();
+    if(this.timeout) {
+      this.getCategories();
+      this.getAllProducts();
+
+      this.timeout = false;
+
+      setTimeout(() => {
+        this.timeout = true;
+      }, 8 * 1000);
+    }     
   }
 /*
   reload(refresher) {
@@ -205,17 +229,17 @@ export class CategoryPage {
     let loader = new Loader(this.loadingCtrl);
     loader.show();
     this.vjApi.getProductsV2(categoryId).subscribe((data) => {
+      loader.hide();
       console.log(data);      
       if(data.length > 0) {
         this.productBySubCategories = data;
-        loader.hide();
         return;
       } 
-      loader.hide();
     }, (err) => {
       loader.hide();
       console.log(err);
-    })
+    });
+
 /*
     this.vjApi.getProducts(categoryId).subscribe(
       (data) => {
@@ -313,6 +337,7 @@ export class CategoryPage {
               let loader = new Loader(this.loadingCtrl);
               loader.show();
               this.vjApi.checkDistributorLogin(mobile).subscribe((resp) => {
+                loader.hide();
                 console.log(resp.json());
                 console.log(mobile);
                 let login = resp.json();
@@ -327,7 +352,6 @@ export class CategoryPage {
                   this.storage.remove(Constants.DISTRIBUTOR_MOBILE);
                   this.app.getRootNav().push('LoginPage', {user: 'distributor'});
                 }
-                loader.hide();
               }, (err) => {
                 loader.hide();
                 console.log(err);
