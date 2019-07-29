@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.venjong.vjshop" version="2.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.venjong.vjshop" version="2.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>稳卓商城</name>
     <description>Venjong online shop</description>
     <author email="stevenx@yitongxun.cn" href="http://www.yitongxun.cn/">Technology Team</author>

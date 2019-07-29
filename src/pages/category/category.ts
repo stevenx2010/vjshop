@@ -50,6 +50,7 @@ export class CategoryPage {
   brand_hf: boolean = false;
   package_box: boolean = false;
   package_pan: boolean = false;
+  package_dai: boolean = false;
   coating_zinc: boolean = false;
   coating_color: boolean = false;
   quality_aftermarket: boolean = false;

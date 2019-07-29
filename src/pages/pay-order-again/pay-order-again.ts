@@ -39,6 +39,8 @@ export class PayOrderAgainPage {
 
   btnDisabled: boolean = true;
 
+  priceModified: boolean = false;
+
   constructor(public navCtrl: NavController, public navParams: NavParams, private vjApi: VJAPI, 
               private appAvail: AppAvailability, private platform: Platform, private alertCtrl: AlertController,
               private events: Events) {
@@ -71,8 +73,16 @@ export class PayOrderAgainPage {
       this.coupons_used = false;
     }
 
+    
     this.calculateTotalPrice();
-    this.orderPrice = Number(this.total) + Number(this.order.shipping_charges);
+    // Unnecessary to calculate the price of order, the price might be changed at the back end
+    let calculatedOrderPricethis = Number(this.total) + Number(this.order.shipping_charges);
+    this.orderPrice = this.order1.total_price;
+    if(calculatedOrderPricethis != this.orderPrice) {
+      this.priceModified = true;
+    } else {
+      this.priceModified = false;
+    }
 
 
     // get shipping address
