@@ -512,6 +512,7 @@ export class ConfirmOrderPage {
     // Order basic info
     this.order.customer_id = this.customer_id;
     this.order.order_serial = this.genOrderSerialNumber();
+    this.order.payment_serial = this.order.order_serial;
     /*
     let dateString = new Date().toISOString();
     let regexp = /^(.*)T(.*)Z$/gi;

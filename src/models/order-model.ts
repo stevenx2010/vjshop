@@ -5,6 +5,7 @@ import { Address } from './address.model';
 export class Order {
 	public id: number = 0;
 	public order_serial: string = '';
+	public payment_serial: string = '';
 	public customer_id: number = 0;
 	public distributor_id: number = 0;
 	public total_price: number =0;
@@ -33,6 +34,7 @@ export class Order {
 		if(obj) {
 			this.id = obj.id || 0;
 			this.order_serial = obj.order_serial || '';
+			this.payment_serial = obj.payment_serial || '';
 			this.customer_id = obj.customer_id || 0;
 			this.distributor_id = obj.distributor_id || 0;
 			this.total_price = obj.total_price || 0;

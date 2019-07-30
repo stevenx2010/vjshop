@@ -75,10 +75,11 @@ export class PayOrderAgainPage {
 
     
     this.calculateTotalPrice();
-    // Unnecessary to calculate the price of order, the price might be changed at the back end
-    let calculatedOrderPricethis = Number(this.total) + Number(this.order.shipping_charges);
-    this.orderPrice = this.order1.total_price;
-    if(calculatedOrderPricethis != this.orderPrice) {
+    // Check if the price has been modified at the back end
+    let calculatedOrderPrice = Number(this.total) + Number(this.order.shipping_charges);
+    this.orderPrice = this.order.total_price;
+    if(calculatedOrderPrice != this.orderPrice) {
+      this.order.total_price = this.orderPrice;
       this.priceModified = true;
     } else {
       this.priceModified = false;
@@ -145,6 +146,7 @@ export class PayOrderAgainPage {
 
     this.order.order_date = Tools.getDateTime();
     //this.order.order_serial = this.genOrderSerialNumber();
+    this.order.payment_serial = this.genOrderSerialNumber();
 
     this.vjApi.submitOrder(JSON.stringify(this.order)).subscribe((r) => {
       if(r) {
