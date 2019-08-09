@@ -386,11 +386,11 @@ export class VJAPI {
 	 		.pipe(map((data) => data.json()));
 	 }
 
-	 public getDistributorLogin(mobile: string): Observable<Response> {
+	 public authDistributorLogin(body): Observable<Response> {
 		let headers = new Headers();
 	 	this.initAuthHeader(headers);
 
-		return this.http.get(this.apiUrl + 'api/distributor/login/' + mobile, {headers: headers});	
+		return this.http.post(this.apiUrl + 'api/distributor/login', body, {headers: headers});	
 	//		.pipe(map((data) =>data.json())); 	
 	 }
 

@@ -43,6 +43,7 @@ export class LoginPage {
 
   currentUser: CurrentUser = CurrentUser.CUSTOMER;
 
+  inputDisabled: boolean = false;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage: Storage, private vjApi: VJAPI, private alertCtrl: AlertController,
   				private events: Events/*, private init: InitEnv*/,/* private loadingCtrl: LoadingController*/) {
@@ -56,6 +57,7 @@ export class LoginPage {
       this.pageCaption = '经销商登录';
       this.currentUser = CurrentUser.DISTRIBUTOR;
       this.isCustomer = false;
+      this.chkAgreement = true;
     }
 
     this.storage.ready().then((data) => {
@@ -66,7 +68,6 @@ export class LoginPage {
       })
     })
   }
-
 
   getSMSCode() {
   	// step 1: Send request to get a SMS code
@@ -96,6 +97,7 @@ export class LoginPage {
   	let count = 60;
   	this.smsBtnDisabled = true;
     this.smsCountingDown = true;
+    this.inputDisabled = true;
   	let timer = setInterval(() => {
 	  				this.caption = count + '秒';
 	  				count -= 1;
@@ -104,6 +106,7 @@ export class LoginPage {
 	  					this.caption = '获取验证码';
 	  					this.smsCountingDown = false;
               this.smsBtnDisabled = false;
+              this.inputDisabled = false;
 	  				}
 					}, 1000);
 
@@ -258,17 +261,30 @@ export class LoginPage {
   confirmLoginDistributor() {
     //let loader = new Loader(this.loadingCtrl);
     //loader.show();
+    let body = {
+      "mobile": this.mobile,
+      "sms_code": this.smsCode
+    }
 
-    this.vjApi.getDistributorLogin(this.mobile).subscribe((data) => {
-
-      if(data.status == 200) {
-        this.storage.ready().then(() => {
+    this.vjApi.authDistributorLogin(body).subscribe((data) => {
+       switch(data.status) {
+         case 200:
+          this.storage.ready().then(() => {
           console.log(this.mobile);
           this.storage.set(Constants.DISTRIBUTOR_LOGIN_KEY, 1).catch((err) => console.log(err));
           this.storage.set(Constants.DISTRIBUTOR_MOBILE, this.mobile).catch((err) => console.log(err));
-        });
+          });
         //loader.hide();
-        this.navCtrl.push('DistributorToolsPage', {mobile: this.mobile});      
+          this.navCtrl.push('DistributorToolsPage', {mobile: this.mobile});    
+          break;
+
+         case 201:
+           this.doPrompt('验证码不正确!');
+           break;  
+
+         case 202:
+           this.doPrompt('验证码超时！');
+           break;
       }
       //loader.hide();
     },
