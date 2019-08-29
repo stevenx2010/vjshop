@@ -21,7 +21,7 @@
 			<button ion-button item-end (click)="getSMSCode()" class="counter" [disabled]="smsBtnDisabled || smsCountingDown">{{caption}}</button>
 		</ion-item>
 		<ion-item>
-			<ion-input type="number" placeholder="短信验证码" [(ngModel)]="smsCode" (keyup)="validate()"></ion-input>
+			<ion-input type="number" placeholder="短信验证码" [(ngModel)]="smsCode" (keyup)="validate()" (input)="validate()"></ion-input>
 		</ion-item>
 	</ion-list>
 

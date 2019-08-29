@@ -64,7 +64,7 @@ export class HomePage {
   timeout_15: boolean = true;
 
   downloadUrl_android: string = '<a href="https://vjshop.venjong.com/vjshop.apk">稳卓商城</a>';
-  downloadUrl_ios: string = '<a href="#">稳卓商城</a>';
+  downloadUrl_ios: string = '<a href="https://itunes.apple.com/cn/app/vjshop/id1475435585?mt=8">稳卓商城</a>';
 
   constructor(public navCtrl: NavController, private vjApi: VJAPI, @Inject('API_BASE_URL') private apiUrl: string, 
               private app: App, private storage: Storage, /*private geolocation: Geolocation, 
