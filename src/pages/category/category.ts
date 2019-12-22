@@ -42,6 +42,7 @@ export class CategoryPage {
 
   modalDropStyle: string;
   filterConditionDisplay: string;
+  filterConditionDisplay_1: string;
 
   filter: Filter;
   oldFilter: Filter;
@@ -386,16 +387,27 @@ export class CategoryPage {
   closeFilter() {
     this.filter = this.oldFilter;
     this.filterConditionDisplay = 'none';
+    this.filterConditionDisplay_1 = 'none';
   }
 
   startFilter() {
     this.getFilteredProducts();
     this.oldFilter = this.filter;
     this.filterConditionDisplay = 'none';
+    this.filterConditionDisplay_1 = 'none';
   }
 
   clearFilter(){
     this.oldFilter = this.filter;
     this.filter = new Filter();
+  }
+
+  nextPage() {
+    this.filterConditionDisplay = 'none';
+    this.filterConditionDisplay_1 = 'block';
+  }
+  prevPage() {
+    this.filterConditionDisplay = 'block';
+    this.filterConditionDisplay_1 = 'none';
   }
 }

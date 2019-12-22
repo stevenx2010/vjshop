@@ -1,7 +1,22 @@
-
+<!--
 <ion-header>
   <ion-navbar>
     <ion-title>客服留言</ion-title>
+  </ion-navbar>
+</ion-header>
+-->
+<ion-header>
+  <ion-navbar>
+  	<ion-grid>
+  		<ion-row>
+  			<ion-col col-8>
+    			<div style="font-size: 1.9rem;" align="center">客服留言</div>
+    		</ion-col>
+    		<ion-col col-4>
+    			<button ion-button outline small (click)="toQuestionAndAnswer()">常见问题</button>
+    		</ion-col>
+    	</ion-row>
+    </ion-grid>
   </ion-navbar>
 </ion-header>
 
@@ -83,6 +98,10 @@
 
 	ion-footer {
 		background-color: #efefef;
+	}
+
+	ion-header button {
+		border: none;
 	}
 
 </style>

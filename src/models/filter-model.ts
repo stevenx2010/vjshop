@@ -1,6 +1,8 @@
 export class Filter {
 	public brand_vj: boolean = false;
 	public brand_hf: boolean = false;
+	public brand_pf: boolean = false;
+	public brand_va: boolean = false;
 	public package_box: boolean = false;
 	public package_pan: boolean = false;
 	public package_dai: boolean = false;
@@ -13,6 +15,8 @@ export class Filter {
 		if(obj) {
 			this.brand_vj = obj.brand_vj || false;
 			this.brand_hf = obj.brand_hf || false;
+			this.brand_pf = obj.brand_pf || false;
+			this.brand_va = obj.brand_va || false;
 			this.package_box = obj.package_box || false;
 			this.package_pan = obj.package_pan || false;
 			this.package_dai = obj.package_dai || false;

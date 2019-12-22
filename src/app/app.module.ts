@@ -74,7 +74,7 @@ import { ScreenOrientation } from '@ionic-native/screen-orientation';
     {provide: ErrorHandler, useClass: IonicErrorHandler},
 //    {provide: 'API_BASE_URL', useValue: 'http://192.168.1.66:8000/'},
 //    {provide: 'API_BASE_URL', useValue: 'http://vjshop.yitongxun.cn:8080/api/'},
-    {provide: 'API_BASE_URL', useValue: 'http://vjshop.venjong.com:8080/api/'},
+    {provide: 'API_BASE_URL', useValue: 'https://vjshop.venjong.com/api/'},
     CoordinateTransform,
     WechatChenyu,
     ScreenOrientation

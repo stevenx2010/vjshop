@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, Content } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events, Content, App } from 'ionic-angular';
 
 import { VJAPI } from '../../services/vj.services';
 import { Message } from '../../models/message.model';
@@ -21,7 +21,8 @@ export class CustomerServicePage {
 
   order_serial: string = '';
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private events: Events, private vjApi: VJAPI) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private events: Events, 
+              private vjApi: VJAPI, private app: App) {
     this.messages = new Array<Message>();
 
   	this.mobile = this.navParams.get('mobile');
@@ -89,5 +90,13 @@ export class CustomerServicePage {
         }    
       }
     }, (err) => console.log(err));   
+  }
+
+  goback() {
+    this.navCtrl.parent.viewCtrl.dismiss();
+  }
+
+  toQuestionAndAnswer(){
+    this.app.getRootNav().push('QuestionAndAnswerPage', {'mobile': this.mobile});
   }
 }

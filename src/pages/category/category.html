@@ -244,6 +244,9 @@
 	<div class="modal-backdrop" [style.display]="filterConditionDisplay">
 	</div>
 
+	<div class="modal-backdrop" [style.display]="filterConditionDisplay_1">
+	</div>
+
 	<div class="filter-condition" [style.display]="filterConditionDisplay">
 		<div class="container">
 			<ion-grid>
@@ -253,7 +256,7 @@
 						<ion-list-header class="list-row-1">
 							品牌
 						</ion-list-header>
-						<ion-item>
+						<ion-item style="height: 5px;">
 							<ion-label>稳卓</ion-label>
 							<ion-checkbox color="dark" [(ngModel)]="filter.brand_vj"></ion-checkbox>
 						</ion-item>
@@ -261,6 +264,18 @@
 							<ion-label>Hofmann</ion-label>
 							<ion-checkbox color="dark" [(ngModel)]="filter.brand_hf"></ion-checkbox>
 						</ion-item>
+						<ion-item>
+							<ion-label>Perfect</ion-label>
+							<ion-checkbox color="dark" [(ngModel)]="filter.brand_pf"></ion-checkbox>
+						</ion-item>
+						<ion-item>
+							<ion-label>安耐通</ion-label>
+							<ion-checkbox color="dark" [(ngModel)]="filter.brand_va"></ion-checkbox>
+						</ion-item>						
+					</ion-list>
+				</ion-col>
+				<ion-col col-6 class="filter-list2">
+					<ion-list no-lines>
 						<ion-list-header class="list-row-2">
 							包装
 						</ion-list-header>
@@ -278,8 +293,41 @@
 						</ion-item>
 					</ion-list>
 				</ion-col>
-				<ion-col col-6 class="filter-list2">
-					<ion-list no-lines>
+				</ion-row>
+				<div class="btn">
+					<ion-row>
+						<ion-col col-3>
+							<div align="center">
+								<button ion-button color="secondary" full (click)="clearFilter()">清除过滤</button>
+							</div>
+						</ion-col>
+						<ion-col col-3>
+							<div align="center">
+								<button ion-button color="secondary" full (click)="startFilter()">确定</button>
+							</div>
+						</ion-col>
+						<ion-col col-3>
+							<div align="center">
+								<button ion-button color="secondary" full (click)="closeFilter()">取消</button>
+							</div>
+						</ion-col>
+						<ion-col col-3>
+							<div align="center">
+								<button ion-button color="secondary" full (click)="nextPage()">下一页</button>
+							</div>
+						</ion-col>
+					</ion-row>
+				</div>
+			</ion-grid>
+		</div>
+	</div>
+
+	<div class="filter-condition-1" [style.display]="filterConditionDisplay_1">
+		<div class="container">
+			<ion-grid>
+				<ion-row>
+				<ion-col col-6 class="filter-list1">
+					<ion-list no-lines class="column-left">
 						<ion-list-header class="list-row-1">
 							涂层
 						</ion-list-header>
@@ -291,6 +339,10 @@
 							<ion-label>彩色</ion-label>
 							<ion-checkbox color="dark" [(ngModel)]="filter.coating_color"></ion-checkbox>
 						</ion-item>
+					</ion-list>
+				</ion-col>
+				<ion-col col-6 class="filter-list2">
+					<ion-list no-lines>						
 						<ion-list-header class="list-row-2">
 							品质
 						</ion-list-header>
@@ -305,21 +357,27 @@
 					</ion-list>
 				</ion-col>
 				</ion-row>
+
 				<div class="btn">
 					<ion-row>
-						<ion-col col-4>
+						<ion-col col-3>
 							<div align="center">
 								<button ion-button color="secondary" full (click)="clearFilter()">清除过滤</button>
 							</div>
 						</ion-col>
-						<ion-col col-4>
+						<ion-col col-3>
 							<div align="center">
 								<button ion-button color="secondary" full (click)="startFilter()">确定</button>
 							</div>
 						</ion-col>
-						<ion-col col-4>
+						<ion-col col-3>
 							<div align="center">
 								<button ion-button color="secondary" full (click)="closeFilter()">取消</button>
+							</div>
+						</ion-col>
+						<ion-col col-3>
+							<div align="center">
+								<button ion-button color="secondary" full (click)="prevPage()">前一页</button>
 							</div>
 						</ion-col>
 					</ion-row>
@@ -470,7 +528,7 @@
 		100%{opacity:1}
 	}
 
-	.filter-condition {
+	.filter-condition, .filter-condition-1 {
 		position: absolute;
 		top: 1em;
 		bottom: 1em;
@@ -478,10 +536,17 @@
 		left: 1em;
 		background-color: white;
 		display: none;
-		z-index: 3;
 
 		animation: fadeIn 1s ease-in;
 		-web-kit-animation: fadeIn 1s ease-in;
+	}
+
+	.filter-condition {
+		z-index: 3;
+	}
+
+	.filter-condition-1 {
+		z-index: 4;
 	}
 
 	.container {
@@ -504,14 +569,15 @@
 		height: 1em;
 	}
 
-	.list-row-2 {
+/*	.list-row-2 {
 		margin-top: 2em;
 		border-top: 1px solid #efefef;
-	}
+	}*/
 
 	.btn {
-		margin-top: 10%;
-	}
 
+		margin-top: 15%;
+
+	}
 
 </style>
